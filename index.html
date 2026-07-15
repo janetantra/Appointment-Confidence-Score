@@ -569,7 +569,7 @@ function submitLead(){
     localStorage.setItem('leadRecords', JSON.stringify(existing));
   } catch(e){ console.warn('Storage error:',e); }
 
-  const WEBHOOK_URL=''; // ← paste Make.com webhook URL here
+  const WEBHOOK_URL='https://hook.us1.make.com/886k5ojznokp6xytozlgqj1w473lfilt';
   if(WEBHOOK_URL){
     fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
       .catch(e=>console.warn('Webhook:',e));
