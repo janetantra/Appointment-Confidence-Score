@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lead Records · Appointment Confidence Score</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*{font-family:'Inter',sans-serif;box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;
+  background:radial-gradient(ellipse at 20% 50%,#2d0057 0%,#0a0015 40%,#0d0025 70%,#050010 100%);
+  background-attachment:fixed;
+}
+body::before{content:'';position:fixed;top:-200px;left:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(139,92,246,0.25) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:0;animation:float1 8s ease-in-out infinite;}
+body::after{content:'';position:fixed;bottom:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(99,102,241,0.2) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:0;animation:float2 10s ease-in-out infinite;}
+@keyframes float1{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,30px)}}
+@keyframes float2{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,-20px)}}
+.wrap{position:relative;z-index:1;padding:24px 20px;max-width:1280px;margin:0 auto}
+.glass{background:rgba(255,255,255,0.05);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(139,92,246,0.25);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.08);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.nav-brand{font-size:18px;font-weight:900;background:linear-gradient(135deg,#c4b5fd,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:1px}
+.btn{padding:8px 18px;border-radius:10px;font-size:12px;font-weight:700;letter-spacing:1px;text-decoration:none;text-transform:uppercase;transition:all 0.2s;cursor:pointer;border:none;display:inline-block}
+.btn-outline{background:transparent;color:#a78bfa;border:1.5px solid rgba(139,92,246,0.4);}
+.btn-outline:hover{background:rgba(139,92,246,0.1);border-color:#8b5cf6}
+.btn-export{background:transparent;color:#818cf8;border:1.5px solid rgba(99,102,241,0.35);}
+.btn-export:hover{background:rgba(99,102,241,0.1)}
+.btn-refresh{background:rgba(139,92,246,0.15);color:#c4b5fd;border:1.5px solid rgba(139,92,246,0.3);}
+.btn-refresh:hover{background:rgba(139,92,246,0.25)}
+
+/* Status bar */
+.status-bar{display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:10px;font-size:12px;font-weight:600;margin-bottom:20px;border:1px solid;}
+.status-loading{background:rgba(139,92,246,0.1);color:#a78bfa;border-color:rgba(139,92,246,0.3)}
+.status-ok{background:rgba(34,197,94,0.1);color:#4ade80;border-color:rgba(34,197,94,0.25)}
+.status-err{background:rgba(239,68,68,0.1);color:#f87171;border-color:rgba(239,68,68,0.25)}
+.status-setup{background:rgba(245,158,11,0.1);color:#fbbf24;border-color:rgba(245,158,11,0.25)}
+
+.spin{display:inline-block;animation:spin 1s linear infinite;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
+.stat-card{padding:16px 18px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(139,92,246,0.2);backdrop-filter:blur(12px);}
+.stat-num{font-size:26px;font-weight:900;line-height:1}
+.stat-label{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;opacity:0.6}
+
+/* Filters */
+.filter-bar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center}
+.fp{padding:7px 16px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;border:1.5px solid;transition:all 0.2s;text-transform:uppercase;background:transparent;}
+.fp-all{color:#a78bfa;border-color:rgba(139,92,246,0.35)}
+.fp-all.active,.fp-all:hover{background:rgba(139,92,246,0.15);border-color:#8b5cf6}
+.fp-high{color:#4ade80;border-color:rgba(34,197,94,0.3)}
+.fp-high.active,.fp-high:hover{background:rgba(34,197,94,0.12);border-color:#22c55e;box-shadow:0 0 10px rgba(34,197,94,0.15)}
+.fp-mid{color:#fbbf24;border-color:rgba(245,158,11,0.3)}
+.fp-mid.active,.fp-mid:hover{background:rgba(245,158,11,0.12);border-color:#f59e0b}
+.fp-low{color:#f87171;border-color:rgba(239,68,68,0.3)}
+.fp-low.active,.fp-low:hover{background:rgba(239,68,68,0.12);border-color:#ef4444}
+.search-box{flex:1;min-width:200px;padding:8px 18px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,92,246,0.25);border-radius:999px;font-size:13px;color:#e2d9f3;outline:none;}
+.search-box::placeholder{color:rgba(167,139,250,0.35)}
+.search-box:focus{border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,0.15)}
+
+/* Table */
+.table-wrap{overflow-x:auto;border-radius:14px;border:1px solid rgba(139,92,246,0.2)}
+table{width:100%;border-collapse:collapse;min-width:960px}
+thead tr{background:rgba(139,92,246,0.12);border-bottom:1px solid rgba(139,92,246,0.25)}
+th{padding:12px 14px;font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#7c3aed;text-align:left;white-space:nowrap;cursor:pointer;user-select:none;}
+th:hover{color:#a78bfa}
+th .sort-icon{margin-left:4px;opacity:0.4}
+th.sorted .sort-icon{opacity:1;color:#c4b5fd}
+tbody tr{border-bottom:1px solid rgba(139,92,246,0.08);transition:background 0.15s}
+tbody tr:hover{background:rgba(139,92,246,0.07)}
+tbody tr:last-child{border-bottom:none}
+td{padding:13px 14px;font-size:13px;color:#c4b5fd;vertical-align:middle}
+
+.score-badge{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;font-size:14px;font-weight:900;border:2px solid;}
+.sb-high{border-color:#22c55e;color:#4ade80;background:rgba(34,197,94,0.1);box-shadow:0 0 10px rgba(34,197,94,0.2)}
+.sb-mid{border-color:#f59e0b;color:#fbbf24;background:rgba(245,158,11,0.1);box-shadow:0 0 10px rgba(245,158,11,0.2)}
+.sb-low{border-color:#ef4444;color:#f87171;background:rgba(239,68,68,0.1);box-shadow:0 0 10px rgba(239,68,68,0.2)}
+
+.pc{display:inline-block;padding:3px 10px;border-radius:999px;font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.pc-high{background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.3)}
+.pc-mid{background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3)}
+.pc-low{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3)}
+
+.expand-btn{padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid rgba(139,92,246,0.25);color:#a78bfa;background:transparent;transition:all 0.2s;}
+.expand-btn:hover{background:rgba(139,92,246,0.15);border-color:#8b5cf6}
+
+/* Detail panel */
+.detail-panel{background:rgba(0,0,0,0.25);border-top:1px solid rgba(139,92,246,0.12);padding:16px 20px;display:none}
+.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.d-item{background:rgba(139,92,246,0.08);border-radius:8px;padding:10px 12px;border:1px solid rgba(139,92,246,0.12)}
+.d-key{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7c3aed;margin-bottom:4px}
+.d-val{font-size:12px;color:#c4b5fd;font-weight:600}
+.notes-box{background:rgba(0,0,0,0.2);border-radius:8px;padding:10px 14px;border:1px solid rgba(139,92,246,0.1);font-size:12px;color:#a78bfa;line-height:1.6;font-style:italic}
+
+/* Empty / setup states */
+.center-box{text-align:center;padding:70px 20px}
+.center-icon{font-size:52px;margin-bottom:14px;opacity:0.5}
+.center-title{font-size:17px;font-weight:700;color:#7c3aed;margin-bottom:8px}
+.center-sub{font-size:13px;color:#4b5563;line-height:1.6}
+.setup-steps{text-align:left;max-width:420px;margin:20px auto 0;display:flex;flex-direction:column;gap:8px}
+.setup-step{background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.18);border-radius:8px;padding:10px 14px;font-size:12px;color:#a78bfa;display:flex;gap:10px;align-items:flex-start}
+.step-num{background:rgba(139,92,246,0.3);color:#c4b5fd;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;margin-top:1px}
+
+/* Pagination */
+.pagination{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:16px}
+.page-btn{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid rgba(139,92,246,0.25);color:#a78bfa;background:transparent;transition:all 0.2s;}
+.page-btn:hover,.page-btn.active{background:rgba(139,92,246,0.15);border-color:#8b5cf6}
+.page-btn:disabled{opacity:0.3;cursor:default}
+.page-info{font-size:12px;color:#6b7280}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Nav -->
+  <div class="nav">
+    <div class="nav-brand">⚡ LEAD RECORDS</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn btn-refresh" onclick="loadFromSheets()">🔄 Refresh</button>
+      <button class="btn btn-export" onclick="exportCSV()">📥 CSV</button>
+      <a href="index.html" class="btn btn-outline">+ New Call</a>
+    </div>
+  </div>
+
+  <!-- Status bar -->
+  <div id="statusBar" class="status-bar status-loading">
+    <span class="spin">⟳</span>
+    <span id="statusMsg">Connecting to Google Sheets...</span>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-num" style="color:#a78bfa" id="s-total">—</div><div class="stat-label" style="color:#7c3aed">Total Leads</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#4ade80" id="s-high">—</div><div class="stat-label" style="color:#22c55e">High Priority</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#fbbf24" id="s-mid">—</div><div class="stat-label" style="color:#f59e0b">Medium Priority</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#f87171" id="s-low">—</div><div class="stat-label" style="color:#ef4444">Low Priority</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#60a5fa" id="s-avg">—</div><div class="stat-label" style="color:#3b82f6">Avg Score</div></div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-bar">
+    <button class="fp fp-all active" onclick="setFilter('ALL',this)">All</button>
+    <button class="fp fp-high" onclick="setFilter('HIGH',this)">🟢 High</button>
+    <button class="fp fp-mid"  onclick="setFilter('MEDIUM',this)">🟡 Medium</button>
+    <button class="fp fp-low"  onclick="setFilter('LOW',this)">🔴 Low</button>
+    <input class="search-box" id="searchBox" placeholder="🔍  Search by name, phone, source..." oninput="renderTable()">
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap glass" id="tableWrap">
+    <div class="center-box" id="emptyState">
+      <div class="center-icon">⚡</div>
+      <div class="center-title">Loading records...</div>
+      <div class="center-sub">Fetching data from Google Sheets</div>
+    </div>
+    <table id="leadsTable" style="display:none">
+      <thead>
+        <tr>
+          <th onclick="sortBy('score')" class="sorted">Score <span class="sort-icon" id="sort-score">↓</span></th>
+          <th onclick="sortBy('priority')">Priority <span class="sort-icon" id="sort-priority"></span></th>
+          <th onclick="sortBy('customer_name')">Customer Name <span class="sort-icon" id="sort-customer_name"></span></th>
+          <th>Phone</th>
+          <th onclick="sortBy('lead_source')">Lead Source <span class="sort-icon" id="sort-lead_source"></span></th>
+          <th onclick="sortBy('project_type')">Project Type <span class="sort-icon" id="sort-project_type"></span></th>
+          <th onclick="sortBy('appointment_date')">Appt Date <span class="sort-icon" id="sort-appointment_date"></span></th>
+          <th onclick="sortBy('timestamp')">Submitted <span class="sort-icon" id="sort-timestamp"></span></th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" id="pagination" style="display:none">
+    <button class="page-btn" id="btnPrev" onclick="changePage(-1)">← Prev</button>
+    <span class="page-info" id="pageInfo"></span>
+    <button class="page-btn" id="btnNext" onclick="changePage(1)">Next →</button>
+  </div>
+
+</div>
+
+<script>
+// ─── CONFIG ──────────────────────────────────────────
+// Your Google Sheet ID (from the URL)
+const SHEET_ID = '1iNd8ZvqOEfQLQohKkEhXjaBtgxW4d52v';
+// Sheet tab name (default is "Sheet1" — change if different)
+const SHEET_TAB = 'Sheet1';
+const ROWS_PER_PAGE = 20;
+
+// Expected column order in your Google Sheet (must match Make.com setup)
+// Row 1 = headers, data starts row 2
+const COL = {
+  timestamp:        0,
+  crm_name:         1,
+  customer_name:    2,
+  phone:            3,
+  score:            4,
+  priority:         5,
+  lead_source:      6,
+  project_type:     7,
+  appointment_date: 8,
+  appointment_time: 9,
+  set_on:           10,
+  dm_answer:        11,
+  dm_pts:           12,
+  quotes_answer:    13,
+  quotes_pts:       14,
+  credit_answer:    15,
+  credit_pts:       16,
+  urgency_answer:   17,
+  urgency_pts:      18,
+  engagement_answer:19,
+  engagement_pts:   20,
+  notes:            21
+};
+
+// ─── STATE ───────────────────────────────────────────
+let allLeads = [];
+let filtered  = [];
+let currentFilter = 'ALL';
+let sortCol   = 'score';
+let sortDir   = -1; // -1 = desc, 1 = asc
+let currentPage = 1;
+
+// ─── LOAD FROM SHEETS ────────────────────────────────
+async function loadFromSheets() {
+  setStatus('loading','Fetching latest data from Google Sheets...');
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_TAB)}`;
+    const res  = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+
+    // Strip JSONP wrapper: /*O_o*/ google.visualization.Query.setResponse({...});
+    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/)[1]);
+    const rows  = json.table.rows;
+
+    if (!rows || rows.length === 0) {
+      allLeads = [];
+      setStatus('ok', 'Connected · No records yet — submit your first call');
+      updateStats(); renderTable(); return;
+    }
+
+    allLeads = rows.map(row => {
+      const c = v => (row.c[v] && row.c[v].v !== null) ? String(row.c[v].v) : '';
+      return {
+        timestamp:        c(COL.timestamp),
+        crm_name:         c(COL.crm_name),
+        customer_name:    c(COL.customer_name),
+        phone:            c(COL.phone),
+        score:            parseInt(c(COL.score)) || 0,
+        priority:         c(COL.priority).toUpperCase(),
+        lead_source:      c(COL.lead_source),
+        project_type:     c(COL.project_type),
+        appointment_date: c(COL.appointment_date),
+        appointment_time: c(COL.appointment_time),
+        set_on:           c(COL.set_on),
+        dm_answer:        c(COL.dm_answer),        dm_pts: c(COL.dm_pts),
+        quotes_answer:    c(COL.quotes_answer),    quotes_pts: c(COL.quotes_pts),
+        credit_answer:    c(COL.credit_answer),    credit_pts: c(COL.credit_pts),
+        urgency_answer:   c(COL.urgency_answer),   urgency_pts: c(COL.urgency_pts),
+        engagement_answer:c(COL.engagement_answer),engagement_pts: c(COL.engagement_pts),
+        notes:            c(COL.notes)
+      };
+    });
+
+    setStatus('ok', `✓ Live · ${allLeads.length} record${allLeads.length!==1?'s':''} loaded from Google Sheets · updates on every refresh`);
+    updateStats();
+    renderTable();
+
+  } catch(err) {
+    console.error(err);
+    if (err.message.includes('404') || err.message.includes('403')) {
+      setStatus('setup', '⚠ Sheet not public yet — see setup steps below');
+      showSetupGuide();
+    } else {
+      setStatus('err', '✗ Could not load sheet — check console for details');
+    }
+  }
+}
+
+// ─── STATUS BAR ──────────────────────────────────────
+function setStatus(type, msg) {
+  const bar = document.getElementById('statusBar');
+  bar.className = 'status-bar status-' + (type==='loading'?'loading':type==='ok'?'ok':type==='setup'?'setup':'err');
+  document.getElementById('statusMsg').textContent = msg;
+}
+
+function showSetupGuide() {
+  document.getElementById('emptyState').innerHTML = `
+    <div class="center-icon">🔒</div>
+    <div class="center-title">Sheet Not Public Yet</div>
+    <div class="center-sub">Do these 2 quick steps to connect your sheet:</div>
+    <div class="setup-steps">
+      <div class="setup-step"><div class="step-num">1</div><div>Open your Google Sheet → click <strong>Share</strong> (top right) → under <em>General access</em> change to <strong>"Anyone with the link – Viewer"</strong> → Done</div></div>
+      <div class="setup-step"><div class="step-num">2</div><div>Come back here and click <strong>🔄 Refresh</strong> above</div></div>
+      <div class="setup-step"><div class="step-num">3</div><div>Make sure your Make.com scenario is writing rows with the correct column order (see the setup guide)</div></div>
+    </div>`;
+  document.getElementById('leadsTable').style.display = 'none';
+}
+
+// ─── STATS ───────────────────────────────────────────
+function updateStats() {
+  const high = allLeads.filter(l=>l.priority==='HIGH').length;
+  const mid  = allLeads.filter(l=>l.priority==='MEDIUM').length;
+  const low  = allLeads.filter(l=>l.priority==='LOW').length;
+  const avg  = allLeads.length ? Math.round(allLeads.reduce((a,l)=>a+l.score,0)/allLeads.length) : 0;
+  document.getElementById('s-total').textContent = allLeads.length;
+  document.getElementById('s-high').textContent  = high;
+  document.getElementById('s-mid').textContent   = mid;
+  document.getElementById('s-low').textContent   = low;
+  document.getElementById('s-avg').textContent   = allLeads.length ? avg : '—';
+}
+
+// ─── FILTER + SORT ───────────────────────────────────
+function setFilter(f, btn) {
+  currentFilter = f; currentPage = 1;
+  document.querySelectorAll('.fp').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+
+function sortBy(col) {
+  if (sortCol === col) sortDir *= -1;
+  else { sortCol = col; sortDir = col==='score'?-1:1; }
+  // Update sort icons
+  document.querySelectorAll('th .sort-icon').forEach(el=>el.textContent='');
+  document.querySelectorAll('th').forEach(el=>el.classList.remove('sorted'));
+  const icon = document.getElementById('sort-'+col);
+  if (icon) { icon.textContent = sortDir===-1?'↓':'↑'; icon.parentElement.classList.add('sorted'); }
+  currentPage = 1;
+  renderTable();
+}
+
+// ─── RENDER TABLE ────────────────────────────────────
+function renderTable() {
+  const q = document.getElementById('searchBox').value.toLowerCase();
+  filtered = allLeads.filter(l => {
+    const matchF = currentFilter==='ALL' || l.priority===currentFilter;
+    const matchQ = !q ||
+      l.customer_name.toLowerCase().includes(q) ||
+      l.crm_name.toLowerCase().includes(q) ||
+      l.phone.includes(q) ||
+      l.lead_source.toLowerCase().includes(q) ||
+      l.project_type.toLowerCase().includes(q);
+    return matchF && matchQ;
+  });
+
+  // Sort
+  filtered.sort((a,b) => {
+    let av = a[sortCol], bv = b[sortCol];
+    if (sortCol==='score') return (bv-av)*sortDir*-1;
+    return String(av).localeCompare(String(bv)) * sortDir;
+  });
+
+  const empty = document.getElementById('emptyState');
+  const table = document.getElementById('leadsTable');
+
+  if (filtered.length === 0) {
+    empty.innerHTML = `<div class="center-icon">🔍</div><div class="center-title">${allLeads.length===0?'No records yet':'No matches'}</div><div class="center-sub">${allLeads.length===0?'Submit your first call and it will appear here automatically':'Try a different search or filter'}</div>`;
+    empty.style.display = 'block';
+    table.style.display = 'none';
+    document.getElementById('pagination').style.display = 'none';
+    return;
+  }
+
+  empty.style.display = 'none';
+  table.style.display = 'table';
+
+  // Pagination
+  const totalPages = Math.ceil(filtered.length / ROWS_PER_PAGE);
+  if (currentPage > totalPages) currentPage = 1;
+  const start = (currentPage-1)*ROWS_PER_PAGE;
+  const page  = filtered.slice(start, start+ROWS_PER_PAGE);
+
+  if (filtered.length > ROWS_PER_PAGE) {
+    document.getElementById('pagination').style.display = 'flex';
+    document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages}  (${filtered.length} records)`;
+    document.getElementById('btnPrev').disabled = currentPage === 1;
+    document.getElementById('btnNext').disabled = currentPage === totalPages;
+  } else {
+    document.getElementById('pagination').style.display = 'none';
+  }
+
+  document.getElementById('tableBody').innerHTML = page.map((lead, i) => {
+    const idx  = start + i;
+    const sbC  = lead.priority==='HIGH'?'sb-high':lead.priority==='MEDIUM'?'sb-mid':'sb-low';
+    const pcC  = lead.priority==='HIGH'?'pc-high':lead.priority==='MEDIUM'?'pc-mid':'pc-low';
+    const pid  = 'dp-'+idx;
+    const ts   = lead.timestamp ? lead.timestamp.replace('T',' ').slice(0,16) : '—';
+    return `
+    <tr>
+      <td><div class="score-badge ${sbC}">${lead.score}</div></td>
+      <td><span class="pc ${pcC}">${lead.priority}</span></td>
+      <td style="font-weight:700;color:#e2d9f3;min-width:160px">${lead.crm_name||lead.customer_name||'—'}</td>
+      <td style="color:#a78bfa;font-family:monospace;font-size:12px">${lead.phone||'—'}</td>
+      <td style="color:#c4b5fd;font-size:12px">${lead.lead_source||'—'}</td>
+      <td style="color:#c4b5fd;font-size:12px">${lead.project_type||'—'}</td>
+      <td style="color:#c4b5fd;font-size:12px">${lead.appointment_date||'—'}</td>
+      <td style="font-size:11px;color:#6b7280;white-space:nowrap">${ts}</td>
+      <td><button class="expand-btn" onclick="toggle('${pid}',this)">▶ View</button></td>
+    </tr>
+    <tr><td colspan="9" style="padding:0">
+      <div class="detail-panel" id="${pid}">
+        <div class="detail-grid">
+          <div class="d-item"><div class="d-key">Decision Maker</div><div class="d-val">${lead.dm_answer||'—'}<span style="color:#7c3aed;font-size:11px"> ${lead.dm_pts?'(+'+lead.dm_pts+' pts)':''}</span></div></div>
+          <div class="d-item"><div class="d-key">Quotes</div><div class="d-val">${lead.quotes_answer||'—'}<span style="color:#7c3aed;font-size:11px"> ${lead.quotes_pts?'(+'+lead.quotes_pts+' pts)':''}</span></div></div>
+          <div class="d-item"><div class="d-key">Credit</div><div class="d-val">${lead.credit_answer||'—'}<span style="color:#7c3aed;font-size:11px"> ${lead.credit_pts?'(+'+lead.credit_pts+' pts)':''}</span></div></div>
+          <div class="d-item"><div class="d-key">Urgency</div><div class="d-val">${lead.urgency_answer||'—'}<span style="color:#7c3aed;font-size:11px"> ${lead.urgency_pts?'(+'+lead.urgency_pts+' pts)':''}</span></div></div>
+          <div class="d-item"><div class="d-key">Engagement</div><div class="d-val">${lead.engagement_answer||'—'}<span style="color:#7c3aed;font-size:11px"> ${lead.engagement_pts?'(+'+lead.engagement_pts+' pts)':''}</span></div></div>
+          <div class="d-item"><div class="d-key">Appt Time</div><div class="d-val">${lead.appointment_time||'—'}</div></div>
+        </div>
+        ${lead.notes?`<div class="d-key" style="margin-bottom:6px">Call Notes</div><div class="notes-box">"${lead.notes}"</div>`:''}
+      </div>
+    </td></tr>`;
+  }).join('');
+}
+
+function toggle(id, btn) {
+  const p = document.getElementById(id);
+  const open = p.style.display==='block';
+  p.style.display = open?'none':'block';
+  btn.textContent = open?'▶ View':'▼ Hide';
+}
+
+function changePage(dir) {
+  currentPage += dir; renderTable();
+}
+
+// ─── EXPORT CSV ──────────────────────────────────────
+function exportCSV() {
+  if (!filtered.length) { alert('No records to export.'); return; }
+  const hdr = ['CRM Name','Customer Name','Phone','Score','Priority','Lead Source','Project Type','Appt Date','Appt Time','DM','DM Pts','Quotes','Quotes Pts','Credit','Credit Pts','Urgency','Urgency Pts','Engagement','Engagement Pts','Notes','Timestamp'];
+  const rows = filtered.map(l=>[
+    l.crm_name,l.customer_name,l.phone,l.score,l.priority,l.lead_source,l.project_type,
+    l.appointment_date,l.appointment_time,
+    l.dm_answer,l.dm_pts,l.quotes_answer,l.quotes_pts,l.credit_answer,l.credit_pts,
+    l.urgency_answer,l.urgency_pts,l.engagement_answer,l.engagement_pts,
+    (l.notes||'').replace(/"/g,'""'),l.timestamp
+  ].map(v=>`"${v||''}"`).join(','));
+  const csv = [hdr.join(','),...rows].join('\n');
+  const a = Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([csv],{type:'text/csv'})),download:'leads-'+new Date().toISOString().split('T')[0]+'.csv'});
+  a.click();
+}
+
+// ─── INIT ────────────────────────────────────────────
+loadFromSheets();
+// Auto-refresh every 60 seconds
+setInterval(loadFromSheets, 60000);
+</script>
+</body>
+</html>
