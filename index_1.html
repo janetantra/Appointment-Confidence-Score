@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lead Scoring Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*{font-family:'Inter',sans-serif;box-sizing:border-box;margin:0;padding:0}
+
+body{
+  min-height:100vh;
+  background: radial-gradient(ellipse at 20% 50%, #2d0057 0%, #0a0015 40%, #0d0025 70%, #050010 100%);
+  background-attachment:fixed;
+}
+
+/* Ambient glow orbs */
+body::before{
+  content:'';position:fixed;top:-200px;left:-200px;width:600px;height:600px;
+  background:radial-gradient(circle,rgba(139,92,246,0.25) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;z-index:0;animation:float1 8s ease-in-out infinite;
+}
+body::after{
+  content:'';position:fixed;bottom:-100px;right:-100px;width:500px;height:500px;
+  background:radial-gradient(circle,rgba(99,102,241,0.2) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;z-index:0;animation:float2 10s ease-in-out infinite;
+}
+@keyframes float1{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,30px)}}
+@keyframes float2{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,-20px)}}
+
+.page-wrap{position:relative;z-index:1;padding:24px 16px;max-width:1100px;margin:0 auto}
+
+/* Glass card */
+.glass{
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(139,92,246,0.25);
+  border-radius:16px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.08);
+  margin-bottom:20px;padding:24px;
+}
+.glass:hover{border-color:rgba(139,92,246,0.45);transition:border-color 0.3s}
+
+.section-title{
+  font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:#a78bfa;margin-bottom:18px;display:flex;align-items:center;gap:8px;
+}
+.section-title .icon{font-size:16px}
+
+.field-label{
+  font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
+  color:#7c3aed;margin-bottom:6px;display:block;
+}
+
+input[type="text"],input[type="tel"],input[type="date"],input[type="time"],select,textarea{
+  width:100%;padding:11px 14px;
+  background:rgba(255,255,255,0.06);
+  border:1.5px solid rgba(139,92,246,0.3);
+  border-radius:10px;font-size:14px;color:#e2d9f3;outline:none;
+  transition:all 0.2s;
+}
+input::placeholder,textarea::placeholder{color:rgba(167,139,250,0.4)}
+input:focus,select:focus,textarea:focus{
+  border-color:#8b5cf6;
+  box-shadow:0 0 0 3px rgba(139,92,246,0.2),0 0 20px rgba(139,92,246,0.1);
+  background:rgba(255,255,255,0.09);
+}
+select option{background:#1a0035;color:#e2d9f3}
+
+/* Option cards */
+.opt{
+  cursor:pointer;
+  border:1.5px solid rgba(139,92,246,0.2);
+  border-radius:12px;padding:14px 12px;
+  transition:all 0.2s;
+  background:rgba(255,255,255,0.04);
+  text-align:center;user-select:none;
+  position:relative;overflow:hidden;
+}
+.opt::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(139,92,246,0) 0%,rgba(139,92,246,0.05) 100%);
+  opacity:0;transition:opacity 0.2s;
+}
+.opt:hover{border-color:#8b5cf6;background:rgba(139,92,246,0.1);transform:translateY(-1px)}
+.opt:hover::before{opacity:1}
+
+.opt.sel-green{border-color:#22c55e!important;background:rgba(34,197,94,0.12)!important;box-shadow:0 0 16px rgba(34,197,94,0.2)}
+.opt.sel-amber{border-color:#f59e0b!important;background:rgba(245,158,11,0.12)!important;box-shadow:0 0 16px rgba(245,158,11,0.2)}
+.opt.sel-purple{border-color:#8b5cf6!important;background:rgba(139,92,246,0.15)!important;box-shadow:0 0 16px rgba(139,92,246,0.3)}
+.opt.sel-red{border-color:#ef4444!important;background:rgba(239,68,68,0.12)!important;box-shadow:0 0 16px rgba(239,68,68,0.2)}
+.opt.sel-gray{border-color:#6b7280!important;background:rgba(107,114,128,0.12)!important}
+.opt.sel-blue{border-color:#3b82f6!important;background:rgba(59,130,246,0.12)!important;box-shadow:0 0 16px rgba(59,130,246,0.2)}
+
+.opt-label{font-size:13px;font-weight:600;color:#e2d9f3;margin-bottom:5px}
+.pts{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;margin-top:4px}
+.pts-green{background:rgba(34,197,94,0.2);color:#4ade80}
+.pts-amber{background:rgba(245,158,11,0.2);color:#fbbf24}
+.pts-gray{background:rgba(107,114,128,0.2);color:#9ca3af}
+.pts-blue{background:rgba(59,130,246,0.2);color:#60a5fa}
+.pts-purple{background:rgba(139,92,246,0.2);color:#c4b5fd}
+
+/* Score ring */
+.score-ring{
+  width:128px;height:128px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border:4px solid;transition:all 0.4s ease;
+  position:relative;
+}
+.score-ring::after{
+  content:'';position:absolute;inset:-8px;border-radius:50%;
+  border:1px solid;opacity:0.3;transition:all 0.4s;
+}
+.ring-zero {border-color:#4b5563;color:#6b7280;box-shadow:none}
+.ring-zero::after{border-color:#4b5563}
+.ring-high {border-color:#22c55e;color:#4ade80;box-shadow:0 0 30px rgba(34,197,94,0.4)}
+.ring-high::after{border-color:#22c55e}
+.ring-mid  {border-color:#f59e0b;color:#fbbf24;box-shadow:0 0 30px rgba(245,158,11,0.4)}
+.ring-mid::after{border-color:#f59e0b}
+.ring-low  {border-color:#ef4444;color:#f87171;box-shadow:0 0 30px rgba(239,68,68,0.4)}
+.ring-low::after{border-color:#ef4444}
+
+.priority-pill{font-size:10px;font-weight:800;letter-spacing:2px;padding:4px 12px;border-radius:999px;text-transform:uppercase}
+.pill-none{background:rgba(107,114,128,0.2);color:#9ca3af;border:1px solid rgba(107,114,128,0.3)}
+.pill-high{background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.4);box-shadow:0 0 12px rgba(34,197,94,0.2)}
+.pill-mid {background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.4);box-shadow:0 0 12px rgba(245,158,11,0.2)}
+.pill-low {background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.4);box-shadow:0 0 12px rgba(239,68,68,0.2)}
+
+.progress-track{background:rgba(255,255,255,0.08);border-radius:999px;height:6px}
+.progress-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#7c3aed,#a78bfa);transition:width 0.4s ease;box-shadow:0 0 8px rgba(139,92,246,0.6)}
+
+.name-preview{
+  background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);
+  border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;
+  color:#c4b5fd;min-height:38px;display:flex;align-items:center;justify-content:center;
+  letter-spacing:0.5px;
+}
+
+.submit-btn{
+  width:100%;padding:15px;border:none;border-radius:12px;cursor:pointer;
+  font-size:14px;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+  background:linear-gradient(135deg,#7c3aed 0%,#5b21b6 50%,#4c1d95 100%);
+  color:#fff;position:relative;overflow:hidden;
+  box-shadow:0 4px 20px rgba(124,58,237,0.5),inset 0 1px 0 rgba(255,255,255,0.15);
+  transition:all 0.2s;
+}
+.submit-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.1),transparent);
+}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(124,58,237,0.6),inset 0 1px 0 rgba(255,255,255,0.15)}
+.submit-btn:active{transform:translateY(0)}
+
+.sticky-panel{position:sticky;top:24px}
+
+/* Panel sections */
+.panel-section{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(139,92,246,0.2);
+  backdrop-filter:blur(20px);
+}
+.panel-top{border-radius:16px 16px 0 0;border-bottom:none;padding:24px;text-align:center}
+.panel-mid{border-top:none;border-bottom:none;padding:14px 18px}
+.panel-bot{border-radius:0 0 16px 16px;border-top:none;padding:18px}
+
+.breakdown-row{display:flex;justify-content:space-between;font-size:12px;color:#7c3aed;padding:4px 0}
+.breakdown-val{font-weight:700;color:#6b7280;transition:color 0.3s}
+
+.header-glow{
+  text-align:center;margin-bottom:28px;
+}
+.header-glow h1{
+  font-size:26px;font-weight:900;letter-spacing:1px;
+  background:linear-gradient(135deg,#c4b5fd,#a78bfa,#7c3aed);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.header-glow p{font-size:13px;color:rgba(167,139,250,0.6);margin-top:4px}
+
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(139,92,246,0.3),transparent);margin:4px 0}
+
+@keyframes pulse-ring{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
+.pulse{animation:pulse-ring 0.35s ease}
+
+/* Modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);z-index:999;align-items:center;justify-content:center}
+.modal-box{background:linear-gradient(135deg,#1a0035,#0d0025);border:1px solid rgba(139,92,246,0.4);border-radius:20px;padding:36px;max-width:520px;width:92%;text-align:center;box-shadow:0 0 60px rgba(139,92,246,0.3)}
+.modal-close{background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;padding:11px 32px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:16px;letter-spacing:1px}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.grid-2-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- Header -->
+  <div class="header-glow">
+    <h1>⚡ LEAD SCORING DASHBOARD</h1>
+    <p>Insurance Appointment Setter · Live Auto-Scoring</p>
+  </div>
+
+  <div style="display:flex;gap:20px;align-items:flex-start">
+
+    <!-- LEFT FORM -->
+    <div style="flex:1;min-width:0">
+
+      <!-- Customer Info -->
+      <div class="glass">
+        <div class="section-title"><span class="icon">👤</span> Customer Information</div>
+        <div class="grid-2" style="margin-bottom:14px">
+          <div>
+            <label class="field-label">Customer Name</label>
+            <input type="text" id="customerName" placeholder="John Smith" oninput="updatePreview()">
+          </div>
+          <div>
+            <label class="field-label">Phone Number</label>
+            <input type="tel" id="phone" placeholder="555-123-4567" oninput="formatPhone(this)" maxlength="12">
+          </div>
+        </div>
+        <div class="grid-2" style="margin-bottom:14px">
+          <div>
+            <label class="field-label">Set On</label>
+            <input type="date" id="setOn">
+          </div>
+          <div>
+            <label class="field-label">Lead Source</label>
+            <select id="leadSource">
+              <option value="">Select source...</option>
+              <option>APPOINTX</option>
+              <option>FACEBOOK</option>
+              <option>GOOGLE ADS</option>
+              <option>HOME ADVISOR</option>
+              <option>HOME BUDDY</option>
+              <option>MOD-MODERNIZE</option>
+              <option>PRO-REMODEL</option>
+              <option>SEARCH GOOGLE & ORGANIC</option>
+              <option>THUMBTACK</option>
+              <option>WEBSITE FORM</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label class="field-label">Project Type</label>
+            <select id="projectType">
+              <option value="">Select type...</option>
+              <option>Roofing</option>
+              <option>Solar</option>
+              <option>HVAC</option>
+              <option>Windows & Doors</option>
+              <option>Siding</option>
+              <option>Gutters</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div>
+              <label class="field-label">Appt Date</label>
+              <input type="date" id="appointmentDate">
+            </div>
+            <div>
+              <label class="field-label">Appt Time</label>
+              <input type="time" id="appointmentTime">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q1: Decision Maker -->
+      <div class="glass">
+        <div class="section-title">
+          <span class="icon">👥</span> 1. Decision Maker Commitment
+          <span style="margin-left:auto;font-size:10px;color:#6b7280;font-weight:500">MAX <span style="color:#a78bfa">20 PTS</span></span>
+        </div>
+        <div class="grid-3" id="group-dm">
+          <div class="opt" onclick="selectOption('dm','Older Couple',20,this,'green')" data-color="green">
+            <div class="opt-label">Older Couple</div>
+            <span class="pts pts-green">+20 PTS</span>
+          </div>
+          <div class="opt" onclick="selectOption('dm','Younger Couple',15,this,'amber')" data-color="amber">
+            <div class="opt-label">Younger Couple</div>
+            <span class="pts pts-amber">+15 PTS</span>
+          </div>
+          <div class="opt" onclick="selectOption('dm','Just Him / Her',5,this,'gray')" data-color="gray">
+            <div class="opt-label">Just Him / Her</div>
+            <span class="pts pts-gray">+5 PTS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q2: Quotes -->
+      <div class="glass">
+        <div class="section-title">
+          <span class="icon">📄</span> 2. Quotes
+          <span style="margin-left:auto;font-size:10px;color:#6b7280;font-weight:500">MAX <span style="color:#a78bfa">40 PTS</span></span>
+        </div>
+        <div class="grid-3" id="group-quotes">
+          <div class="opt" onclick="selectOption('quotes','Got 1',40,this,'green')" data-color="green">
+            <div class="opt-label">Got 1</div>
+            <span class="pts pts-green">+40 PTS</span>
+            <div style="font-size:10px;color:#6b7280;margin-top:4px">Has competitor quote</div>
+          </div>
+          <div class="opt" onclick="selectOption('quotes','Have Appt Before Us',30,this,'amber')" data-color="amber">
+            <div class="opt-label">Have Appt Before Us</div>
+            <span class="pts pts-amber">+30 PTS</span>
+            <div style="font-size:10px;color:#6b7280;margin-top:4px">Scheduled earlier</div>
+          </div>
+          <div class="opt" onclick="selectOption('quotes','None',0,this,'gray')" data-color="gray">
+            <div class="opt-label">None</div>
+            <span class="pts pts-gray">0 PTS</span>
+            <div style="font-size:10px;color:#6b7280;margin-top:4px">No quote yet</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q3: Credit -->
+      <div class="glass">
+        <div class="section-title">
+          <span class="icon">💳</span> 3. Credit
+          <span style="margin-left:auto;font-size:10px;color:#6b7280;font-weight:500">MAX <span style="color:#a78bfa">20 PTS</span></span>
+        </div>
+        <div class="grid-3" id="group-credit">
+          <div class="opt" onclick="selectOption('credit','Good / Excellent',20,this,'green')" data-color="green">
+            <div class="opt-label">Good / Excellent</div>
+            <span class="pts pts-green">+20 PTS</span>
+          </div>
+          <div class="opt" onclick="selectOption('credit','Fair',10,this,'amber')" data-color="amber">
+            <div class="opt-label">Fair</div>
+            <span class="pts pts-amber">+10 PTS</span>
+          </div>
+          <div class="opt" onclick="selectOption('credit','Cash Project',10,this,'blue')" data-color="blue">
+            <div class="opt-label">Cash Project</div>
+            <span class="pts pts-blue">+10 PTS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q4: Project Urgency -->
+      <div class="glass">
+        <div class="section-title">
+          <span class="icon">⏱️</span> 4. Project Urgency
+          <span style="margin-left:auto;font-size:10px;color:#6b7280;font-weight:500">MAX <span style="color:#a78bfa">10 PTS</span></span>
+        </div>
+        <div class="grid-3" id="group-urgency">
+          <div class="opt" onclick="selectOption('urgency','ASAP',10,this,'green')" data-color="green">
+            <div class="opt-label">ASAP</div>
+            <span class="pts pts-green">+10 PTS</span>
+          </div>
+          <div class="opt" onclick="selectOption('urgency','Got a Timeline',5,this,'amber')" data-color="amber">
+            <div class="opt-label">Got a Timeline</div>
+            <span class="pts pts-amber">+5 PTS</span>
+          </div>
+          <div class="opt" onclick="selectOption('urgency','Just Shopping Around',0,this,'gray')" data-color="gray">
+            <div class="opt-label">Just Shopping Around</div>
+            <span class="pts pts-gray">0 PTS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q5: Engagement -->
+      <div class="glass">
+        <div class="section-title">
+          <span class="icon">💬</span> 5. Engagement
+          <span style="margin-left:auto;font-size:10px;color:#6b7280;font-weight:500">MAX <span style="color:#a78bfa">10 PTS</span></span>
+        </div>
+        <div class="grid-2-cols" id="group-engagement">
+          <div class="opt" onclick="selectOption('engagement','Very Interested',10,this,'green')" data-color="green">
+            <div class="opt-label">Very Interested</div>
+            <span class="pts pts-green">+10 PTS</span>
+          </div>
+          <div class="opt" onclick="selectOption('engagement','Interested',5,this,'amber')" data-color="amber">
+            <div class="opt-label">Interested</div>
+            <span class="pts pts-amber">+5 PTS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Call Notes -->
+      <div class="glass">
+        <div class="section-title"><span class="icon">📝</span> Call Notes</div>
+        <textarea id="callNotes" rows="5" placeholder="Type additional notes, objections, or special circumstances..."></textarea>
+      </div>
+
+    </div><!-- end LEFT -->
+
+    <!-- RIGHT: Score Panel -->
+    <div style="width:270px;flex-shrink:0">
+      <div class="sticky-panel">
+
+        <!-- Score ring -->
+        <div class="panel-section panel-top">
+          <div style="font-size:10px;font-weight:800;letter-spacing:3px;color:#7c3aed;text-transform:uppercase;margin-bottom:16px">⚡ Live Score</div>
+          <div style="display:flex;justify-content:center;margin-bottom:14px">
+            <div class="score-ring ring-zero" id="scoreRing">
+              <div style="font-size:36px;font-weight:900;line-height:1" id="scoreNumber">0</div>
+              <div style="font-size:10px;font-weight:600;opacity:0.7;margin-top:2px">/ 100</div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:center;margin-bottom:14px">
+            <span class="priority-pill pill-none" id="priorityBadge">No Data Yet</span>
+          </div>
+          <div class="name-preview" id="namePreview">— Enter customer name —</div>
+        </div>
+
+        <!-- Progress -->
+        <div class="panel-section panel-mid">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;align-items:center">
+            <span style="font-size:10px;font-weight:700;letter-spacing:1px;color:#7c3aed;text-transform:uppercase">Progress</span>
+            <span style="font-size:12px;font-weight:800;color:#a78bfa" id="progressText">0 of 5</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressBar" style="width:0%"></div>
+          </div>
+        </div>
+
+        <!-- Breakdown -->
+        <div class="panel-section panel-mid">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:#7c3aed;text-transform:uppercase;margin-bottom:10px">Score Breakdown</div>
+          <div class="breakdown-row"><span>Decision Maker</span><span class="breakdown-val" id="b-dm">—</span></div>
+          <div class="divider"></div>
+          <div class="breakdown-row"><span>Quotes</span><span class="breakdown-val" id="b-quotes">—</span></div>
+          <div class="divider"></div>
+          <div class="breakdown-row"><span>Credit</span><span class="breakdown-val" id="b-credit">—</span></div>
+          <div class="divider"></div>
+          <div class="breakdown-row"><span>Project Urgency</span><span class="breakdown-val" id="b-urgency">—</span></div>
+          <div class="divider"></div>
+          <div class="breakdown-row"><span>Engagement</span><span class="breakdown-val" id="b-engagement">—</span></div>
+          <div style="height:1px;background:rgba(139,92,246,0.3);margin:8px 0"></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:800;color:#c4b5fd">
+            <span>TOTAL</span><span id="b-total">0 / 100</span>
+          </div>
+        </div>
+
+        <!-- Priority Guide -->
+        <div class="panel-section panel-mid">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:#7c3aed;text-transform:uppercase;margin-bottom:10px">Priority Guide</div>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:11px">
+            <div style="display:flex;align-items:center;gap:8px;color:#4ade80"><span style="width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e;display:inline-block"></span>80–100 → HIGH</div>
+            <div style="display:flex;align-items:center;gap:8px;color:#fbbf24"><span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;box-shadow:0 0 6px #f59e0b;display:inline-block"></span>60–79 → MEDIUM</div>
+            <div style="display:flex;align-items:center;gap:8px;color:#f87171"><span style="width:8px;height:8px;border-radius:50%;background:#ef4444;box-shadow:0 0 6px #ef4444;display:inline-block"></span>0–59 → LOW</div>
+          </div>
+        </div>
+
+        <!-- Clock -->
+        <div class="panel-section panel-mid" style="text-align:center">
+          <div style="font-size:18px;font-weight:800;color:#a78bfa;letter-spacing:2px" id="clock"></div>
+          <div style="font-size:10px;color:#6b7280;margin-top:2px" id="dateDisplay"></div>
+        </div>
+
+        <!-- Submit -->
+        <div class="panel-section panel-bot">
+          <button class="submit-btn" onclick="submitLead()">🚀 SUBMIT TO CRM</button>
+          <div style="text-align:center;font-size:10px;color:rgba(107,114,128,0.7);margin-top:8px;letter-spacing:0.5px">Sends all data to Make.com → BuildersPrime</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="successModal">
+  <div class="modal-box">
+    <div style="font-size:48px;margin-bottom:12px">✅</div>
+    <h2 style="font-size:18px;font-weight:800;color:#c4b5fd;margin-bottom:8px">Lead Submitted!</h2>
+    <p style="font-size:13px;color:#7c3aed;margin-bottom:16px" id="modalSummary"></p>
+    <div id="modalPayload" style="background:rgba(0,0,0,0.3);border:1px solid rgba(139,92,246,0.2);border-radius:10px;padding:14px;text-align:left;font-size:11px;color:#a78bfa;max-height:200px;overflow-y:auto;margin-bottom:16px;font-family:monospace;white-space:pre-wrap"></div>
+    <button class="modal-close" onclick="closeModal()">NEW CALL</button>
+  </div>
+</div>
+
+<script>
+const answers={dm:null,quotes:null,credit:null,urgency:null,engagement:null};
+const scores ={dm:0,   quotes:0,   credit:0,   urgency:0,   engagement:0};
+
+const selClass={green:'sel-green',amber:'sel-amber',blue:'sel-blue',red:'sel-red',gray:'sel-gray',purple:'sel-purple'};
+
+function selectOption(group,label,pts,el,color){
+  document.querySelectorAll('#group-'+group+' .opt').forEach(c=>{
+    c.classList.remove('sel-green','sel-amber','sel-blue','sel-red','sel-gray','sel-purple');
+  });
+  el.classList.add(selClass[color]||'sel-purple');
+  answers[group]=label; scores[group]=pts;
+  updateScore();
+}
+
+function updateScore(){
+  const total=Object.values(scores).reduce((a,b)=>a+b,0);
+  const answered=Object.values(answers).filter(v=>v!==null).length;
+
+  document.getElementById('scoreNumber').textContent=total;
+  const ring=document.getElementById('scoreRing');
+  ring.className='score-ring';
+
+  let priority,badgeClass,ringClass;
+  if(answered===0){ringClass='ring-zero';priority='No Data Yet';badgeClass='pill-none';}
+  else if(total>=80){ringClass='ring-high';priority='HIGH PRIORITY';badgeClass='pill-high';}
+  else if(total>=60){ringClass='ring-mid';priority='MEDIUM PRIORITY';badgeClass='pill-mid';}
+  else{ringClass='ring-low';priority='LOW PRIORITY';badgeClass='pill-low';}
+
+  ring.classList.add(ringClass,'pulse');
+  setTimeout(()=>ring.classList.remove('pulse'),350);
+
+  const badge=document.getElementById('priorityBadge');
+  badge.textContent=priority; badge.className='priority-pill '+badgeClass;
+
+  const pct=Math.round((answered/5)*100);
+  document.getElementById('progressBar').style.width=pct+'%';
+  document.getElementById('progressText').textContent=answered+' of 5';
+
+  ['dm','quotes','credit','urgency','engagement'].forEach(k=>{
+    const el=document.getElementById('b-'+k);
+    if(answers[k]===null){el.textContent='—';el.style.color='#6b7280';}
+    else{el.textContent=scores[k]+' pts';el.style.color=scores[k]>0?'#4ade80':'#f87171';}
+  });
+  document.getElementById('b-total').textContent=total+' / 100';
+  updatePreview();
+}
+
+function updatePreview(){
+  const name=document.getElementById('customerName').value.trim();
+  const total=Object.values(scores).reduce((a,b)=>a+b,0);
+  const answered=Object.values(answers).filter(v=>v!==null).length;
+  const el=document.getElementById('namePreview');
+  if(!name){el.textContent='— Enter customer name —';el.style.color='rgba(167,139,250,0.4)';}
+  else{el.textContent=answered>0?total+' '+name:name;el.style.color='#c4b5fd';}
+}
+
+function submitLead(){
+  const name=document.getElementById('customerName').value.trim()||'Unknown';
+  const total=Object.values(scores).reduce((a,b)=>a+b,0);
+  const priority=total>=80?'HIGH':total>=60?'MEDIUM':'LOW';
+  const payload={
+    crm_customer_name:total+' '+name,
+    customer_name:name,
+    phone:document.getElementById('phone').value,
+    set_on:document.getElementById('setOn').value,
+    lead_source:document.getElementById('leadSource').value,
+    project_type:document.getElementById('projectType').value,
+    appointment_date:document.getElementById('appointmentDate').value,
+    appointment_time:document.getElementById('appointmentTime').value,
+    score:total,score_max:100,priority,
+    answers:{...answers},scores:{...scores},
+    notes:document.getElementById('callNotes').value,
+    call_timestamp:new Date().toISOString()
+  };
+  const WEBHOOK_URL=''; // ← paste Make.com webhook URL here
+  if(WEBHOOK_URL){
+    fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+      .catch(e=>console.warn('Webhook:',e));
+  }
+  document.getElementById('modalSummary').textContent=payload.crm_customer_name+' · '+priority+' · '+total+'/100 pts';
+  document.getElementById('modalPayload').textContent=JSON.stringify(payload,null,2);
+  document.getElementById('successModal').style.display='flex';
+}
+
+function closeModal(){
+  document.getElementById('successModal').style.display='none';
+  ['customerName','phone','callNotes'].forEach(id=>document.getElementById(id).value='');
+  ['leadSource','projectType','appointmentDate','appointmentTime'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('setOn').value=new Date().toISOString().split('T')[0];
+  document.querySelectorAll('.opt').forEach(c=>c.classList.remove('sel-green','sel-amber','sel-blue','sel-red','sel-gray','sel-purple'));
+  for(const k in answers){answers[k]=null;scores[k]=0;}
+  updateScore();
+}
+
+function formatPhone(input){
+  let d=input.value.replace(/\D/g,'').substring(0,10);
+  if(d.length<=3)input.value=d;
+  else if(d.length<=6)input.value=d.slice(0,3)+'-'+d.slice(3);
+  else input.value=d.slice(0,3)+'-'+d.slice(3,6)+'-'+d.slice(6);
+}
+
+function tick(){
+  const now=new Date();
+  document.getElementById('clock').textContent=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('dateDisplay').textContent=now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+}
+tick();setInterval(tick,1000);
+document.getElementById('setOn').value=new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
