@@ -287,7 +287,7 @@ select option{background:#1a0035;color:#e2d9f3}
       </div>
       <div class="script-listen">👂 Listen — then select below</div>
     </div>
-    <div class="g3" id="group-dm">
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px" id="group-dm">
       <div class="opt" onclick="pick('dm','Older Couple',20,this,'sg','Decision Maker')">
         <div class="ol">Older Couple</div>
         <span class="pts pg" style="margin-top:5px;display:inline-block">+20 PTS</span>
@@ -298,10 +298,15 @@ select option{background:#1a0035;color:#e2d9f3}
         <span class="pts pa" style="margin-top:5px;display:inline-block">+15 PTS</span>
         <div style="font-size:10px;color:#6b7280;margin-top:4px">Both DMs present</div>
       </div>
-      <div class="opt" onclick="pick('dm','Just Him / Her',5,this,'sgr','Decision Maker')">
+      <div class="opt" onclick="pick('dm','Just Him / Her',10,this,'sgr','Decision Maker')">
         <div class="ol">Just Him / Her</div>
-        <span class="pts pgr" style="margin-top:5px;display:inline-block">+5 PTS</span>
+        <span class="pts pgr" style="margin-top:5px;display:inline-block">+10 PTS</span>
         <div style="font-size:10px;color:#6b7280;margin-top:4px">Solo decision maker</div>
+      </div>
+      <div class="opt" onclick="pick('dm','Cash Project',10,this,'sb','Decision Maker')">
+        <div class="ol">Cash Project</div>
+        <span class="pts pb" style="margin-top:5px;display:inline-block">+10 PTS</span>
+        <div style="font-size:10px;color:#6b7280;margin-top:4px">Cash buyer</div>
       </div>
     </div>
   </div>
@@ -338,7 +343,7 @@ select option{background:#1a0035;color:#e2d9f3}
       </div>
       <div class="script-listen">👂 Listen — then select below</div>
     </div>
-    <div class="g3" id="group-credit">
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px" id="group-credit">
       <div class="opt" onclick="pick('credit','Good / Excellent',20,this,'sg','Credit')">
         <div class="ol">Good / Excellent</div>
         <span class="pts pg" style="margin-top:5px;display:inline-block">+20 PTS</span>
@@ -347,9 +352,13 @@ select option{background:#1a0035;color:#e2d9f3}
         <div class="ol">Fair</div>
         <span class="pts pa" style="margin-top:5px;display:inline-block">+10 PTS</span>
       </div>
-      <div class="opt" onclick="pick('credit','Cash Project',10,this,'sb','Credit')">
+      <div class="opt" onclick="pick('credit','Cash Project',20,this,'sb','Credit')">
         <div class="ol">Cash Project</div>
-        <span class="pts pb" style="margin-top:5px;display:inline-block">+10 PTS</span>
+        <span class="pts pb" style="margin-top:5px;display:inline-block">+20 PTS</span>
+      </div>
+      <div class="opt" onclick="pick('credit','Won\'t Share Credit',10,this,'sgr','Credit')">
+        <div class="ol">Won't Share Credit</div>
+        <span class="pts pgr" style="margin-top:5px;display:inline-block">+10 PTS</span>
       </div>
     </div>
   </div>
