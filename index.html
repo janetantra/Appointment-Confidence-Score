@@ -3,109 +3,127 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lead Scoring Dashboard</title>
+<title>Lead Scoring · Bathroom Excellence</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 *{font-family:'Inter',sans-serif;box-sizing:border-box;margin:0;padding:0}
 body{min-height:100vh;background:radial-gradient(ellipse at 20% 50%,#2d0057 0%,#0a0015 40%,#0d0025 70%,#050010 100%);background-attachment:fixed;}
-body::before{content:'';position:fixed;top:-200px;left:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(139,92,246,0.25) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:0;animation:f1 8s ease-in-out infinite;}
-body::after{content:'';position:fixed;bottom:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(99,102,241,0.2) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:0;animation:f2 10s ease-in-out infinite;}
+body::before{content:'';position:fixed;top:-200px;left:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(139,92,246,0.2) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:0;animation:f1 8s ease-in-out infinite;}
+body::after{content:'';position:fixed;bottom:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(99,102,241,0.15) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:0;animation:f2 10s ease-in-out infinite;}
 @keyframes f1{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,30px)}}
 @keyframes f2{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,-20px)}}
 @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
-.pulse{animation:pulse 0.35s ease}
+@keyframes toastIn{0%{opacity:0;transform:translateY(20px) scale(0.9)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes toastOut{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-10px) scale(0.95)}}
 
-.wrap{position:relative;z-index:1;padding:24px 20px;max-width:1200px;margin:0 auto}
-.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.nav-brand{font-size:18px;font-weight:900;background:linear-gradient(135deg,#c4b5fd,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.nav-link{padding:8px 18px;border-radius:10px;font-size:12px;font-weight:700;letter-spacing:1px;text-decoration:none;text-transform:uppercase;background:rgba(139,92,246,0.15);color:#a78bfa;border:1.5px solid rgba(139,92,246,0.35);transition:all 0.2s}
+.wrap{position:relative;z-index:1;padding:20px 16px;max-width:1200px;margin:0 auto}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.nav-brand{font-size:17px;font-weight:900;background:linear-gradient(135deg,#c4b5fd,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-link{padding:7px 16px;border-radius:10px;font-size:11px;font-weight:700;letter-spacing:1px;text-decoration:none;text-transform:uppercase;background:rgba(139,92,246,0.15);color:#a78bfa;border:1.5px solid rgba(139,92,246,0.35);transition:all 0.2s}
 .nav-link:hover{background:rgba(139,92,246,0.25)}
-.hdr{text-align:center;margin-bottom:24px}
-.hdr h1{font-size:24px;font-weight:900;background:linear-gradient(135deg,#c4b5fd,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hdr p{font-size:13px;color:rgba(167,139,250,0.6);margin-top:4px}
 
-/* TWO COLUMN LAYOUT */
-.layout{display:flex;gap:20px;align-items:flex-start}
-.left-col{flex:1;min-width:0}
-.right-col{width:272px;flex-shrink:0}
+.layout{display:flex;gap:18px;align-items:flex-start}
+.left{flex:1;min-width:0}
+.right{width:265px;flex-shrink:0}
+.sticky-panel{position:sticky;top:20px}
 
-/* GLASS CARD — each one is block level */
-.card{
-  display:block;
-  width:100%;
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(20px);
-  border:1px solid rgba(139,92,246,0.25);
-  border-radius:16px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.4);
-  padding:22px;
-  margin-bottom:18px;
-}
+/* Cards */
+.card{display:block;width:100%;background:rgba(255,255,255,0.05);backdrop-filter:blur(20px);border:1px solid rgba(139,92,246,0.22);border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,0.35);padding:20px;margin-bottom:16px}
+.card-info{border-color:rgba(139,92,246,0.35)}
 
-.stitle{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.mpts{margin-left:auto;font-size:10px;color:#6b7280;font-weight:500}
-.fl{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#7c3aed;margin-bottom:6px;display:block}
+/* Script bubble */
+.script-block{background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-left:3px solid #7c3aed;border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.script-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#7c3aed;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.script-text{font-size:13px;color:#c4b5fd;line-height:1.7}
+.script-text strong{color:#e2d9f3;font-weight:700}
+.script-listen{font-size:11px;color:#a78bfa;font-style:italic;margin-top:6px;opacity:0.8}
 
-input,select,textarea{width:100%;padding:10px 14px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(139,92,246,0.3);border-radius:10px;font-size:14px;color:#e2d9f3;outline:none;transition:all 0.2s}
-input::placeholder,textarea::placeholder{color:rgba(167,139,250,0.4)}
-input:focus,select:focus,textarea:focus{border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,0.2)}
+/* Section header */
+.sec-hdr{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.sec-num{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sec-title{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#a78bfa}
+.sec-pts{margin-left:auto;font-size:10px;color:#6b7280;font-weight:500}
+
+/* Field label */
+.fl{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7c3aed;margin-bottom:5px;display:block}
+input,select,textarea{width:100%;padding:9px 13px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(139,92,246,0.3);border-radius:9px;font-size:13px;color:#e2d9f3;outline:none;transition:all 0.2s}
+input::placeholder,textarea::placeholder{color:rgba(167,139,250,0.35)}
+input:focus,select:focus,textarea:focus{border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,0.18)}
 select option{background:#1a0035;color:#e2d9f3}
-.bp{border-color:rgba(245,158,11,0.5) !important}
-.bp:focus{border-color:#f59e0b !important;box-shadow:0 0 0 3px rgba(245,158,11,0.15) !important}
-
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.bp-inp{border-color:rgba(245,158,11,0.45) !important}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 .g2:last-child{margin-bottom:0}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.g2b{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-.opt{cursor:pointer;border:1.5px solid rgba(139,92,246,0.2);border-radius:12px;padding:14px 10px;transition:all 0.2s;background:rgba(255,255,255,0.03);text-align:center;user-select:none}
-.opt:hover{border-color:#8b5cf6;background:rgba(139,92,246,0.1);transform:translateY(-1px)}
-.ol{font-size:13px;font-weight:600;color:#e2d9f3;margin-bottom:6px}
-.pts{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;margin-top:4px}
+/* Option cards */
+.opt{cursor:pointer;border:1.5px solid rgba(139,92,246,0.18);border-radius:11px;padding:13px 10px;transition:all 0.2s;background:rgba(255,255,255,0.03);text-align:center;user-select:none;position:relative}
+.opt:hover{border-color:#8b5cf6;background:rgba(139,92,246,0.1);transform:translateY(-2px)}
+.opt:active{transform:translateY(0)}
+.ol{font-size:12px;font-weight:700;color:#e2d9f3;margin-bottom:5px}
+.pts{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px}
 .pg{background:rgba(34,197,94,0.2);color:#4ade80}
 .pa{background:rgba(245,158,11,0.2);color:#fbbf24}
 .pb{background:rgba(59,130,246,0.2);color:#60a5fa}
 .pr{background:rgba(239,68,68,0.2);color:#f87171}
 .pgr{background:rgba(107,114,128,0.2);color:#9ca3af}
-
-.sg{border-color:#22c55e !important;background:rgba(34,197,94,0.12) !important;box-shadow:0 0 16px rgba(34,197,94,0.2)}
-.sa{border-color:#f59e0b !important;background:rgba(245,158,11,0.12) !important;box-shadow:0 0 16px rgba(245,158,11,0.2)}
-.sb{border-color:#3b82f6 !important;background:rgba(59,130,246,0.12) !important;box-shadow:0 0 16px rgba(59,130,246,0.2)}
-.sr{border-color:#ef4444 !important;background:rgba(239,68,68,0.12) !important;box-shadow:0 0 16px rgba(239,68,68,0.2)}
+.sg{border-color:#22c55e !important;background:rgba(34,197,94,0.12) !important;box-shadow:0 0 14px rgba(34,197,94,0.2)}
+.sa{border-color:#f59e0b !important;background:rgba(245,158,11,0.12) !important;box-shadow:0 0 14px rgba(245,158,11,0.2)}
+.sb{border-color:#3b82f6 !important;background:rgba(59,130,246,0.12) !important;box-shadow:0 0 14px rgba(59,130,246,0.2)}
+.sr{border-color:#ef4444 !important;background:rgba(239,68,68,0.12) !important;box-shadow:0 0 14px rgba(239,68,68,0.2)}
 .sgr{border-color:#6b7280 !important;background:rgba(107,114,128,0.12) !important}
 
-/* PANEL */
-.sticky-panel{position:sticky;top:24px}
-.pbox{background:rgba(255,255,255,0.04);border:1px solid rgba(139,92,246,0.2);backdrop-filter:blur(20px)}
-.ptop{border-radius:16px 16px 0 0;border-bottom:none;padding:22px;text-align:center}
-.pmid{border-top:none;border-bottom:none;padding:14px 18px}
-.pbot{border-radius:0 0 16px 16px;border-top:none;padding:18px}
-
-.sring{width:128px;height:128px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:4px solid;transition:all 0.4s ease;margin:0 auto}
+/* Score ring */
+.sring{width:116px;height:116px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:4px solid;transition:all 0.4s ease;margin:0 auto}
 .rz{border-color:#4b5563;color:#6b7280}
-.rh{border-color:#22c55e;color:#4ade80;box-shadow:0 0 30px rgba(34,197,94,0.4)}
-.rm{border-color:#f59e0b;color:#fbbf24;box-shadow:0 0 30px rgba(245,158,11,0.4)}
-.rl{border-color:#ef4444;color:#f87171;box-shadow:0 0 30px rgba(239,68,68,0.4)}
+.rh{border-color:#22c55e;color:#4ade80;box-shadow:0 0 28px rgba(34,197,94,0.4)}
+.rm{border-color:#f59e0b;color:#fbbf24;box-shadow:0 0 28px rgba(245,158,11,0.4)}
+.rl{border-color:#ef4444;color:#f87171;box-shadow:0 0 28px rgba(239,68,68,0.4)}
+.pulse{animation:pulse 0.35s ease}
 
-.pill{font-size:10px;font-weight:800;letter-spacing:2px;padding:4px 12px;border-radius:999px;text-transform:uppercase;display:inline-block}
+.pill{font-size:9px;font-weight:800;letter-spacing:2px;padding:3px 10px;border-radius:999px;text-transform:uppercase;display:inline-block}
 .pnone{background:rgba(107,114,128,0.2);color:#9ca3af;border:1px solid rgba(107,114,128,0.3)}
-.ph{background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.4);box-shadow:0 0 12px rgba(34,197,94,0.2)}
+.ph{background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.4);box-shadow:0 0 10px rgba(34,197,94,0.2)}
 .pm{background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.4)}
 .pl{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.4)}
 
-.ptrack{background:rgba(255,255,255,0.08);border-radius:999px;height:6px}
+.ptrack{background:rgba(255,255,255,0.08);border-radius:999px;height:5px}
 .pfill{height:100%;border-radius:999px;background:linear-gradient(90deg,#7c3aed,#a78bfa);transition:width 0.4s ease}
-.nprev{background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;color:#c4b5fd;min-height:38px;display:flex;align-items:center;justify-content:center}
-.br{display:flex;justify-content:space-between;font-size:12px;color:#7c3aed;padding:4px 0}
+.nprev{background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.22);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;color:#c4b5fd;min-height:34px;display:flex;align-items:center;justify-content:center}
+.br{display:flex;justify-content:space-between;font-size:11px;color:#7c3aed;padding:3px 0}
 .bv{font-weight:700;color:#6b7280;transition:color 0.3s}
-.div{height:1px;background:linear-gradient(90deg,transparent,rgba(139,92,246,0.3),transparent);margin:3px 0}
+.hdiv{height:1px;background:linear-gradient(90deg,transparent,rgba(139,92,246,0.3),transparent);margin:2px 0}
+.pbox{background:rgba(255,255,255,0.04);border:1px solid rgba(139,92,246,0.18);backdrop-filter:blur(20px)}
+.ptop{border-radius:14px 14px 0 0;border-bottom:none;padding:20px;text-align:center}
+.pmid{border-top:none;border-bottom:none;padding:12px 16px}
+.pbot{border-radius:0 0 14px 14px;border-top:none;padding:16px}
+.sub-btn{width:100%;padding:13px;border:none;border-radius:11px;cursor:pointer;font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;background:linear-gradient(135deg,#7c3aed,#5b21b6,#4c1d95);color:#fff;box-shadow:0 4px 18px rgba(124,58,237,0.5);transition:all 0.2s}
+.sub-btn:hover{transform:translateY(-2px);box-shadow:0 7px 26px rgba(124,58,237,0.6)}
 
-.sub-btn{width:100%;padding:15px;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:800;letter-spacing:1px;text-transform:uppercase;background:linear-gradient(135deg,#7c3aed,#5b21b6,#4c1d95);color:#fff;box-shadow:0 4px 20px rgba(124,58,237,0.5);transition:all 0.2s}
-.sub-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(124,58,237,0.6)}
+/* TOAST POPUP */
+.toast{
+  position:fixed;bottom:30px;right:300px;z-index:9999;
+  background:linear-gradient(135deg,rgba(30,0,60,0.95),rgba(15,0,35,0.95));
+  border:1px solid rgba(139,92,246,0.5);
+  border-radius:12px;padding:12px 20px;
+  display:flex;align-items:center;gap:12px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+  pointer-events:none;opacity:0;
+  backdrop-filter:blur(20px);
+}
+.toast.show{animation:toastIn 0.3s ease forwards}
+.toast.hide{animation:toastOut 0.3s ease forwards}
+.toast-pts{font-size:20px;font-weight:900;line-height:1}
+.toast-label{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;opacity:0.7;margin-top:1px}
+.toast-divider{width:1px;height:36px;background:rgba(139,92,246,0.3)}
+.toast-total-num{font-size:22px;font-weight:900;line-height:1}
+.toast-total-label{font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;opacity:0.6;margin-top:1px}
 
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);z-index:999;align-items:center;justify-content:center}
-.modal-box{background:linear-gradient(135deg,#1a0035,#0d0025);border:1px solid rgba(139,92,246,0.4);border-radius:20px;padding:36px;max-width:520px;width:92%;text-align:center;box-shadow:0 0 60px rgba(139,92,246,0.3)}
-.mcl{background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;padding:11px 32px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:16px}
+/* Modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:999;align-items:center;justify-content:center}
+.modal-box{background:linear-gradient(135deg,#1a0035,#0d0025);border:1px solid rgba(139,92,246,0.4);border-radius:18px;padding:32px;max-width:500px;width:92%;text-align:center;box-shadow:0 0 50px rgba(139,92,246,0.3)}
+.mcl{background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;padding:10px 30px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;margin-top:14px}
 </style>
 </head>
 <body>
@@ -113,270 +131,416 @@ select option{background:#1a0035;color:#e2d9f3}
 
   <!-- Nav -->
   <div class="nav">
-    <div class="nav-brand">⚡ LEAD SCORING</div>
+    <div class="nav-brand">⚡ BATHROOM EXCELLENCE</div>
     <a href="records.html" class="nav-link">📋 View Records</a>
   </div>
 
-  <!-- Header -->
-  <div class="hdr">
-    <h1>⚡ LEAD SCORING DASHBOARD</h1>
-    <p>Bathroom Excellence · Appointment Setter · Live Auto-Scoring</p>
+  <div style="text-align:center;margin-bottom:20px">
+    <div style="font-size:22px;font-weight:900;background:linear-gradient(135deg,#c4b5fd,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">⚡ APPOINTMENT SCORING SCRIPT</div>
+    <div style="font-size:12px;color:rgba(167,139,250,0.6);margin-top:3px">Follow the script · Click answers · Watch score update live</div>
   </div>
 
-  <!-- Two Column Layout -->
   <div class="layout">
+  <!-- ══════════ LEFT ══════════ -->
+  <div class="left">
 
-    <!-- ═══ LEFT COLUMN ═══ -->
-    <div class="left-col">
+  <!-- ── CUSTOMER INFO ── -->
+  <div class="card card-info">
+    <div class="sec-hdr"><div class="sec-num">📋</div><div class="sec-title">Customer Information</div></div>
+    <div class="g2">
+      <div><label class="fl">Customer Name</label><input type="text" id="customerName" placeholder="John Smith" oninput="updatePreview()"></div>
+      <div><label class="fl">🔑 BP Opportunity ID <span style="color:#f59e0b;font-size:9px">(?opportunityId= in URL)</span></label><input type="number" id="bpLeadId" placeholder="e.g. 4947823" class="bp-inp"></div>
+    </div>
+    <div class="g2">
+      <div><label class="fl">Set On</label><input type="date" id="setOn"></div>
+      <div><label class="fl">Lead Source</label>
+        <select id="leadSource">
+          <option value="">Select source...</option>
+          <option>APPOINTX</option><option>FACEBOOK</option><option>GOOGLE ADS</option>
+          <option>HOME ADVISOR</option><option>HOME BUDDY</option><option>MOD-MODERNIZE</option>
+          <option>PRO-REMODEL</option><option>SEARCH GOOGLE & ORGANIC</option>
+          <option>THUMBTACK</option><option>WEBSITE FORM</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+  </div>
 
-      <!-- Customer Info -->
-      <div class="card">
-        <div class="stitle">👤 Customer Information</div>
-        <div class="g2">
-          <div>
-            <label class="fl">Customer Name</label>
-            <input type="text" id="customerName" placeholder="John Smith" oninput="updatePreview()">
-          </div>
-          <div>
-            <label class="fl">🔑 BP Opportunity ID <span style="color:#f59e0b;font-size:9px">(?opportunityId= in URL)</span></label>
-            <input type="number" id="bpLeadId" placeholder="e.g. 4947823" class="bp">
+  <!-- ── OPENING ── -->
+  <div class="card">
+    <div class="sec-hdr"><div class="sec-num" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">📞</div><div class="sec-title">Opening</div></div>
+    <div class="script-block">
+      <div class="script-label">🎙️ Say This</div>
+      <div class="script-text">
+        <strong>"Hi [Homeowner's Name], this is Arnold with Bathroom Excellence."</strong><br><br>
+        "I'm following up on the information you submitted about your bathroom project. Jack, my manager, asked me to reach out and get everything set up for your free in-home estimate."<br><br>
+        "Before we pick a time, I just want to learn a little more about your project so Jack can come prepared with the best recommendations."
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROJECT DISCOVERY ── -->
+  <div class="card">
+    <div class="sec-hdr"><div class="sec-num">1</div><div class="sec-title">Project Discovery</div></div>
+    <div class="script-block">
+      <div class="script-label">🎙️ Ask</div>
+      <div class="script-text"><strong>"What are you looking to have done to your bathroom?"</strong></div>
+      <div class="script-listen">👂 Listen — then say: "Great, that's definitely something we specialize in."</div>
+    </div>
+    <div class="g2">
+      <div>
+        <label class="fl">Project Type</label>
+        <select id="projectType" onchange="toggleOther(this)">
+          <option value="">Select type...</option>
+          <option>Full Bathroom Remodel</option>
+          <option>Tub to Shower Conversion</option>
+          <option>Tub/Shower Update</option>
+          <option value="Other">Other</option>
+        </select>
+        <input type="text" id="projectTypeOther" placeholder="Describe project..." style="display:none;margin-top:8px">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TIMELINE / URGENCY (SCORED) ── -->
+  <div class="card">
+    <div class="sec-hdr">
+      <div class="sec-num">2</div>
+      <div class="sec-title">Timeline / Project Urgency</div>
+      <div class="sec-pts">MAX <strong style="color:#a78bfa">20 PTS</strong></div>
+    </div>
+    <div class="script-block">
+      <div class="script-label">🎙️ Ask</div>
+      <div class="script-text"><strong>"Ideally, when would you like to have the project completed?"</strong></div>
+      <div class="script-listen">👂 Listen — then select below</div>
+    </div>
+    <div class="g3" id="group-urgency">
+      <div class="opt" onclick="pick('urgency','ASAP',20,this,'sg')">
+        <div class="ol">ASAP / As Soon As Possible</div>
+        <div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-top:5px">
+          <span class="pts pg">+10 PTS</span>
+          <span style="font-size:9px;font-weight:800;color:#fbbf24;background:rgba(245,158,11,0.2);padding:2px 6px;border-radius:999px">+10 BONUS</span>
+        </div>
+      </div>
+      <div class="opt" onclick="pick('urgency','Within the Next Month',5,this,'sa')">
+        <div class="ol">Within the Next Month</div>
+        <span class="pts pa" style="margin-top:5px;display:inline-block">+5 PTS</span>
+      </div>
+      <div class="opt" onclick="pick('urgency','Just Planning Ahead',0,this,'sgr')">
+        <div class="ol">Just Planning Ahead</div>
+        <span class="pts pgr" style="margin-top:5px;display:inline-block">0 PTS</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── BUYING READINESS ── -->
+  <div class="card">
+    <div class="sec-hdr"><div class="sec-num" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">✅</div><div class="sec-title">Buying Readiness</div></div>
+    <div class="script-block">
+      <div class="script-label">🎙️ Ask</div>
+      <div class="script-text"><strong>"If everything made sense—the design, the workmanship, and the investment—would you be ready to move forward with the right company?"</strong></div>
+      <div class="script-listen">👂 Listen</div>
+    </div>
+  </div>
+
+  <!-- ── COMPETITION / QUOTES (SCORED) ── -->
+  <div class="card">
+    <div class="sec-hdr">
+      <div class="sec-num">3</div>
+      <div class="sec-title">Competition / Quotes</div>
+      <div class="sec-pts">MAX <strong style="color:#a78bfa">40 PTS</strong></div>
+    </div>
+    <div class="script-block">
+      <div class="script-label">🎙️ Ask</div>
+      <div class="script-text">
+        <strong>"Have you had any other companies come out yet?"</strong><br><br>
+        <span style="color:#a78bfa">If YES:</span> <strong>"How many estimates have you received so far?"</strong>
+      </div>
+      <div class="script-listen">👂 Listen — then select below</div>
+    </div>
+    <div class="g3" id="group-quotes">
+      <div class="opt" onclick="pick('quotes','Got 1 Quote',40,this,'sg')">
+        <div class="ol">Got 1 Quote</div>
+        <span class="pts pg" style="margin-top:5px;display:inline-block">+40 PTS</span>
+        <div style="font-size:10px;color:#6b7280;margin-top:4px">Has competitor quote</div>
+      </div>
+      <div class="opt" onclick="pick('quotes','Have Appt Before Us',30,this,'sa')">
+        <div class="ol">Have Appt Before Us</div>
+        <span class="pts pa" style="margin-top:5px;display:inline-block">+30 PTS</span>
+        <div style="font-size:10px;color:#6b7280;margin-top:4px">Scheduled earlier</div>
+      </div>
+      <div class="opt" onclick="pick('quotes','None',10,this,'sa')">
+        <div class="ol">None</div>
+        <span class="pts pa" style="margin-top:5px;display:inline-block">+10 PTS</span>
+        <div style="font-size:10px;color:#6b7280;margin-top:4px">No quote yet</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DECISION MAKERS (SCORED) ── -->
+  <div class="card">
+    <div class="sec-hdr">
+      <div class="sec-num">4</div>
+      <div class="sec-title">Decision Makers</div>
+      <div class="sec-pts">MAX <strong style="color:#a78bfa">20 PTS</strong></div>
+    </div>
+    <div class="script-block">
+      <div class="script-label">🎙️ Ask</div>
+      <div class="script-text">
+        <strong>"Besides yourself, will anyone else be involved in making the final decision? Such as a spouse or partner?"</strong><br><br>
+        <span style="color:#a78bfa">If YES:</span> "Perfect. Since Jack will be discussing design ideas, pricing, and financing options, we ask that everyone involved in the decision be present so everyone hears the same information together."<br><br>
+        <strong>"What's the best time that works for the both of you? Morning, afternoon, or evening?"</strong>
+      </div>
+      <div class="script-listen">👂 Listen — then select below</div>
+    </div>
+    <div class="g3" id="group-dm">
+      <div class="opt" onclick="pick('dm','Older Couple',20,this,'sg')">
+        <div class="ol">Older Couple</div>
+        <span class="pts pg" style="margin-top:5px;display:inline-block">+20 PTS</span>
+        <div style="font-size:10px;color:#6b7280;margin-top:4px">Both DMs present</div>
+      </div>
+      <div class="opt" onclick="pick('dm','Younger Couple',15,this,'sa')">
+        <div class="ol">Younger Couple</div>
+        <span class="pts pa" style="margin-top:5px;display:inline-block">+15 PTS</span>
+        <div style="font-size:10px;color:#6b7280;margin-top:4px">Both DMs present</div>
+      </div>
+      <div class="opt" onclick="pick('dm','Just Him / Her',5,this,'sgr')">
+        <div class="ol">Just Him / Her</div>
+        <span class="pts pgr" style="margin-top:5px;display:inline-block">+5 PTS</span>
+        <div style="font-size:10px;color:#6b7280;margin-top:4px">Solo decision maker</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCHEDULE ── -->
+  <div class="card">
+    <div class="sec-hdr"><div class="sec-num" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">📅</div><div class="sec-title">Schedule Appointment</div></div>
+    <div class="script-block">
+      <div class="script-label">🎙️ Say</div>
+      <div class="script-text">
+        "Let's find a time that works best."<br><br>
+        <strong>"I have: Tuesday at 2:00 PM or Wednesday at 5:00 PM. Which works better for you?"</strong>
+      </div>
+      <div class="script-listen">📅 Book the appointment below</div>
+    </div>
+    <div class="g2">
+      <div><label class="fl">Appointment Date</label><input type="date" id="appointmentDate"></div>
+      <div><label class="fl">Appointment Time</label><input type="time" id="appointmentTime"></div>
+    </div>
+  </div>
+
+  <!-- ── CREDIT (SCORED) ── -->
+  <div class="card">
+    <div class="sec-hdr">
+      <div class="sec-num">5</div>
+      <div class="sec-title">Financing / Credit</div>
+      <div class="sec-pts">MAX <strong style="color:#a78bfa">20 PTS</strong></div>
+    </div>
+    <div class="script-block">
+      <div class="script-label">🎙️ Say</div>
+      <div class="script-text">
+        "Jack brings several financing programs with him—from excellent-credit options all the way down to programs designed for homeowners rebuilding credit."<br><br>
+        <strong>"About where would you say your credit falls today? Needs work, fair, good, or excellent?"</strong>
+      </div>
+      <div class="script-listen">👂 Listen — then select below</div>
+    </div>
+    <div class="g3" id="group-credit">
+      <div class="opt" onclick="pick('credit','Good / Excellent',20,this,'sg')">
+        <div class="ol">Good / Excellent</div>
+        <span class="pts pg" style="margin-top:5px;display:inline-block">+20 PTS</span>
+      </div>
+      <div class="opt" onclick="pick('credit','Fair',10,this,'sa')">
+        <div class="ol">Fair</div>
+        <span class="pts pa" style="margin-top:5px;display:inline-block">+10 PTS</span>
+      </div>
+      <div class="opt" onclick="pick('credit','Cash Project',10,this,'sb')">
+        <div class="ol">Cash Project</div>
+        <span class="pts pb" style="margin-top:5px;display:inline-block">+10 PTS</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── BUILD VALUE ── -->
+  <div class="card">
+    <div class="sec-hdr"><div class="sec-num" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">💎</div><div class="sec-title">Build Value</div></div>
+    <div class="script-block">
+      <div class="script-label">🎙️ Say</div>
+      <div class="script-text">
+        "Excellent. The nice thing about meeting with Jack is that he'll take measurements, go over different design options, explain the installation process, answer any questions you have, and provide pricing during the appointment."<br><br>
+        <strong>"That way you'll have everything you need to make an informed decision—there's absolutely no obligation."</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ENGAGEMENT (SCORED) ── -->
+  <div class="card">
+    <div class="sec-hdr">
+      <div class="sec-num">6</div>
+      <div class="sec-title">Engagement / Interest Level</div>
+      <div class="sec-pts">MAX <strong style="color:#a78bfa">10 PTS</strong></div>
+    </div>
+    <div class="script-block">
+      <div class="script-label">🎙️ Commitment Close</div>
+      <div class="script-text">
+        "Perfect. We reserve this appointment specifically for you, and Jack sets aside about 60 to 90 minutes so he can answer all of your questions without rushing."<br><br>
+        <strong>"Is there anything you can think of today that might prevent us from meeting that day?"</strong><br><br>
+        <strong>"So unless something unexpected comes up, I can count on seeing you then?"</strong>
+      </div>
+      <div class="script-listen">👂 Rate customer enthusiasm below</div>
+    </div>
+    <div class="g3" id="group-engagement">
+      <div class="opt" onclick="pick('engagement','Very Interested',10,this,'sg')">
+        <div class="ol">Very Interested</div>
+        <span class="pts pg" style="margin-top:5px;display:inline-block">+10 PTS</span>
+        <div style="font-size:10px;color:#6b7280;margin-top:4px">Enthusiastic & committed</div>
+      </div>
+      <div class="opt" onclick="pick('engagement','Interested',5,this,'sa')">
+        <div class="ol">Interested</div>
+        <span class="pts pa" style="margin-top:5px;display:inline-block">+5 PTS</span>
+        <div style="font-size:10px;color:#6b7280;margin-top:4px">Willing but cautious</div>
+      </div>
+      <div class="opt" onclick="pick('engagement','Not Interested',0,this,'sr')">
+        <div class="ol">Not Interested</div>
+        <span class="pts pr" style="margin-top:5px;display:inline-block">0 PTS</span>
+        <div style="font-size:10px;color:#6b7280;margin-top:4px">Low intent</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ADDRESS & CONFIRMATION ── -->
+  <div class="card">
+    <div class="sec-hdr"><div class="sec-num" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">📍</div><div class="sec-title">Address & Final Confirmation</div></div>
+    <div class="script-block">
+      <div class="script-label">🎙️ Confirm</div>
+      <div class="script-text">
+        <strong>"Can you please confirm the property address for me?"</strong><br><br>
+        "Excellent. So I have you scheduled for:<br>
+        📅 <strong>[Date & Time]</strong><br>
+        📍 <strong>[Address]</strong><br>
+        And both decision-makers will be there, correct?"<br><br>
+        "You'll receive a reminder from us before your appointment. Jack is looking forward to meeting you, and we appreciate the opportunity to earn your business. <strong>Have a wonderful day!</strong>"
+      </div>
+    </div>
+    <div class="g2">
+      <div><label class="fl">Property Address</label><input type="text" id="address" placeholder="123 Main St, City, State"></div>
+    </div>
+  </div>
+
+  <!-- ── CALL NOTES ── -->
+  <div class="card">
+    <div class="sec-hdr"><div class="sec-num" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">📝</div><div class="sec-title">Call Notes</div></div>
+    <textarea id="callNotes" rows="4" placeholder="Objections, special notes, or anything else to follow up on..."></textarea>
+  </div>
+
+  </div><!-- end left -->
+
+  <!-- ══════════ RIGHT PANEL ══════════ -->
+  <div class="right">
+    <div class="sticky-panel">
+
+      <div class="pbox ptop">
+        <div style="font-size:9px;font-weight:800;letter-spacing:3px;color:#7c3aed;text-transform:uppercase;margin-bottom:14px">⚡ Live Score</div>
+        <div style="margin-bottom:12px">
+          <div class="sring rz" id="scoreRing">
+            <div style="font-size:34px;font-weight:900;line-height:1" id="scoreNumber">0</div>
+            <div style="font-size:9px;font-weight:600;opacity:0.7;margin-top:2px">/ 110</div>
           </div>
         </div>
-        <div class="g2">
-          <div>
-            <label class="fl">Set On</label>
-            <input type="date" id="setOn">
-          </div>
-          <div>
-            <label class="fl">Lead Source</label>
-            <select id="leadSource">
-              <option value="">Select source...</option>
-              <option>APPOINTX</option>
-              <option>FACEBOOK</option>
-              <option>GOOGLE ADS</option>
-              <option>HOME ADVISOR</option>
-              <option>HOME BUDDY</option>
-              <option>MOD-MODERNIZE</option>
-              <option>PRO-REMODEL</option>
-              <option>SEARCH GOOGLE & ORGANIC</option>
-              <option>THUMBTACK</option>
-              <option>WEBSITE FORM</option>
-              <option>Other</option>
-            </select>
-          </div>
+        <div style="margin-bottom:12px"><span class="pill pnone" id="priorityBadge">No Data Yet</span></div>
+        <div class="nprev" id="namePreview">— Enter customer name —</div>
+      </div>
+
+      <div class="pbox pmid">
+        <div style="display:flex;justify-content:space-between;margin-bottom:7px">
+          <span style="font-size:9px;font-weight:700;letter-spacing:1px;color:#7c3aed;text-transform:uppercase">Progress</span>
+          <span style="font-size:11px;font-weight:800;color:#a78bfa" id="progressText">0 of 5</span>
         </div>
-        <div class="g2">
-          <div>
-            <label class="fl">Project Type</label>
-            <select id="projectType" onchange="toggleOther(this)">
-              <option value="">Select type...</option>
-              <option>Full Bathroom Remodel</option>
-              <option>Tub to Shower Conversion</option>
-              <option>Tub/Shower Update</option>
-              <option value="Other">Other</option>
-            </select>
-            <input type="text" id="projectTypeOther" placeholder="Describe project..." style="display:none;margin-top:8px">
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <div>
-              <label class="fl">Appt Date</label>
-              <input type="date" id="appointmentDate">
-            </div>
-            <div>
-              <label class="fl">Appt Time</label>
-              <input type="time" id="appointmentTime">
-            </div>
-          </div>
+        <div class="ptrack"><div class="pfill" id="progressBar" style="width:0%"></div></div>
+      </div>
+
+      <div class="pbox pmid">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;color:#7c3aed;text-transform:uppercase;margin-bottom:8px">Score Breakdown</div>
+        <div class="br"><span>Urgency</span><span class="bv" id="b-urgency">—</span></div>
+        <div class="hdiv"></div>
+        <div class="br"><span>Quotes</span><span class="bv" id="b-quotes">—</span></div>
+        <div class="hdiv"></div>
+        <div class="br"><span>Decision Maker</span><span class="bv" id="b-dm">—</span></div>
+        <div class="hdiv"></div>
+        <div class="br"><span>Credit</span><span class="bv" id="b-credit">—</span></div>
+        <div class="hdiv"></div>
+        <div class="br"><span>Engagement</span><span class="bv" id="b-engagement">—</span></div>
+        <div style="height:1px;background:rgba(139,92,246,0.3);margin:7px 0"></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:800;color:#c4b5fd">
+          <span>TOTAL</span><span id="b-total">0 / 110</span>
         </div>
       </div>
 
-      <!-- Q1 Decision Maker -->
-      <div class="card">
-        <div class="stitle">👥 1. Decision Maker Commitment <span class="mpts">MAX <strong style="color:#a78bfa">20 PTS</strong></span></div>
-        <div class="g3" id="group-dm">
-          <div class="opt" onclick="pick('dm','Older Couple',20,this,'sg')">
-            <div class="ol">Older Couple</div><span class="pts pg">+20 PTS</span>
-          </div>
-          <div class="opt" onclick="pick('dm','Younger Couple',15,this,'sa')">
-            <div class="ol">Younger Couple</div><span class="pts pa">+15 PTS</span>
-          </div>
-          <div class="opt" onclick="pick('dm','Just Him / Her',5,this,'sgr')">
-            <div class="ol">Just Him / Her</div><span class="pts pgr">+5 PTS</span>
-          </div>
+      <div class="pbox pmid">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;color:#7c3aed;text-transform:uppercase;margin-bottom:8px">Priority Guide</div>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:11px">
+          <div style="display:flex;align-items:center;gap:7px;color:#4ade80"><span style="width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 5px #22c55e;display:inline-block;flex-shrink:0"></span>80–110 → HIGH</div>
+          <div style="display:flex;align-items:center;gap:7px;color:#fbbf24"><span style="width:7px;height:7px;border-radius:50%;background:#f59e0b;box-shadow:0 0 5px #f59e0b;display:inline-block;flex-shrink:0"></span>60–79 → MEDIUM</div>
+          <div style="display:flex;align-items:center;gap:7px;color:#f87171"><span style="width:7px;height:7px;border-radius:50%;background:#ef4444;box-shadow:0 0 5px #ef4444;display:inline-block;flex-shrink:0"></span>0–59 → LOW</div>
         </div>
       </div>
 
-      <!-- Q2 Quotes -->
-      <div class="card">
-        <div class="stitle">📄 2. Quotes <span class="mpts">MAX <strong style="color:#a78bfa">40 PTS</strong></span></div>
-        <div class="g3" id="group-quotes">
-          <div class="opt" onclick="pick('quotes','Got 1',40,this,'sg')">
-            <div class="ol">Got 1</div><span class="pts pg">+40 PTS</span>
-            <div style="font-size:10px;color:#6b7280;margin-top:4px">Has competitor quote</div>
-          </div>
-          <div class="opt" onclick="pick('quotes','Have Appt Before Us',30,this,'sa')">
-            <div class="ol">Have Appt Before Us</div><span class="pts pa">+30 PTS</span>
-            <div style="font-size:10px;color:#6b7280;margin-top:4px">Scheduled earlier</div>
-          </div>
-          <div class="opt" onclick="pick('quotes','None',10,this,'sa')">
-            <div class="ol">None</div><span class="pts pa">+10 PTS</span>
-            <div style="font-size:10px;color:#6b7280;margin-top:4px">No quote yet</div>
-          </div>
-        </div>
+      <div class="pbox pmid" style="text-align:center">
+        <div style="font-size:15px;font-weight:800;color:#a78bfa;letter-spacing:2px" id="clock"></div>
+        <div style="font-size:9px;color:#6b7280;margin-top:2px" id="datedisp"></div>
       </div>
 
-      <!-- Q3 Credit -->
-      <div class="card">
-        <div class="stitle">💳 3. Credit <span class="mpts">MAX <strong style="color:#a78bfa">20 PTS</strong></span></div>
-        <div class="g3" id="group-credit">
-          <div class="opt" onclick="pick('credit','Good / Excellent',20,this,'sg')">
-            <div class="ol">Good / Excellent</div><span class="pts pg">+20 PTS</span>
-          </div>
-          <div class="opt" onclick="pick('credit','Fair',10,this,'sa')">
-            <div class="ol">Fair</div><span class="pts pa">+10 PTS</span>
-          </div>
-          <div class="opt" onclick="pick('credit','Cash Project',10,this,'sb')">
-            <div class="ol">Cash Project</div><span class="pts pb">+10 PTS</span>
-          </div>
-        </div>
+      <div class="pbox pbot">
+        <button class="sub-btn" onclick="submitLead()">🚀 SUBMIT TO CRM</button>
+        <div style="text-align:center;font-size:9px;color:rgba(107,114,128,0.7);margin-top:7px">Google Sheets + BuildersPrime</div>
       </div>
 
-      <!-- Q4 Urgency -->
-      <div class="card">
-        <div class="stitle">⏱️ 4. Project Urgency <span class="mpts">MAX <strong style="color:#a78bfa">20 PTS</strong> <span style="color:#fbbf24">(+10 bonus)</span></span></div>
-        <div class="g3" id="group-urgency">
-          <div class="opt" onclick="pick('urgency','ASAP',20,this,'sg')">
-            <div class="ol">ASAP</div>
-            <div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-top:4px">
-              <span class="pts pg">+10 PTS</span>
-              <span style="font-size:9px;font-weight:800;color:#fbbf24;background:rgba(245,158,11,0.2);padding:2px 6px;border-radius:999px">+10 BONUS</span>
-            </div>
-          </div>
-          <div class="opt" onclick="pick('urgency','Got a Timeline',5,this,'sa')">
-            <div class="ol">Got a Timeline</div><span class="pts pa">+5 PTS</span>
-          </div>
-          <div class="opt" onclick="pick('urgency','Shopping Around',0,this,'sgr')">
-            <div class="ol">Shopping Around</div><span class="pts pgr">0 PTS</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Q5 Engagement -->
-      <div class="card">
-        <div class="stitle">💬 5. Engagement <span class="mpts">MAX <strong style="color:#a78bfa">10 PTS</strong></span></div>
-        <div class="g3" id="group-engagement">
-          <div class="opt" onclick="pick('engagement','Very Interested',10,this,'sg')">
-            <div class="ol">Very Interested</div><span class="pts pg">+10 PTS</span>
-          </div>
-          <div class="opt" onclick="pick('engagement','Interested',5,this,'sa')">
-            <div class="ol">Interested</div><span class="pts pa">+5 PTS</span>
-          </div>
-          <div class="opt" onclick="pick('engagement','Not Interested',0,this,'sr')">
-            <div class="ol">Not Interested</div><span class="pts pr">0 PTS</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Call Notes -->
-      <div class="card">
-        <div class="stitle">📝 Call Notes</div>
-        <textarea id="callNotes" rows="5" placeholder="Type additional notes, objections, or special circumstances..."></textarea>
-      </div>
-
-    </div><!-- end left-col -->
-
-    <!-- ═══ RIGHT COLUMN ═══ -->
-    <div class="right-col">
-      <div class="sticky-panel">
-
-        <!-- Score ring -->
-        <div class="pbox ptop">
-          <div style="font-size:10px;font-weight:800;letter-spacing:3px;color:#7c3aed;text-transform:uppercase;margin-bottom:16px">⚡ Live Score</div>
-          <div style="margin-bottom:14px">
-            <div class="sring rz" id="scoreRing">
-              <div style="font-size:36px;font-weight:900;line-height:1" id="scoreNumber">0</div>
-              <div style="font-size:10px;font-weight:600;opacity:0.7;margin-top:2px">/ 110</div>
-            </div>
-          </div>
-          <div style="margin-bottom:14px"><span class="pill pnone" id="priorityBadge">No Data Yet</span></div>
-          <div class="nprev" id="namePreview">— Enter customer name —</div>
-        </div>
-
-        <!-- Progress -->
-        <div class="pbox pmid">
-          <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-            <span style="font-size:10px;font-weight:700;letter-spacing:1px;color:#7c3aed;text-transform:uppercase">Progress</span>
-            <span style="font-size:12px;font-weight:800;color:#a78bfa" id="progressText">0 of 5</span>
-          </div>
-          <div class="ptrack"><div class="pfill" id="progressBar" style="width:0%"></div></div>
-        </div>
-
-        <!-- Breakdown -->
-        <div class="pbox pmid">
-          <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:#7c3aed;text-transform:uppercase;margin-bottom:10px">Score Breakdown</div>
-          <div class="br"><span>Decision Maker</span><span class="bv" id="b-dm">—</span></div>
-          <div class="div"></div>
-          <div class="br"><span>Quotes</span><span class="bv" id="b-quotes">—</span></div>
-          <div class="div"></div>
-          <div class="br"><span>Credit</span><span class="bv" id="b-credit">—</span></div>
-          <div class="div"></div>
-          <div class="br"><span>Urgency</span><span class="bv" id="b-urgency">—</span></div>
-          <div class="div"></div>
-          <div class="br"><span>Engagement</span><span class="bv" id="b-engagement">—</span></div>
-          <div style="height:1px;background:rgba(139,92,246,0.3);margin:8px 0"></div>
-          <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:800;color:#c4b5fd">
-            <span>TOTAL</span><span id="b-total">0 / 110</span>
-          </div>
-        </div>
-
-        <!-- Priority Guide -->
-        <div class="pbox pmid">
-          <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:#7c3aed;text-transform:uppercase;margin-bottom:10px">Priority Guide</div>
-          <div style="display:flex;flex-direction:column;gap:7px;font-size:11px">
-            <div style="display:flex;align-items:center;gap:8px;color:#4ade80"><span style="width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e;display:inline-block;flex-shrink:0"></span>80–110 → HIGH</div>
-            <div style="display:flex;align-items:center;gap:8px;color:#fbbf24"><span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;box-shadow:0 0 6px #f59e0b;display:inline-block;flex-shrink:0"></span>60–79 → MEDIUM</div>
-            <div style="display:flex;align-items:center;gap:8px;color:#f87171"><span style="width:8px;height:8px;border-radius:50%;background:#ef4444;box-shadow:0 0 6px #ef4444;display:inline-block;flex-shrink:0"></span>0–59 → LOW</div>
-          </div>
-        </div>
-
-        <!-- Clock -->
-        <div class="pbox pmid" style="text-align:center">
-          <div style="font-size:17px;font-weight:800;color:#a78bfa;letter-spacing:2px" id="clock"></div>
-          <div style="font-size:10px;color:#6b7280;margin-top:2px" id="datedisp"></div>
-        </div>
-
-        <!-- Submit -->
-        <div class="pbox pbot">
-          <button class="sub-btn" onclick="submitLead()">🚀 SUBMIT TO CRM</button>
-          <div style="text-align:center;font-size:10px;color:rgba(107,114,128,0.7);margin-top:8px">Sends to Google Sheets + BuildersPrime</div>
-        </div>
-
-      </div>
-    </div><!-- end right-col -->
+    </div>
+  </div><!-- end right -->
 
   </div><!-- end layout -->
-</div><!-- end wrap -->
+</div>
+
+<!-- Score Toast -->
+<div class="toast" id="toast">
+  <div>
+    <div class="toast-pts" id="toastPts" style="color:#4ade80"></div>
+    <div class="toast-label" style="color:#a78bfa">Points Added</div>
+  </div>
+  <div class="toast-divider"></div>
+  <div>
+    <div class="toast-total-num" id="toastTotal" style="color:#c4b5fd"></div>
+    <div class="toast-total-label" style="color:#7c3aed">Total Score</div>
+  </div>
+  <div class="toast-divider"></div>
+  <div>
+    <div style="font-size:13px;font-weight:800" id="toastPriority"></div>
+    <div class="toast-total-label" style="color:#7c3aed">Priority</div>
+  </div>
+</div>
 
 <!-- Modal -->
 <div class="modal-bg" id="modal">
   <div class="modal-box">
-    <div style="font-size:48px;margin-bottom:12px">✅</div>
-    <h2 style="font-size:18px;font-weight:800;color:#c4b5fd;margin-bottom:8px">Lead Submitted!</h2>
-    <p style="font-size:13px;color:#7c3aed;margin-bottom:16px" id="modalSummary"></p>
-    <div id="modalPayload" style="background:rgba(0,0,0,0.3);border:1px solid rgba(139,92,246,0.2);border-radius:10px;padding:14px;text-align:left;font-size:11px;color:#a78bfa;max-height:200px;overflow-y:auto;margin-bottom:16px;font-family:monospace;white-space:pre-wrap"></div>
+    <div style="font-size:44px;margin-bottom:10px">✅</div>
+    <h2 style="font-size:17px;font-weight:800;color:#c4b5fd;margin-bottom:7px">Lead Submitted!</h2>
+    <p style="font-size:12px;color:#7c3aed;margin-bottom:14px" id="modalSummary"></p>
+    <div id="modalPayload" style="background:rgba(0,0,0,0.3);border:1px solid rgba(139,92,246,0.2);border-radius:10px;padding:12px;text-align:left;font-size:10px;color:#a78bfa;max-height:180px;overflow-y:auto;margin-bottom:14px;font-family:monospace;white-space:pre-wrap"></div>
     <button class="mcl" onclick="closeModal()">NEW CALL</button>
   </div>
 </div>
 
 <script>
-const A={dm:null,quotes:null,credit:null,urgency:null,engagement:null};
-const S={dm:0,quotes:0,credit:0,urgency:0,engagement:0};
+const A={urgency:null,quotes:null,dm:null,credit:null,engagement:null};
+const S={urgency:0,  quotes:0,   dm:0,  credit:0,   engagement:0};
+
+let toastTimer=null;
 
 function pick(group,label,pts,el,cls){
   document.querySelectorAll('#group-'+group+' .opt').forEach(c=>c.classList.remove('sg','sa','sb','sr','sgr'));
   el.classList.add(cls);
+  const prev=S[group];
   A[group]=label; S[group]=pts;
   calc();
+  showToast(pts, prev);
 }
 
 function calc(){
@@ -385,27 +549,59 @@ function calc(){
   document.getElementById('scoreNumber').textContent=total;
   const ring=document.getElementById('scoreRing');
   ring.className='sring';
-  let pr,pc,rc;
-  if(done===0){rc='rz';pr='No Data Yet';pc='pnone';}
-  else if(total>=80){rc='rh';pr='HIGH PRIORITY';pc='ph';}
-  else if(total>=60){rc='rm';pr='MEDIUM PRIORITY';pc='pm';}
-  else{rc='rl';pr='LOW PRIORITY';pc='pl';}
+  let pr,pc,rc,tcol;
+  if(done===0){rc='rz';pr='No Data Yet';pc='pnone';tcol='#9ca3af';}
+  else if(total>=80){rc='rh';pr='HIGH';pc='ph';tcol='#4ade80';}
+  else if(total>=60){rc='rm';pr='MEDIUM';pc='pm';tcol='#fbbf24';}
+  else{rc='rl';pr='LOW';pc='pl';tcol='#f87171';}
   ring.classList.add(rc,'pulse');
   setTimeout(()=>ring.classList.remove('pulse'),350);
   const b=document.getElementById('priorityBadge');
-  b.textContent=pr; b.className='pill '+pc;
+  b.textContent=done===0?'No Data Yet':pr+' PRIORITY'; b.className='pill '+pc;
   document.getElementById('progressBar').style.width=Math.round((done/5)*100)+'%';
   document.getElementById('progressText').textContent=done+' of 5';
-  ['dm','quotes','credit','urgency','engagement'].forEach(k=>{
+  ['urgency','quotes','dm','credit','engagement'].forEach(k=>{
     const el=document.getElementById('b-'+k);
     if(A[k]===null){el.textContent='—';el.style.color='#6b7280';}
     else{el.textContent=S[k]+' pts';el.style.color=S[k]>0?'#4ade80':'#f87171';}
   });
   document.getElementById('b-total').textContent=total+' / 110';
-  preview();
+  // Update toast colors
+  document.getElementById('toastPriority').textContent=done===0?'—':pr;
+  document.getElementById('toastPriority').style.color=tcol;
+  updatePreview();
+  return {total,pr,tcol};
 }
 
-function preview(){
+function showToast(pts, prevPts){
+  const total=Object.values(S).reduce((a,b)=>a+b,0);
+  const done=Object.values(A).filter(v=>v!==null).length;
+  let pr='—',tcol='#9ca3af';
+  if(total>=80){pr='HIGH';tcol='#4ade80';}
+  else if(total>=60){pr='MEDIUM';tcol='#fbbf24';}
+  else if(done>0){pr='LOW';tcol='#f87171';}
+
+  const diff=pts-prevPts;
+  const ptsEl=document.getElementById('toastPts');
+  ptsEl.textContent=(diff>=0?'+':'')+diff+' pts';
+  ptsEl.style.color=diff>0?'#4ade80':diff<0?'#f87171':'#9ca3af';
+  document.getElementById('toastTotal').textContent=total;
+  document.getElementById('toastPriority').textContent=pr;
+  document.getElementById('toastPriority').style.color=tcol;
+
+  const toast=document.getElementById('toast');
+  if(toastTimer){clearTimeout(toastTimer);toast.className='toast';}
+  requestAnimationFrame(()=>{
+    toast.classList.add('show');
+    toastTimer=setTimeout(()=>{
+      toast.classList.remove('show');
+      toast.classList.add('hide');
+      setTimeout(()=>{toast.classList.remove('hide');},300);
+    },2500);
+  });
+}
+
+function updatePreview(){
   const name=document.getElementById('customerName').value.trim();
   const total=Object.values(S).reduce((a,b)=>a+b,0);
   const done=Object.values(A).filter(v=>v!==null).length;
@@ -413,7 +609,6 @@ function preview(){
   if(!name){el.textContent='— Enter customer name —';el.style.color='rgba(167,139,250,0.4)';}
   else{el.textContent=done>0?total+' '+name:name;el.style.color='#c4b5fd';}
 }
-function updatePreview(){preview();}
 
 function toggleOther(sel){
   const o=document.getElementById('projectTypeOther');
@@ -433,6 +628,7 @@ function submitLead(){
     bp_lead_id:parseInt(document.getElementById('bpLeadId').value)||null,
     crm_customer_name:total+' '+name,
     customer_name:name,
+    address:document.getElementById('address').value,
     set_on:document.getElementById('setOn').value,
     lead_source:document.getElementById('leadSource').value,
     project_type:pt,
@@ -452,7 +648,7 @@ function submitLead(){
 
 function closeModal(){
   document.getElementById('modal').style.display='none';
-  ['customerName','callNotes','bpLeadId'].forEach(id=>document.getElementById(id).value='');
+  ['customerName','callNotes','bpLeadId','address'].forEach(id=>document.getElementById(id).value='');
   ['leadSource','projectType','appointmentDate','appointmentTime'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('projectTypeOther').style.display='none';
   document.getElementById('projectTypeOther').value='';
@@ -460,13 +656,6 @@ function closeModal(){
   document.querySelectorAll('.opt').forEach(c=>c.classList.remove('sg','sa','sb','sr','sgr'));
   for(const k in A){A[k]=null;S[k]=0;}
   calc();
-}
-
-function formatPhone(i){
-  let d=i.value.replace(/\D/g,'').substring(0,10);
-  if(d.length<=3)i.value=d;
-  else if(d.length<=6)i.value=d.slice(0,3)+'-'+d.slice(3);
-  else i.value=d.slice(0,3)+'-'+d.slice(3,6)+'-'+d.slice(6);
 }
 
 function tick(){
