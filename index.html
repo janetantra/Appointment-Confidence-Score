@@ -8,128 +8,104 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 *{font-family:'Inter',sans-serif;box-sizing:border-box;margin:0;padding:0}
-body{
-  min-height:100vh;
-  background:radial-gradient(ellipse at 20% 50%,#2d0057 0%,#0a0015 40%,#0d0025 70%,#050010 100%);
-  background-attachment:fixed;
-}
-body::before{content:'';position:fixed;top:-200px;left:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(139,92,246,0.25) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:0;animation:float1 8s ease-in-out infinite;}
-body::after{content:'';position:fixed;bottom:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(99,102,241,0.2) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:0;animation:float2 10s ease-in-out infinite;}
-@keyframes float1{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,30px)}}
-@keyframes float2{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,-20px)}}
-
-.wrap{position:relative;z-index:1;padding:24px 20px;max-width:1200px;margin:0 auto}
-
-.glass{
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border:1px solid rgba(139,92,246,0.25);
-  border-radius:16px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.08);
-  padding:22px;
-  margin-bottom:18px;
-  display:block;
-  width:100%;
-}
-
-/* Nav */
-.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.nav-brand{font-size:18px;font-weight:900;background:linear-gradient(135deg,#c4b5fd,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:1px}
-.nav-link{padding:8px 18px;border-radius:10px;font-size:12px;font-weight:700;letter-spacing:1px;text-decoration:none;text-transform:uppercase;transition:all 0.2s;background:rgba(139,92,246,0.15);color:#a78bfa;border:1.5px solid rgba(139,92,246,0.35);}
-.nav-link:hover{background:rgba(139,92,246,0.25)}
-
-/* Header */
-.header{text-align:center;margin-bottom:24px}
-.header h1{font-size:24px;font-weight:900;background:linear-gradient(135deg,#c4b5fd,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:1px}
-.header p{font-size:13px;color:rgba(167,139,250,0.6);margin-top:4px}
-
-/* Main layout */
-.main-layout{display:flex;gap:20px;align-items:flex-start}
-.form-col{flex:1;min-width:0;display:flex;flex-direction:column}
-.panel-col{width:272px;flex-shrink:0}
-
-/* Section title */
-.sec-title{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.sec-title .max-pts{margin-left:auto;font-size:10px;color:#6b7280;font-weight:500}
-
-/* Field label */
-.fl{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#7c3aed;margin-bottom:6px;display:block}
-
-/* Inputs */
-input[type=text],input[type=tel],input[type=date],input[type=time],input[type=number],select,textarea{
-  width:100%;padding:10px 14px;
-  background:rgba(255,255,255,0.06);
-  border:1.5px solid rgba(139,92,246,0.3);
-  border-radius:10px;font-size:14px;color:#e2d9f3;outline:none;transition:all 0.2s;
-}
-input::placeholder,textarea::placeholder{color:rgba(167,139,250,0.4)}
-input:focus,select:focus,textarea:focus{border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,0.2)}
-select option{background:#1a0035;color:#e2d9f3}
-.bp-field{border-color:rgba(245,158,11,0.4) !important}
-.bp-field:focus{border-color:#f59e0b !important;box-shadow:0 0 0 3px rgba(245,158,11,0.15) !important}
-
-/* Grid helpers */
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.g2b{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-
-/* Option cards */
-.opt{cursor:pointer;border:1.5px solid rgba(139,92,246,0.2);border-radius:12px;padding:14px 10px;transition:all 0.2s;background:rgba(255,255,255,0.03);text-align:center;user-select:none;}
-.opt:hover{border-color:#8b5cf6;background:rgba(139,92,246,0.1);transform:translateY(-1px)}
-.opt-label{font-size:13px;font-weight:600;color:#e2d9f3;margin-bottom:6px}
-.pts{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;margin-top:4px}
-.pts-g{background:rgba(34,197,94,0.2);color:#4ade80}
-.pts-a{background:rgba(245,158,11,0.2);color:#fbbf24}
-.pts-b{background:rgba(59,130,246,0.2);color:#60a5fa}
-.pts-r{background:rgba(239,68,68,0.2);color:#f87171}
-.pts-gr{background:rgba(107,114,128,0.2);color:#9ca3af}
-
-.sel-g{border-color:#22c55e !important;background:rgba(34,197,94,0.12) !important;box-shadow:0 0 16px rgba(34,197,94,0.2)}
-.sel-a{border-color:#f59e0b !important;background:rgba(245,158,11,0.12) !important;box-shadow:0 0 16px rgba(245,158,11,0.2)}
-.sel-b{border-color:#3b82f6 !important;background:rgba(59,130,246,0.12) !important;box-shadow:0 0 16px rgba(59,130,246,0.2)}
-.sel-r{border-color:#ef4444 !important;background:rgba(239,68,68,0.12) !important;box-shadow:0 0 16px rgba(239,68,68,0.2)}
-.sel-gr{border-color:#6b7280 !important;background:rgba(107,114,128,0.12) !important}
-
-/* Score ring */
-.score-ring{width:128px;height:128px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:4px solid;transition:all 0.4s ease;margin:0 auto}
-.ring-z{border-color:#4b5563;color:#6b7280}
-.ring-h{border-color:#22c55e;color:#4ade80;box-shadow:0 0 30px rgba(34,197,94,0.4)}
-.ring-m{border-color:#f59e0b;color:#fbbf24;box-shadow:0 0 30px rgba(245,158,11,0.4)}
-.ring-l{border-color:#ef4444;color:#f87171;box-shadow:0 0 30px rgba(239,68,68,0.4)}
-
-.pill{font-size:10px;font-weight:800;letter-spacing:2px;padding:4px 12px;border-radius:999px;text-transform:uppercase;display:inline-block}
-.pill-none{background:rgba(107,114,128,0.2);color:#9ca3af;border:1px solid rgba(107,114,128,0.3)}
-.pill-h{background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.4);box-shadow:0 0 12px rgba(34,197,94,0.2)}
-.pill-m{background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.4);box-shadow:0 0 12px rgba(245,158,11,0.2)}
-.pill-l{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.4);box-shadow:0 0 12px rgba(239,68,68,0.2)}
-
-.prog-track{background:rgba(255,255,255,0.08);border-radius:999px;height:6px}
-.prog-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#7c3aed,#a78bfa);transition:width 0.4s ease;box-shadow:0 0 8px rgba(139,92,246,0.5)}
-
-.name-prev{background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;color:#c4b5fd;min-height:38px;display:flex;align-items:center;justify-content:center;letter-spacing:0.5px}
-
-.panel-box{background:rgba(255,255,255,0.04);border:1px solid rgba(139,92,246,0.2);backdrop-filter:blur(20px)}
-.panel-top{border-radius:16px 16px 0 0;border-bottom:none;padding:22px;text-align:center}
-.panel-mid{border-top:none;border-bottom:none;padding:14px 18px}
-.panel-bot{border-radius:0 0 16px 16px;border-top:none;padding:18px}
-
-.brow{display:flex;justify-content:space-between;font-size:12px;color:#7c3aed;padding:4px 0}
-.bval{font-weight:700;color:#6b7280;transition:color 0.3s}
-.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(139,92,246,0.3),transparent);margin:3px 0}
-
-.submit-btn{width:100%;padding:15px;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:800;letter-spacing:1px;text-transform:uppercase;background:linear-gradient(135deg,#7c3aed 0%,#5b21b6 50%,#4c1d95 100%);color:#fff;box-shadow:0 4px 20px rgba(124,58,237,0.5);transition:all 0.2s;}
-.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(124,58,237,0.6)}
-.submit-btn:active{transform:translateY(0)}
-
-.sticky-panel{position:sticky;top:24px}
-
+body{min-height:100vh;background:radial-gradient(ellipse at 20% 50%,#2d0057 0%,#0a0015 40%,#0d0025 70%,#050010 100%);background-attachment:fixed;}
+body::before{content:'';position:fixed;top:-200px;left:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(139,92,246,0.25) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:0;animation:f1 8s ease-in-out infinite;}
+body::after{content:'';position:fixed;bottom:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(99,102,241,0.2) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:0;animation:f2 10s ease-in-out infinite;}
+@keyframes f1{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,30px)}}
+@keyframes f2{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,-20px)}}
 @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
 .pulse{animation:pulse 0.35s ease}
 
-/* Modal */
+.wrap{position:relative;z-index:1;padding:24px 20px;max-width:1200px;margin:0 auto}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.nav-brand{font-size:18px;font-weight:900;background:linear-gradient(135deg,#c4b5fd,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-link{padding:8px 18px;border-radius:10px;font-size:12px;font-weight:700;letter-spacing:1px;text-decoration:none;text-transform:uppercase;background:rgba(139,92,246,0.15);color:#a78bfa;border:1.5px solid rgba(139,92,246,0.35);transition:all 0.2s}
+.nav-link:hover{background:rgba(139,92,246,0.25)}
+.hdr{text-align:center;margin-bottom:24px}
+.hdr h1{font-size:24px;font-weight:900;background:linear-gradient(135deg,#c4b5fd,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hdr p{font-size:13px;color:rgba(167,139,250,0.6);margin-top:4px}
+
+/* TWO COLUMN LAYOUT */
+.layout{display:flex;gap:20px;align-items:flex-start}
+.left-col{flex:1;min-width:0}
+.right-col{width:272px;flex-shrink:0}
+
+/* GLASS CARD — each one is block level */
+.card{
+  display:block;
+  width:100%;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(20px);
+  border:1px solid rgba(139,92,246,0.25);
+  border-radius:16px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4);
+  padding:22px;
+  margin-bottom:18px;
+}
+
+.stitle{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.mpts{margin-left:auto;font-size:10px;color:#6b7280;font-weight:500}
+.fl{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#7c3aed;margin-bottom:6px;display:block}
+
+input,select,textarea{width:100%;padding:10px 14px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(139,92,246,0.3);border-radius:10px;font-size:14px;color:#e2d9f3;outline:none;transition:all 0.2s}
+input::placeholder,textarea::placeholder{color:rgba(167,139,250,0.4)}
+input:focus,select:focus,textarea:focus{border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,0.2)}
+select option{background:#1a0035;color:#e2d9f3}
+.bp{border-color:rgba(245,158,11,0.5) !important}
+.bp:focus{border-color:#f59e0b !important;box-shadow:0 0 0 3px rgba(245,158,11,0.15) !important}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.g2:last-child{margin-bottom:0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+.opt{cursor:pointer;border:1.5px solid rgba(139,92,246,0.2);border-radius:12px;padding:14px 10px;transition:all 0.2s;background:rgba(255,255,255,0.03);text-align:center;user-select:none}
+.opt:hover{border-color:#8b5cf6;background:rgba(139,92,246,0.1);transform:translateY(-1px)}
+.ol{font-size:13px;font-weight:600;color:#e2d9f3;margin-bottom:6px}
+.pts{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;margin-top:4px}
+.pg{background:rgba(34,197,94,0.2);color:#4ade80}
+.pa{background:rgba(245,158,11,0.2);color:#fbbf24}
+.pb{background:rgba(59,130,246,0.2);color:#60a5fa}
+.pr{background:rgba(239,68,68,0.2);color:#f87171}
+.pgr{background:rgba(107,114,128,0.2);color:#9ca3af}
+
+.sg{border-color:#22c55e !important;background:rgba(34,197,94,0.12) !important;box-shadow:0 0 16px rgba(34,197,94,0.2)}
+.sa{border-color:#f59e0b !important;background:rgba(245,158,11,0.12) !important;box-shadow:0 0 16px rgba(245,158,11,0.2)}
+.sb{border-color:#3b82f6 !important;background:rgba(59,130,246,0.12) !important;box-shadow:0 0 16px rgba(59,130,246,0.2)}
+.sr{border-color:#ef4444 !important;background:rgba(239,68,68,0.12) !important;box-shadow:0 0 16px rgba(239,68,68,0.2)}
+.sgr{border-color:#6b7280 !important;background:rgba(107,114,128,0.12) !important}
+
+/* PANEL */
+.sticky-panel{position:sticky;top:24px}
+.pbox{background:rgba(255,255,255,0.04);border:1px solid rgba(139,92,246,0.2);backdrop-filter:blur(20px)}
+.ptop{border-radius:16px 16px 0 0;border-bottom:none;padding:22px;text-align:center}
+.pmid{border-top:none;border-bottom:none;padding:14px 18px}
+.pbot{border-radius:0 0 16px 16px;border-top:none;padding:18px}
+
+.sring{width:128px;height:128px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:4px solid;transition:all 0.4s ease;margin:0 auto}
+.rz{border-color:#4b5563;color:#6b7280}
+.rh{border-color:#22c55e;color:#4ade80;box-shadow:0 0 30px rgba(34,197,94,0.4)}
+.rm{border-color:#f59e0b;color:#fbbf24;box-shadow:0 0 30px rgba(245,158,11,0.4)}
+.rl{border-color:#ef4444;color:#f87171;box-shadow:0 0 30px rgba(239,68,68,0.4)}
+
+.pill{font-size:10px;font-weight:800;letter-spacing:2px;padding:4px 12px;border-radius:999px;text-transform:uppercase;display:inline-block}
+.pnone{background:rgba(107,114,128,0.2);color:#9ca3af;border:1px solid rgba(107,114,128,0.3)}
+.ph{background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.4);box-shadow:0 0 12px rgba(34,197,94,0.2)}
+.pm{background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.4)}
+.pl{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.4)}
+
+.ptrack{background:rgba(255,255,255,0.08);border-radius:999px;height:6px}
+.pfill{height:100%;border-radius:999px;background:linear-gradient(90deg,#7c3aed,#a78bfa);transition:width 0.4s ease}
+.nprev{background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;color:#c4b5fd;min-height:38px;display:flex;align-items:center;justify-content:center}
+.br{display:flex;justify-content:space-between;font-size:12px;color:#7c3aed;padding:4px 0}
+.bv{font-weight:700;color:#6b7280;transition:color 0.3s}
+.div{height:1px;background:linear-gradient(90deg,transparent,rgba(139,92,246,0.3),transparent);margin:3px 0}
+
+.sub-btn{width:100%;padding:15px;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:800;letter-spacing:1px;text-transform:uppercase;background:linear-gradient(135deg,#7c3aed,#5b21b6,#4c1d95);color:#fff;box-shadow:0 4px 20px rgba(124,58,237,0.5);transition:all 0.2s}
+.sub-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(124,58,237,0.6)}
+
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);z-index:999;align-items:center;justify-content:center}
 .modal-box{background:linear-gradient(135deg,#1a0035,#0d0025);border:1px solid rgba(139,92,246,0.4);border-radius:20px;padding:36px;max-width:520px;width:92%;text-align:center;box-shadow:0 0 60px rgba(139,92,246,0.3)}
-.modal-close{background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;padding:11px 32px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:16px;letter-spacing:1px}
+.mcl{background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;padding:11px 32px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:16px}
 </style>
 </head>
 <body>
@@ -142,20 +118,20 @@ select option{background:#1a0035;color:#e2d9f3}
   </div>
 
   <!-- Header -->
-  <div class="header">
+  <div class="hdr">
     <h1>⚡ LEAD SCORING DASHBOARD</h1>
     <p>Bathroom Excellence · Appointment Setter · Live Auto-Scoring</p>
   </div>
 
-  <!-- Main Layout -->
-  <div class="main-layout">
+  <!-- Two Column Layout -->
+  <div class="layout">
 
-    <!-- LEFT: Form -->
-    <div class="form-col">
+    <!-- ═══ LEFT COLUMN ═══ -->
+    <div class="left-col">
 
       <!-- Customer Info -->
-      <div class="glass">
-        <div class="sec-title">👤 Customer Information</div>
+      <div class="card">
+        <div class="stitle">👤 Customer Information</div>
         <div class="g2">
           <div>
             <label class="fl">Customer Name</label>
@@ -163,15 +139,14 @@ select option{background:#1a0035;color:#e2d9f3}
           </div>
           <div>
             <label class="fl">🔑 BP Opportunity ID <span style="color:#f59e0b;font-size:9px">(?opportunityId= in URL)</span></label>
-            <input type="number" id="bpLeadId" placeholder="e.g. 4947823" class="bp-field">
+            <input type="number" id="bpLeadId" placeholder="e.g. 4947823" class="bp">
           </div>
         </div>
+        <div class="g2">
           <div>
             <label class="fl">Set On</label>
             <input type="date" id="setOn">
           </div>
-        </div>
-        <div class="g2" style="margin-top:14px;margin-bottom:0">
           <div>
             <label class="fl">Lead Source</label>
             <select id="leadSource">
@@ -189,277 +164,268 @@ select option{background:#1a0035;color:#e2d9f3}
               <option>Other</option>
             </select>
           </div>
+        </div>
+        <div class="g2">
           <div>
             <label class="fl">Project Type</label>
-            <select id="projectType" onchange="toggleProjectOther(this)">
+            <select id="projectType" onchange="toggleOther(this)">
               <option value="">Select type...</option>
               <option>Full Bathroom Remodel</option>
               <option>Tub to Shower Conversion</option>
               <option>Tub/Shower Update</option>
               <option value="Other">Other</option>
             </select>
-            <input type="text" id="projectTypeOther" placeholder="Describe the project..." style="display:none;margin-top:8px">
+            <input type="text" id="projectTypeOther" placeholder="Describe project..." style="display:none;margin-top:8px">
           </div>
-        </div>
-        <div class="g2" style="margin-top:14px;margin-bottom:0">
-          <div>
-            <label class="fl">Appointment Date</label>
-            <input type="date" id="appointmentDate">
-          </div>
-          <div>
-            <label class="fl">Appointment Time</label>
-            <input type="time" id="appointmentTime">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div>
+              <label class="fl">Appt Date</label>
+              <input type="date" id="appointmentDate">
+            </div>
+            <div>
+              <label class="fl">Appt Time</label>
+              <input type="time" id="appointmentTime">
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Q1: Decision Maker -->
-      <div class="glass">
-        <div class="sec-title">👥 1. Decision Maker Commitment <span class="max-pts">MAX <strong style="color:#a78bfa">20 PTS</strong></span></div>
+      <!-- Q1 Decision Maker -->
+      <div class="card">
+        <div class="stitle">👥 1. Decision Maker Commitment <span class="mpts">MAX <strong style="color:#a78bfa">20 PTS</strong></span></div>
         <div class="g3" id="group-dm">
-          <div class="opt" onclick="sel('dm','Older Couple',20,this,'g')">
-            <div class="opt-label">Older Couple</div>
-            <span class="pts pts-g">+20 PTS</span>
+          <div class="opt" onclick="pick('dm','Older Couple',20,this,'sg')">
+            <div class="ol">Older Couple</div><span class="pts pg">+20 PTS</span>
           </div>
-          <div class="opt" onclick="sel('dm','Younger Couple',15,this,'a')">
-            <div class="opt-label">Younger Couple</div>
-            <span class="pts pts-a">+15 PTS</span>
+          <div class="opt" onclick="pick('dm','Younger Couple',15,this,'sa')">
+            <div class="ol">Younger Couple</div><span class="pts pa">+15 PTS</span>
           </div>
-          <div class="opt" onclick="sel('dm','Just Him / Her',5,this,'gr')">
-            <div class="opt-label">Just Him / Her</div>
-            <span class="pts pts-gr">+5 PTS</span>
+          <div class="opt" onclick="pick('dm','Just Him / Her',5,this,'sgr')">
+            <div class="ol">Just Him / Her</div><span class="pts pgr">+5 PTS</span>
           </div>
         </div>
       </div>
 
-      <!-- Q2: Quotes -->
-      <div class="glass">
-        <div class="sec-title">📄 2. Quotes <span class="max-pts">MAX <strong style="color:#a78bfa">40 PTS</strong></span></div>
+      <!-- Q2 Quotes -->
+      <div class="card">
+        <div class="stitle">📄 2. Quotes <span class="mpts">MAX <strong style="color:#a78bfa">40 PTS</strong></span></div>
         <div class="g3" id="group-quotes">
-          <div class="opt" onclick="sel('quotes','Got 1',40,this,'g')">
-            <div class="opt-label">Got 1</div>
-            <span class="pts pts-g">+40 PTS</span>
+          <div class="opt" onclick="pick('quotes','Got 1',40,this,'sg')">
+            <div class="ol">Got 1</div><span class="pts pg">+40 PTS</span>
             <div style="font-size:10px;color:#6b7280;margin-top:4px">Has competitor quote</div>
           </div>
-          <div class="opt" onclick="sel('quotes','Have Appt Before Us',30,this,'a')">
-            <div class="opt-label">Have Appt Before Us</div>
-            <span class="pts pts-a">+30 PTS</span>
+          <div class="opt" onclick="pick('quotes','Have Appt Before Us',30,this,'sa')">
+            <div class="ol">Have Appt Before Us</div><span class="pts pa">+30 PTS</span>
             <div style="font-size:10px;color:#6b7280;margin-top:4px">Scheduled earlier</div>
           </div>
-          <div class="opt" onclick="sel('quotes','None',10,this,'a')">
-            <div class="opt-label">None</div>
-            <span class="pts pts-a">+10 PTS</span>
+          <div class="opt" onclick="pick('quotes','None',10,this,'sa')">
+            <div class="ol">None</div><span class="pts pa">+10 PTS</span>
             <div style="font-size:10px;color:#6b7280;margin-top:4px">No quote yet</div>
           </div>
         </div>
       </div>
 
-      <!-- Q3: Credit -->
-      <div class="glass">
-        <div class="sec-title">💳 3. Credit <span class="max-pts">MAX <strong style="color:#a78bfa">20 PTS</strong></span></div>
+      <!-- Q3 Credit -->
+      <div class="card">
+        <div class="stitle">💳 3. Credit <span class="mpts">MAX <strong style="color:#a78bfa">20 PTS</strong></span></div>
         <div class="g3" id="group-credit">
-          <div class="opt" onclick="sel('credit','Good / Excellent',20,this,'g')">
-            <div class="opt-label">Good / Excellent</div>
-            <span class="pts pts-g">+20 PTS</span>
+          <div class="opt" onclick="pick('credit','Good / Excellent',20,this,'sg')">
+            <div class="ol">Good / Excellent</div><span class="pts pg">+20 PTS</span>
           </div>
-          <div class="opt" onclick="sel('credit','Fair',10,this,'a')">
-            <div class="opt-label">Fair</div>
-            <span class="pts pts-a">+10 PTS</span>
+          <div class="opt" onclick="pick('credit','Fair',10,this,'sa')">
+            <div class="ol">Fair</div><span class="pts pa">+10 PTS</span>
           </div>
-          <div class="opt" onclick="sel('credit','Cash Project',10,this,'b')">
-            <div class="opt-label">Cash Project</div>
-            <span class="pts pts-b">+10 PTS</span>
+          <div class="opt" onclick="pick('credit','Cash Project',10,this,'sb')">
+            <div class="ol">Cash Project</div><span class="pts pb">+10 PTS</span>
           </div>
         </div>
       </div>
 
-      <!-- Q4: Urgency -->
-      <div class="glass">
-        <div class="sec-title">⏱️ 4. Project Urgency <span class="max-pts">MAX <strong style="color:#a78bfa">20 PTS</strong> <span style="color:#fbbf24">(incl. +10 bonus)</span></span></div>
+      <!-- Q4 Urgency -->
+      <div class="card">
+        <div class="stitle">⏱️ 4. Project Urgency <span class="mpts">MAX <strong style="color:#a78bfa">20 PTS</strong> <span style="color:#fbbf24">(+10 bonus)</span></span></div>
         <div class="g3" id="group-urgency">
-          <div class="opt" onclick="sel('urgency','ASAP',20,this,'g')">
-            <div class="opt-label">ASAP</div>
+          <div class="opt" onclick="pick('urgency','ASAP',20,this,'sg')">
+            <div class="ol">ASAP</div>
             <div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-top:4px">
-              <span class="pts pts-g">+10 PTS</span>
+              <span class="pts pg">+10 PTS</span>
               <span style="font-size:9px;font-weight:800;color:#fbbf24;background:rgba(245,158,11,0.2);padding:2px 6px;border-radius:999px">+10 BONUS</span>
             </div>
           </div>
-          <div class="opt" onclick="sel('urgency','Got a Timeline',5,this,'a')">
-            <div class="opt-label">Got a Timeline</div>
-            <span class="pts pts-a">+5 PTS</span>
+          <div class="opt" onclick="pick('urgency','Got a Timeline',5,this,'sa')">
+            <div class="ol">Got a Timeline</div><span class="pts pa">+5 PTS</span>
           </div>
-          <div class="opt" onclick="sel('urgency','Shopping Around',0,this,'gr')">
-            <div class="opt-label">Shopping Around</div>
-            <span class="pts pts-gr">0 PTS</span>
+          <div class="opt" onclick="pick('urgency','Shopping Around',0,this,'sgr')">
+            <div class="ol">Shopping Around</div><span class="pts pgr">0 PTS</span>
           </div>
         </div>
       </div>
 
-      <!-- Q5: Engagement -->
-      <div class="glass">
-        <div class="sec-title">💬 5. Engagement <span class="max-pts">MAX <strong style="color:#a78bfa">10 PTS</strong></span></div>
+      <!-- Q5 Engagement -->
+      <div class="card">
+        <div class="stitle">💬 5. Engagement <span class="mpts">MAX <strong style="color:#a78bfa">10 PTS</strong></span></div>
         <div class="g3" id="group-engagement">
-          <div class="opt" onclick="sel('engagement','Very Interested',10,this,'g')">
-            <div class="opt-label">Very Interested</div>
-            <span class="pts pts-g">+10 PTS</span>
+          <div class="opt" onclick="pick('engagement','Very Interested',10,this,'sg')">
+            <div class="ol">Very Interested</div><span class="pts pg">+10 PTS</span>
           </div>
-          <div class="opt" onclick="sel('engagement','Interested',5,this,'a')">
-            <div class="opt-label">Interested</div>
-            <span class="pts pts-a">+5 PTS</span>
+          <div class="opt" onclick="pick('engagement','Interested',5,this,'sa')">
+            <div class="ol">Interested</div><span class="pts pa">+5 PTS</span>
           </div>
-          <div class="opt" onclick="sel('engagement','Not Interested',0,this,'r')">
-            <div class="opt-label">Not Interested</div>
-            <span class="pts pts-r">0 PTS</span>
+          <div class="opt" onclick="pick('engagement','Not Interested',0,this,'sr')">
+            <div class="ol">Not Interested</div><span class="pts pr">0 PTS</span>
           </div>
         </div>
       </div>
 
       <!-- Call Notes -->
-      <div class="glass">
-        <div class="sec-title">📝 Call Notes</div>
+      <div class="card">
+        <div class="stitle">📝 Call Notes</div>
         <textarea id="callNotes" rows="5" placeholder="Type additional notes, objections, or special circumstances..."></textarea>
       </div>
 
-    </div><!-- end form-col -->
+    </div><!-- end left-col -->
 
-    <!-- RIGHT: Sticky Panel -->
-    <div class="panel-col">
+    <!-- ═══ RIGHT COLUMN ═══ -->
+    <div class="right-col">
       <div class="sticky-panel">
 
-        <div class="panel-box panel-top">
+        <!-- Score ring -->
+        <div class="pbox ptop">
           <div style="font-size:10px;font-weight:800;letter-spacing:3px;color:#7c3aed;text-transform:uppercase;margin-bottom:16px">⚡ Live Score</div>
           <div style="margin-bottom:14px">
-            <div class="score-ring ring-z" id="scoreRing">
+            <div class="sring rz" id="scoreRing">
               <div style="font-size:36px;font-weight:900;line-height:1" id="scoreNumber">0</div>
               <div style="font-size:10px;font-weight:600;opacity:0.7;margin-top:2px">/ 110</div>
             </div>
           </div>
-          <div style="margin-bottom:14px"><span class="pill pill-none" id="priorityBadge">No Data Yet</span></div>
-          <div class="name-prev" id="namePreview">— Enter customer name —</div>
+          <div style="margin-bottom:14px"><span class="pill pnone" id="priorityBadge">No Data Yet</span></div>
+          <div class="nprev" id="namePreview">— Enter customer name —</div>
         </div>
 
-        <div class="panel-box panel-mid">
-          <div style="display:flex;justify-content:space-between;margin-bottom:8px;align-items:center">
+        <!-- Progress -->
+        <div class="pbox pmid">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px">
             <span style="font-size:10px;font-weight:700;letter-spacing:1px;color:#7c3aed;text-transform:uppercase">Progress</span>
             <span style="font-size:12px;font-weight:800;color:#a78bfa" id="progressText">0 of 5</span>
           </div>
-          <div class="prog-track"><div class="prog-fill" id="progressBar" style="width:0%"></div></div>
+          <div class="ptrack"><div class="pfill" id="progressBar" style="width:0%"></div></div>
         </div>
 
-        <div class="panel-box panel-mid">
+        <!-- Breakdown -->
+        <div class="pbox pmid">
           <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:#7c3aed;text-transform:uppercase;margin-bottom:10px">Score Breakdown</div>
-          <div class="brow"><span>Decision Maker</span><span class="bval" id="b-dm">—</span></div>
-          <div class="divider"></div>
-          <div class="brow"><span>Quotes</span><span class="bval" id="b-quotes">—</span></div>
-          <div class="divider"></div>
-          <div class="brow"><span>Credit</span><span class="bval" id="b-credit">—</span></div>
-          <div class="divider"></div>
-          <div class="brow"><span>Urgency</span><span class="bval" id="b-urgency">—</span></div>
-          <div class="divider"></div>
-          <div class="brow"><span>Engagement</span><span class="bval" id="b-engagement">—</span></div>
+          <div class="br"><span>Decision Maker</span><span class="bv" id="b-dm">—</span></div>
+          <div class="div"></div>
+          <div class="br"><span>Quotes</span><span class="bv" id="b-quotes">—</span></div>
+          <div class="div"></div>
+          <div class="br"><span>Credit</span><span class="bv" id="b-credit">—</span></div>
+          <div class="div"></div>
+          <div class="br"><span>Urgency</span><span class="bv" id="b-urgency">—</span></div>
+          <div class="div"></div>
+          <div class="br"><span>Engagement</span><span class="bv" id="b-engagement">—</span></div>
           <div style="height:1px;background:rgba(139,92,246,0.3);margin:8px 0"></div>
           <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:800;color:#c4b5fd">
             <span>TOTAL</span><span id="b-total">0 / 110</span>
           </div>
         </div>
 
-        <div class="panel-box panel-mid">
+        <!-- Priority Guide -->
+        <div class="pbox pmid">
           <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:#7c3aed;text-transform:uppercase;margin-bottom:10px">Priority Guide</div>
-          <div style="display:flex;flex-direction:column;gap:6px;font-size:11px">
-            <div style="display:flex;align-items:center;gap:8px;color:#4ade80"><span style="width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e;flex-shrink:0;display:inline-block"></span>80–110 → HIGH</div>
-            <div style="display:flex;align-items:center;gap:8px;color:#fbbf24"><span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;box-shadow:0 0 6px #f59e0b;flex-shrink:0;display:inline-block"></span>60–79 → MEDIUM</div>
-            <div style="display:flex;align-items:center;gap:8px;color:#f87171"><span style="width:8px;height:8px;border-radius:50%;background:#ef4444;box-shadow:0 0 6px #ef4444;flex-shrink:0;display:inline-block"></span>0–59 → LOW</div>
+          <div style="display:flex;flex-direction:column;gap:7px;font-size:11px">
+            <div style="display:flex;align-items:center;gap:8px;color:#4ade80"><span style="width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e;display:inline-block;flex-shrink:0"></span>80–110 → HIGH</div>
+            <div style="display:flex;align-items:center;gap:8px;color:#fbbf24"><span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;box-shadow:0 0 6px #f59e0b;display:inline-block;flex-shrink:0"></span>60–79 → MEDIUM</div>
+            <div style="display:flex;align-items:center;gap:8px;color:#f87171"><span style="width:8px;height:8px;border-radius:50%;background:#ef4444;box-shadow:0 0 6px #ef4444;display:inline-block;flex-shrink:0"></span>0–59 → LOW</div>
           </div>
         </div>
 
-        <div class="panel-box panel-mid" style="text-align:center">
+        <!-- Clock -->
+        <div class="pbox pmid" style="text-align:center">
           <div style="font-size:17px;font-weight:800;color:#a78bfa;letter-spacing:2px" id="clock"></div>
-          <div style="font-size:10px;color:#6b7280;margin-top:2px" id="dateDisplay"></div>
+          <div style="font-size:10px;color:#6b7280;margin-top:2px" id="datedisp"></div>
         </div>
 
-        <div class="panel-box panel-bot">
-          <button class="submit-btn" onclick="submitLead()">🚀 SUBMIT TO CRM</button>
+        <!-- Submit -->
+        <div class="pbox pbot">
+          <button class="sub-btn" onclick="submitLead()">🚀 SUBMIT TO CRM</button>
           <div style="text-align:center;font-size:10px;color:rgba(107,114,128,0.7);margin-top:8px">Sends to Google Sheets + BuildersPrime</div>
         </div>
 
       </div>
-    </div><!-- end panel-col -->
+    </div><!-- end right-col -->
 
-  </div><!-- end main-layout -->
-</div>
+  </div><!-- end layout -->
+</div><!-- end wrap -->
 
 <!-- Modal -->
-<div class="modal-bg" id="successModal">
+<div class="modal-bg" id="modal">
   <div class="modal-box">
     <div style="font-size:48px;margin-bottom:12px">✅</div>
     <h2 style="font-size:18px;font-weight:800;color:#c4b5fd;margin-bottom:8px">Lead Submitted!</h2>
     <p style="font-size:13px;color:#7c3aed;margin-bottom:16px" id="modalSummary"></p>
     <div id="modalPayload" style="background:rgba(0,0,0,0.3);border:1px solid rgba(139,92,246,0.2);border-radius:10px;padding:14px;text-align:left;font-size:11px;color:#a78bfa;max-height:200px;overflow-y:auto;margin-bottom:16px;font-family:monospace;white-space:pre-wrap"></div>
-    <button class="modal-close" onclick="closeModal()">NEW CALL</button>
+    <button class="mcl" onclick="closeModal()">NEW CALL</button>
   </div>
 </div>
 
 <script>
-const answers={dm:null,quotes:null,credit:null,urgency:null,engagement:null};
-const scores ={dm:0,   quotes:0,   credit:0,   urgency:0,   engagement:0};
-const selMap ={g:'sel-g',a:'sel-a',b:'sel-b',r:'sel-r',gr:'sel-gr'};
+const A={dm:null,quotes:null,credit:null,urgency:null,engagement:null};
+const S={dm:0,quotes:0,credit:0,urgency:0,engagement:0};
 
-function sel(group,label,pts,el,color){
-  document.querySelectorAll('#group-'+group+' .opt').forEach(c=>{
-    c.classList.remove('sel-g','sel-a','sel-b','sel-r','sel-gr');
-  });
-  el.classList.add(selMap[color]);
-  answers[group]=label; scores[group]=pts;
-  updateScore();
+function pick(group,label,pts,el,cls){
+  document.querySelectorAll('#group-'+group+' .opt').forEach(c=>c.classList.remove('sg','sa','sb','sr','sgr'));
+  el.classList.add(cls);
+  A[group]=label; S[group]=pts;
+  calc();
 }
 
-function updateScore(){
-  const total=Object.values(scores).reduce((a,b)=>a+b,0);
-  const answered=Object.values(answers).filter(v=>v!==null).length;
+function calc(){
+  const total=Object.values(S).reduce((a,b)=>a+b,0);
+  const done=Object.values(A).filter(v=>v!==null).length;
   document.getElementById('scoreNumber').textContent=total;
   const ring=document.getElementById('scoreRing');
-  ring.className='score-ring';
-  let priority,badgeClass,ringClass;
-  if(answered===0){ringClass='ring-z';priority='No Data Yet';badgeClass='pill-none';}
-  else if(total>=80){ringClass='ring-h';priority='HIGH PRIORITY';badgeClass='pill-h';}
-  else if(total>=60){ringClass='ring-m';priority='MEDIUM PRIORITY';badgeClass='pill-m';}
-  else{ringClass='ring-l';priority='LOW PRIORITY';badgeClass='pill-l';}
-  ring.classList.add(ringClass,'pulse');
+  ring.className='sring';
+  let pr,pc,rc;
+  if(done===0){rc='rz';pr='No Data Yet';pc='pnone';}
+  else if(total>=80){rc='rh';pr='HIGH PRIORITY';pc='ph';}
+  else if(total>=60){rc='rm';pr='MEDIUM PRIORITY';pc='pm';}
+  else{rc='rl';pr='LOW PRIORITY';pc='pl';}
+  ring.classList.add(rc,'pulse');
   setTimeout(()=>ring.classList.remove('pulse'),350);
-  const badge=document.getElementById('priorityBadge');
-  badge.textContent=priority; badge.className='pill '+badgeClass;
-  const pct=Math.round((answered/5)*100);
-  document.getElementById('progressBar').style.width=pct+'%';
-  document.getElementById('progressText').textContent=answered+' of 5';
+  const b=document.getElementById('priorityBadge');
+  b.textContent=pr; b.className='pill '+pc;
+  document.getElementById('progressBar').style.width=Math.round((done/5)*100)+'%';
+  document.getElementById('progressText').textContent=done+' of 5';
   ['dm','quotes','credit','urgency','engagement'].forEach(k=>{
     const el=document.getElementById('b-'+k);
-    if(answers[k]===null){el.textContent='—';el.style.color='#6b7280';}
-    else{el.textContent=scores[k]+' pts';el.style.color=scores[k]>0?'#4ade80':'#f87171';}
+    if(A[k]===null){el.textContent='—';el.style.color='#6b7280';}
+    else{el.textContent=S[k]+' pts';el.style.color=S[k]>0?'#4ade80':'#f87171';}
   });
   document.getElementById('b-total').textContent=total+' / 110';
-  updatePreview();
+  preview();
 }
 
-function updatePreview(){
+function preview(){
   const name=document.getElementById('customerName').value.trim();
-  const total=Object.values(scores).reduce((a,b)=>a+b,0);
-  const answered=Object.values(answers).filter(v=>v!==null).length;
+  const total=Object.values(S).reduce((a,b)=>a+b,0);
+  const done=Object.values(A).filter(v=>v!==null).length;
   const el=document.getElementById('namePreview');
   if(!name){el.textContent='— Enter customer name —';el.style.color='rgba(167,139,250,0.4)';}
-  else{el.textContent=answered>0?total+' '+name:name;el.style.color='#c4b5fd';}
+  else{el.textContent=done>0?total+' '+name:name;el.style.color='#c4b5fd';}
 }
+function updatePreview(){preview();}
 
-function toggleProjectOther(sel){
-  const other=document.getElementById('projectTypeOther');
-  other.style.display=sel.value==='Other'?'block':'none';
-  if(sel.value!=='Other')other.value='';
+function toggleOther(sel){
+  const o=document.getElementById('projectTypeOther');
+  o.style.display=sel.value==='Other'?'block':'none';
+  if(sel.value!=='Other')o.value='';
 }
 
 function submitLead(){
   const name=document.getElementById('customerName').value.trim()||'Unknown';
-  const total=Object.values(scores).reduce((a,b)=>a+b,0);
+  const total=Object.values(S).reduce((a,b)=>a+b,0);
   const priority=total>=80?'HIGH':total>=60?'MEDIUM':'LOW';
-  const projectType=document.getElementById('projectType').value==='Other'
+  const pt=document.getElementById('projectType').value==='Other'
     ?'Other: '+(document.getElementById('projectTypeOther').value.trim()||'Not specified')
     :document.getElementById('projectType').value;
   const payload={
@@ -467,53 +433,46 @@ function submitLead(){
     bp_lead_id:parseInt(document.getElementById('bpLeadId').value)||null,
     crm_customer_name:total+' '+name,
     customer_name:name,
-    phone:document.getElementById('phone').value,
     set_on:document.getElementById('setOn').value,
     lead_source:document.getElementById('leadSource').value,
-    project_type:projectType,
+    project_type:pt,
     appointment_date:document.getElementById('appointmentDate').value,
     appointment_time:document.getElementById('appointmentTime').value,
     score:total,score_max:110,priority,
-    answers:{...answers},scores:{...scores},
+    answers:{...A},scores:{...S},
     notes:document.getElementById('callNotes').value,
     call_timestamp:new Date().toISOString()
   };
-  try{
-    const existing=JSON.parse(localStorage.getItem('leadRecords')||'[]');
-    existing.push(payload);
-    localStorage.setItem('leadRecords',JSON.stringify(existing));
-  }catch(e){}
-  const WEBHOOK_URL='https://hook.us1.make.com/886k5ojznokp6xytozlgqj1w473lfilt';
-  fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
-    .catch(e=>console.warn('Webhook:',e));
+  try{const e=JSON.parse(localStorage.getItem('leadRecords')||'[]');e.push(payload);localStorage.setItem('leadRecords',JSON.stringify(e));}catch(e){}
+  fetch('https://hook.us1.make.com/886k5ojznokp6xytozlgqj1w473lfilt',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(e=>console.warn(e));
   document.getElementById('modalSummary').textContent=payload.crm_customer_name+' · '+priority+' · '+total+'/110 pts';
   document.getElementById('modalPayload').textContent=JSON.stringify(payload,null,2);
-  document.getElementById('successModal').style.display='flex';
+  document.getElementById('modal').style.display='flex';
 }
 
 function closeModal(){
-  document.getElementById('successModal').style.display='none';
-  ['customerName','phone','callNotes','bpLeadId'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('modal').style.display='none';
+  ['customerName','callNotes','bpLeadId'].forEach(id=>document.getElementById(id).value='');
   ['leadSource','projectType','appointmentDate','appointmentTime'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('projectTypeOther').style.display='none';
   document.getElementById('projectTypeOther').value='';
   document.getElementById('setOn').value=new Date().toISOString().split('T')[0];
-  document.querySelectorAll('.opt').forEach(c=>c.classList.remove('sel-g','sel-a','sel-b','sel-r','sel-gr'));
-  for(const k in answers){answers[k]=null;scores[k]=0;}
-  updateScore();
+  document.querySelectorAll('.opt').forEach(c=>c.classList.remove('sg','sa','sb','sr','sgr'));
+  for(const k in A){A[k]=null;S[k]=0;}
+  calc();
 }
 
-function formatPhone(input){
-  let d=input.value.replace(/\D/g,'').substring(0,10);
-  if(d.length<=3)input.value=d;
-  else if(d.length<=6)input.value=d.slice(0,3)+'-'+d.slice(3);
-  else input.value=d.slice(0,3)+'-'+d.slice(3,6)+'-'+d.slice(6);
+function formatPhone(i){
+  let d=i.value.replace(/\D/g,'').substring(0,10);
+  if(d.length<=3)i.value=d;
+  else if(d.length<=6)i.value=d.slice(0,3)+'-'+d.slice(3);
+  else i.value=d.slice(0,3)+'-'+d.slice(3,6)+'-'+d.slice(6);
 }
 
 function tick(){
-  const now=new Date();
-  document.getElementById('clock').textContent=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  document.getElementById('dateDisplay').textContent=now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+  const n=new Date();
+  document.getElementById('clock').textContent=n.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('datedisp').textContent=n.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
 }
 tick();setInterval(tick,1000);
 document.getElementById('setOn').value=new Date().toISOString().split('T')[0];
