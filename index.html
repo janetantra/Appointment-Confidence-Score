@@ -227,9 +227,14 @@ select option{background:#1a0035;color:#e2d9f3}
         </div>
         <div class="grid-2" style="margin-bottom:14px">
           <div>
+            <label class="field-label">🔑 BP Opportunity ID <span style="color:#f59e0b;font-size:10px">(?opportunityId= in URL)</span></label>
+            <input type="number" id="bpLeadId" placeholder="e.g. 4947823" style="border-color:rgba(245,158,11,0.4)">
+          </div>
+          <div>
             <label class="field-label">Set On</label>
             <input type="date" id="setOn">
           </div>
+        </div>
           <div>
             <label class="field-label">Lead Source</label>
             <select id="leadSource">
@@ -547,6 +552,7 @@ function submitLead(){
   const priority=total>=80?'HIGH':total>=60?'MEDIUM':'LOW';
   const payload={
     id: Date.now().toString(36) + Math.random().toString(36).slice(2,7),
+    bp_lead_id: parseInt(document.getElementById('bpLeadId').value) || null,
     crm_customer_name:total+' '+name,
     customer_name:name,
     phone:document.getElementById('phone').value,
@@ -581,7 +587,7 @@ function submitLead(){
 
 function closeModal(){
   document.getElementById('successModal').style.display='none';
-  ['customerName','phone','callNotes'].forEach(id=>document.getElementById(id).value='');
+  ['customerName','phone','callNotes','bpLeadId'].forEach(id=>document.getElementById(id).value='');
   ['leadSource','projectType','appointmentDate','appointmentTime'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('projectTypeOther').style.display='none';
   document.getElementById('projectTypeOther').value='';
