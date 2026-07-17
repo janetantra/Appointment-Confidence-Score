@@ -905,9 +905,24 @@ function toggleOther(sel) {
 
 // ══ SUBMIT ══
 function submitLead() {
-  const name = document.getElementById('customerName').value.trim() || 'Unknown';
+  const name = document.getElementById('customerName').value.trim();
+  if (!name) {
+    const el = document.getElementById('customerName');
+    el.style.borderColor = '#ef4444';
+    el.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.2)';
+    el.placeholder = '⚠️ Name is required before submitting!';
+    el.focus();
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => {
+      el.style.borderColor = '';
+      el.style.boxShadow = '';
+      el.placeholder = 'John Smith';
+    }, 3000);
+    return;
+  }
   const total = Object.values(S).reduce((a,b) => a+b, 0);
   const priority = total >= 80 ? 'HIGH' : total >= 65 ? 'MEDIUM' : 'LOW';
+  // name is guaranteed non-empty from validation above
   const rec = getRec(total, A);
   const pt = document.getElementById('projectType').value === 'Other'
     ? 'Other: ' + (document.getElementById('projectTypeOther').value.trim() || 'Not specified')
