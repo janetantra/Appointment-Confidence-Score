@@ -300,7 +300,7 @@ select option{background:#0d0020;color:#e2d9f3}
       <div class="script-body">
         <strong>"Hi [Name], this is Arnold with Bathroom Excellence."</strong><br><br>
         "I'm following up on the information you submitted about your bathroom project. Jack, my manager, asked me to reach out and get everything set up for your free in-home estimate."<br><br>
-        "Before we pick a time, I just want to learn a little more about your project so Jack can come prepared."
+        "Before we pick a time, I just want to learn a little more about your project so Jack can come prepared with the best recommendations."
       </div>
     </div>
   </div>
@@ -324,6 +324,7 @@ select option{background:#0d0020;color:#e2d9f3}
       <select id="projectType" onchange="toggleOther(this)">
         <option value="">Select type...</option>
         <option>Full Bathroom Remodel</option>
+        <option>Bathroom from Scratch</option>
         <option>Tub to Shower Conversion</option>
         <option>Tub/Shower Update</option>
         <option value="Other">Other</option>
@@ -344,10 +345,10 @@ select option{background:#0d0020;color:#e2d9f3}
       <div class="script-body"><strong>"Ideally, when would you like to have the project completed?"</strong></div>
       <div class="script-listen">👂 Listen — then select below</div>
     </div>
-    <div class="choices cols-3" id="group-urgency">
+    <div class="choices cols-4" id="group-urgency">
       <div class="choice" onclick="pick('urgency','ASAP',20,this,'sel-green','Urgency')">
         <div class="choice-label">ASAP</div>
-        <div class="choice-sub">Immediate need</div>
+        <div class="choice-sub">As soon as possible</div>
         <span class="badge badge-green">+20 PTS</span>
       </div>
       <div class="choice" onclick="pick('urgency','1-3 Months',15,this,'sel-amber','Urgency')">
@@ -355,8 +356,13 @@ select option{background:#0d0020;color:#e2d9f3}
         <div class="choice-sub">Near-term timeline</div>
         <span class="badge badge-amber">+15 PTS</span>
       </div>
-      <div class="choice" onclick="pick('urgency','Shopping Around',0,this,'sel-gray','Urgency')">
-        <div class="choice-label">Shopping Around</div>
+      <div class="choice" onclick="pick('urgency','Depends on the Price',15,this,'sel-amber','Urgency')">
+        <div class="choice-label">Depends on Price</div>
+        <div class="choice-sub">Price-dependent</div>
+        <span class="badge badge-amber">+15 PTS</span>
+      </div>
+      <div class="choice" onclick="pick('urgency','Just Planning Ahead',0,this,'sel-gray','Urgency')">
+        <div class="choice-label">Just Planning Ahead</div>
         <div class="choice-sub">No urgency yet</div>
         <span class="badge badge-gray">0 PTS</span>
       </div>
@@ -371,7 +377,7 @@ select option{background:#0d0020;color:#e2d9f3}
     </div>
     <div class="script">
       <div class="script-tag">🎙 Ask</div>
-      <div class="script-body"><strong>"If everything made sense — the design, the workmanship, and the investment — would you be ready to move forward with the right company?"</strong></div>
+      <div class="script-body"><strong>"If everything made sense — the design, the workmanship, and the investment — when would you like to have the project started?"</strong></div>
       <div class="script-listen">👂 Listen</div>
     </div>
   </div>
@@ -387,7 +393,9 @@ select option{background:#0d0020;color:#e2d9f3}
       <div class="script-tag">🎙 Ask</div>
       <div class="script-body">
         <strong>"Have you had any other companies come out yet?"</strong><br><br>
-        <span style="color:#818cf8">If YES →</span> <strong>"How many estimates have you received so far?"</strong>
+        <span style="color:#4ade80">If YES →</span> <strong>"Great! That's gonna be an additional discount for you!"</strong> We don't need to know which company nor how much the offer is — we just want you to have something to compare us with, price wise and quality wise.<br><br>
+        <span style="color:#f87171">If NO →</span> "Just so you know, I am not booking you with any regular agent — I am booking you with the manager himself. That being said, it's a guarantee that you will be offered a significant discount on top of the promotion you already qualified for. We highly recommend that you get a quote before our visit if possible, doesn't really matter which company nor how much the offer is — we will never ask, we just want you to have something to compare us with, price wise and quality wise."<br><br>
+        <strong>"Do you think 7 days out is enough for you to get a quote?"</strong>
       </div>
       <div class="script-listen">👂 Listen — then select below</div>
     </div>
@@ -433,40 +441,35 @@ select option{background:#0d0020;color:#e2d9f3}
       <div class="script-tag">🎙 Ask</div>
       <div class="script-body">
         <strong>"Besides yourself, will anyone else be involved in making the final decision? Such as a spouse or partner?"</strong><br><br>
-        <span style="color:#818cf8">If YES →</span> "Perfect. Since Jack will be discussing design ideas, pricing, and financing options, we ask that everyone involved in the decision be present."<br><br>
-        <strong>"Can we confirm ALL decision makers will be present at the appointment?"</strong>
+        <span style="color:#4ade80">If YES →</span> "Perfect. Since Jack will be discussing design ideas, pricing, and financing options, we ask that everyone involved in the decision be present so everyone hears the same information together."<br><br>
+        <strong>"What's the best time that works for the both of you — morning, afternoon, or evening?"</strong>
       </div>
     </div>
-    <div class="choices cols-2" id="group-dm">
-      <div class="dm-big dm-yes" onclick="pickDM('Yes — All Confirmed',20,this)">
-        <div class="dm-icon">✅</div>
-        <div class="dm-big-label" style="color:#4ade80">YES</div>
-        <div style="font-size:12px;color:rgba(107,114,128,0.7);margin-bottom:10px">All decision makers confirmed present</div>
-        <span class="badge badge-green" style="font-size:12px;padding:5px 16px">+20 PTS</span>
+    <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(167,139,250,0.5);margin-bottom:10px">Select Decision Maker Age Group</div>
+    <div class="choices cols-3" id="group-dm">
+      <div class="dm-big dm-yes" onclick="pickDM('60+ Senior',20,this)">
+        <div class="dm-icon">👴</div>
+        <div class="dm-big-label" style="color:#4ade80">60 – Senior</div>
+        <div style="font-size:11px;color:rgba(107,114,128,0.7);margin-bottom:10px">Senior homeowner</div>
+        <span class="badge badge-green" style="font-size:11px;padding:4px 14px">+20 PTS</span>
       </div>
-      <div class="dm-big dm-no" onclick="pickDM('Not Confirmed',0,this)">
-        <div class="dm-icon">❌</div>
-        <div class="dm-big-label" style="color:#f87171">NO</div>
-        <div style="font-size:12px;color:rgba(107,114,128,0.7);margin-bottom:10px">Decision makers not confirmed</div>
-        <span class="badge badge-gray" style="font-size:12px;padding:5px 16px">0 PTS</span>
+      <div class="dm-big dm-yes" onclick="pickDM('50s Couple',20,this)">
+        <div class="dm-icon">👫</div>
+        <div class="dm-big-label" style="color:#4ade80">50s – 50s</div>
+        <div style="font-size:11px;color:rgba(107,114,128,0.7);margin-bottom:10px">Mid-age couple</div>
+        <span class="badge badge-green" style="font-size:11px;padding:4px 14px">+20 PTS</span>
+      </div>
+      <div class="dm-big dm-no" onclick="pickDM('40s and Below',0,this)">
+        <div class="dm-icon">🧑</div>
+        <div class="dm-big-label" style="color:#f87171">40s Below</div>
+        <div style="font-size:11px;color:rgba(107,114,128,0.7);margin-bottom:10px">Younger decision maker</div>
+        <span class="badge badge-gray" style="font-size:11px;padding:4px 14px">0 PTS</span>
       </div>
     </div>
   </div>
 
-  <!-- BUILD VALUE -->
-  <div class="card">
-    <div class="card-header">
-      <div class="card-icon ci-info">💎</div>
-      <div class="card-title">Build Value</div>
-    </div>
-    <div class="script">
-      <div class="script-tag">🎙 Say</div>
-      <div class="script-body">
-        "Excellent. The nice thing about meeting with Jack is that he'll take measurements, go over different design options, explain the installation process, answer any questions you have, and provide pricing during the appointment."<br><br>
-        <strong>"That way you'll have everything you need to make an informed decision — there's absolutely no obligation."</strong>
-      </div>
-    </div>
-  </div>
+  <!-- BUILD VALUE — moved to after schedule/address per new script order -->
+  
 
   <!-- ══ APPOINTMENT QUALIFICATION ══ -->
   <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Appointment Qualification</div><div class="section-divider-line" style="background:linear-gradient(90deg,rgba(109,40,217,0.25),transparent)"></div></div>
@@ -479,8 +482,9 @@ select option{background:#0d0020;color:#e2d9f3}
       <div class="card-pts">MAX 20 PTS</div>
     </div>
     <div class="script">
-      <div class="script-tag">🎙 Say</div>
+      <div class="script-tag">🎙 Say — Read while checking calendar</div>
       <div class="script-body">
+        "Let me go ahead and check Jack's availability…"<br><br>
         "Jack brings several financing programs with him — from excellent-credit options all the way down to programs designed for homeowners rebuilding credit."<br><br>
         <strong>"About where would you say your credit falls today? Needs work, fair, good, or excellent?"</strong>
       </div>
@@ -598,13 +602,26 @@ select option{background:#0d0020;color:#e2d9f3}
       <div class="script">
         <div class="script-tag">🎙 Say</div>
         <div class="script-body">
-          "Let's find a time that works best."<br><br>
-          <strong>"I have: Tuesday at 2:00 PM or Wednesday at 5:00 PM. Which works better for you?"</strong>
+          <strong>"Let me go ahead and check Jack's availability…"</strong><br><br>
+          "I have: Tuesday at 2:00 PM or Wednesday at 5:00 PM. Which works better for you?"
         </div>
       </div>
-      <div class="grid-2">
+      <div class="grid-2" style="margin-bottom:12px">
         <div><label class="field-label">Appointment Date</label><input type="date" id="appointmentDate"></div>
         <div><label class="field-label">Appointment Time</label><input type="time" id="appointmentTime"></div>
+      </div>
+      <div>
+        <label class="field-label">Sales Agent</label>
+        <div class="choices cols-2" id="group-agent" style="margin-top:0">
+          <div class="choice" onclick="pickAgent('Jack',this)" id="agent-jack">
+            <div class="choice-label">🤝 Jack</div>
+            <div class="choice-sub">Manager / Senior Agent</div>
+          </div>
+          <div class="choice" onclick="pickAgent('Dave',this)" id="agent-dave">
+            <div class="choice-label">🤝 Dave</div>
+            <div class="choice-sub">Sales Agent</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -618,12 +635,27 @@ select option{background:#0d0020;color:#e2d9f3}
     <div class="script">
       <div class="script-tag">🎙 Confirm</div>
       <div class="script-body">
-        <strong>"Can you please confirm the property address for me?"</strong><br><br>
-        "Excellent. So I have you scheduled for 📅 <strong>[Date & Time]</strong> at 📍 <strong>[Address]</strong>. And all decision-makers will be there, correct?"<br><br>
-        "Jack is looking forward to meeting you. <strong>Have a wonderful day!</strong>"
+        <strong>"Can you please confirm the property address for me?"</strong>
       </div>
     </div>
     <div><label class="field-label">Property Address</label><input type="text" id="address" placeholder="123 Main St, City, State"></div>
+  </div>
+
+  <!-- BUILD VALUE / CLOSE -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon ci-info">💎</div>
+      <div class="card-title">Build Value & Close</div>
+    </div>
+    <div class="script">
+      <div class="script-tag">🎙 Say to Close</div>
+      <div class="script-body">
+        <strong>"Alright, you are all set on [DATE AND TIME]."</strong><br><br>
+        "Jack will see you then. He will take measurements, go over different design options, explain the installation process, answer any questions you have, and provide pricing during the appointment."<br><br>
+        "That way you'll have everything you need to make an informed decision — there's absolutely no obligation."<br><br>
+        <strong>"Just wait for the text message I'll be sending you in a few that will have our company name, our website, and a phone number to call or text in case you need to reschedule. Thank you and have a great day!"</strong>
+      </div>
+    </div>
   </div>
 
   <!-- ENTHUSIASM BONUS -->
@@ -698,6 +730,15 @@ const S = { urgency: 0, quotes: 0, dm: 0, credit: 0 };
 let enthAnswer = null, enthBonus = 0;
 let toastTimer = null;
 let competitorApptExists = false;
+let selectedAgent = null;
+
+function pickAgent(name, el) {
+  document.querySelectorAll('#group-agent .choice').forEach(c => {
+    c.className = c.className.replace(/sel-\w+/g,'').trim();
+  });
+  el.classList.add('sel-purple');
+  selectedAgent = name;
+}
 
 // ══ RECOMMENDATION ENGINE ══
 function getRec(score, answers) {
@@ -939,6 +980,7 @@ function submitLead() {
     project_type: pt,
     appointment_date: document.getElementById('appointmentDate').value,
     appointment_time: document.getElementById('appointmentTime').value,
+    sales_agent: selectedAgent,
     competitor_appt_exists: competitorApptExists,
     competitor_appt_date: document.getElementById('competitorApptDate').value || null,
     score: total, score_max: 100, priority,
@@ -981,6 +1023,8 @@ function closeModal() {
   for (const k in A) { A[k] = null; S[k] = 0; }
   enthAnswer = null; enthBonus = 0;
   competitorApptExists = false;
+  selectedAgent = null;
+  document.querySelectorAll('#group-agent .choice').forEach(c => { c.className = c.className.replace(/sel-\w+/g,'').trim(); });
   hideCompetitorFollowup();
   calc();
 }
