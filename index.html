@@ -303,6 +303,11 @@ select option{background:#1a0035;color:#e2d9f3}
         <span class="pts pgr" style="margin-top:5px;display:inline-block">+10 PTS</span>
         <div style="font-size:10px;color:#6b7280;margin-top:4px">Solo decision maker</div>
       </div>
+      <div class="opt" onclick="pick('dm','With Son / Daughter / Parents',10,this,'sb','Decision Maker')">
+        <div class="ol">With Son / Daughter / Parents</div>
+        <span class="pts pb" style="margin-top:5px;display:inline-block">+10 PTS</span>
+        <div style="font-size:10px;color:#6b7280;margin-top:4px">Family present</div>
+      </div>
       <div class="opt" onclick="pick('dm','Cash Project',10,this,'sb','Decision Maker')">
         <div class="ol">Cash Project</div>
         <span class="pts pb" style="margin-top:5px;display:inline-block">+10 PTS</span>
@@ -439,7 +444,7 @@ select option{background:#1a0035;color:#e2d9f3}
       <div style="text-align:center">
         <div class="sring rz" id="scoreRing">
           <div style="font-size:48px;font-weight:900;line-height:1" id="scoreNumber">0</div>
-          <div style="font-size:12px;font-weight:600;opacity:0.7;margin-top:4px">/ 110</div>
+          <div style="font-size:12px;font-weight:600;opacity:0.7;margin-top:4px">PTS</div>
         </div>
         <div style="margin-top:14px"><span class="pill pnone" id="priorityBadge">No Data Yet</span></div>
       </div>
@@ -454,7 +459,7 @@ select option{background:#1a0035;color:#e2d9f3}
         <div class="ptrack"><div class="pfill" id="progressBar" style="width:0%"></div></div>
 
         <div class="guide-row" style="margin-top:16px">
-          <div class="guide-item" style="color:#4ade80"><span style="width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e;display:inline-block"></span>80–110 → HIGH</div>
+          <div class="guide-item" style="color:#4ade80"><span style="width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e;display:inline-block"></span>80+ → HIGH</div>
           <div class="guide-item" style="color:#fbbf24"><span style="width:9px;height:9px;border-radius:50%;background:#f59e0b;box-shadow:0 0 6px #f59e0b;display:inline-block"></span>60–79 → MEDIUM</div>
           <div class="guide-item" style="color:#f87171"><span style="width:9px;height:9px;border-radius:50%;background:#ef4444;box-shadow:0 0 6px #ef4444;display:inline-block"></span>0–59 → LOW</div>
         </div>
@@ -558,7 +563,7 @@ function showToast(pts,prevPts,catName){
   ptsEl.style.color=diff>0?'#4ade80':diff<0?'#f87171':'#9ca3af';
 
   document.getElementById('toastCategory').textContent=catName;
-  document.getElementById('toastTotal').textContent=total+' / 110';
+  document.getElementById('toastTotal').textContent=total+' pts';
   document.getElementById('toastPriority').textContent=pr;
   document.getElementById('toastPriority').style.color=tcol;
 
@@ -606,14 +611,14 @@ function submitLead(){
     project_type:pt,
     appointment_date:document.getElementById('appointmentDate').value,
     appointment_time:document.getElementById('appointmentTime').value,
-    score:total,score_max:110,priority,
+    score:total,score_max:null,priority,
     answers:{...A},scores:{...S},
     notes:document.getElementById('callNotes').value,
     call_timestamp:new Date().toISOString()
   };
   try{const e=JSON.parse(localStorage.getItem('leadRecords')||'[]');e.push(payload);localStorage.setItem('leadRecords',JSON.stringify(e));}catch(e){}
   fetch('https://hook.us1.make.com/886k5ojznokp6xytozlgqj1w473lfilt',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(e=>console.warn(e));
-  document.getElementById('modalSummary').textContent=payload.crm_customer_name+' · '+priority+' · '+total+'/110 pts';
+  document.getElementById('modalSummary').textContent=payload.crm_customer_name+' · '+priority+' · '+total+' pts';
   document.getElementById('modalPayload').textContent=JSON.stringify(payload,null,2);
   document.getElementById('modal').style.display='flex';
 }
