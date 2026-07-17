@@ -11,97 +11,67 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;min-height:100vh;background:#080014;color:#e2d9f3}
 
-/* ── BACKGROUND ── */
 body::before{content:'';position:fixed;top:-300px;right:-200px;width:800px;height:800px;background:radial-gradient(circle,rgba(109,40,217,0.18) 0%,transparent 65%);border-radius:50%;pointer-events:none;z-index:0}
 body::after{content:'';position:fixed;bottom:-200px;left:-100px;width:600px;height:600px;background:radial-gradient(circle,rgba(79,70,229,0.12) 0%,transparent 65%);border-radius:50%;pointer-events:none;z-index:0}
 
-/* ── SCROLLBAR ── */
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:rgba(255,255,255,0.03)}::-webkit-scrollbar-thumb{background:rgba(139,92,246,0.4);border-radius:99px}
 
-/* ══════════════ LIVE SCORE BAR ══════════════ */
-.score-bar{
-  position:fixed;top:0;left:0;right:0;z-index:600;
-  height:64px;
-  background:rgba(8,0,20,0.92);
-  backdrop-filter:blur(24px);
-  border-bottom:1px solid rgba(109,40,217,0.25);
-  display:flex;align-items:center;gap:0;
-  padding:0 24px;
-}
+/* ══ SCORE BAR ══ */
+.score-bar{position:fixed;top:0;left:0;right:0;z-index:600;height:64px;background:rgba(8,0,20,0.93);backdrop-filter:blur(24px);border-bottom:1px solid rgba(109,40,217,0.25);display:flex;align-items:center;padding:0 24px}
 .sb-segment{display:flex;flex-direction:column;justify-content:center;padding:0 20px;border-right:1px solid rgba(109,40,217,0.18)}
 .sb-segment:last-child{border-right:none}
 .sb-label{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(167,139,250,0.5);margin-bottom:2px}
 .sb-value{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;line-height:1;transition:all 0.25s}
 .sb-pill{display:inline-flex;align-items:center;font-size:10px;font-weight:800;padding:3px 12px;border-radius:99px;letter-spacing:1.5px;text-transform:uppercase;transition:all 0.25s}
-
 .pill-none{background:rgba(107,114,128,0.15);color:#6b7280;border:1px solid rgba(107,114,128,0.2)}
 .pill-high{background:rgba(34,197,94,0.12);color:#4ade80;border:1px solid rgba(34,197,94,0.35)}
 .pill-med{background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.35)}
 .pill-low{background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.35)}
-
-.sb-rec{font-size:11px;font-weight:700;color:#a78bfa;padding:0 20px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sb-progress{display:flex;align-items:center;gap:10px;margin-left:auto;padding-left:20px;border-left:1px solid rgba(109,40,217,0.18)}
 .sb-dots{display:flex;gap:5px}
 .sb-dot{width:8px;height:8px;border-radius:50%;background:rgba(109,40,217,0.25);transition:all 0.3s}
 .sb-dot.done{background:#7c3aed;box-shadow:0 0 6px rgba(124,58,237,0.6)}
 
-/* ══════════════ WRAPPER ══════════════ */
+/* ══ LAYOUT ══ */
 .wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:80px 16px 40px}
-
-/* ── HEADER ── */
 .page-header{text-align:center;margin-bottom:32px;padding:28px 0 20px}
 .brand{font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:rgba(167,139,250,0.5);margin-bottom:10px}
 .page-title{font-size:28px;font-weight:900;background:linear-gradient(135deg,#ddd6fe,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2;margin-bottom:8px}
 .page-sub{font-size:12px;color:rgba(167,139,250,0.45);letter-spacing:0.5px}
 
-/* ── CARDS ── */
+/* ══ CARDS ══ */
 .card{background:rgba(255,255,255,0.04);border:1px solid rgba(109,40,217,0.2);border-radius:16px;padding:24px;margin-bottom:14px;backdrop-filter:blur(12px)}
 .card-header{display:flex;align-items:center;gap:10px;margin-bottom:18px}
 .card-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
 .ci-info{background:rgba(14,165,233,0.15);border:1px solid rgba(14,165,233,0.25)}
 .ci-scored{background:rgba(109,40,217,0.2);border:1px solid rgba(109,40,217,0.35)}
 .ci-green{background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.25)}
+.ci-orange{background:rgba(249,115,22,0.15);border:1px solid rgba(249,115,22,0.3)}
 .card-title{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#a78bfa}
 .card-pts{margin-left:auto;font-size:10px;font-weight:600;color:rgba(167,139,250,0.4);white-space:nowrap}
 
-/* ── SCRIPT BLOCK ── */
+/* ══ SCRIPT BLOCK ══ */
 .script{background:rgba(109,40,217,0.07);border:1px solid rgba(109,40,217,0.18);border-left:3px solid #7c3aed;border-radius:10px;padding:14px 16px;margin-bottom:16px}
 .script-tag{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#7c3aed;margin-bottom:7px}
 .script-body{font-size:13px;color:#c4b5fd;line-height:1.8}
 .script-body strong{color:#e2d9f3;font-weight:700}
 .script-listen{font-size:11px;color:#818cf8;font-style:italic;margin-top:8px;opacity:0.8}
 
-/* ── FORM INPUTS ── */
+/* ══ INPUTS ══ */
 .field-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(167,139,250,0.6);margin-bottom:6px;display:block}
-input,select,textarea{
-  width:100%;padding:10px 14px;
-  background:rgba(255,255,255,0.05);
-  border:1.5px solid rgba(109,40,217,0.25);
-  border-radius:10px;font-size:13px;font-family:'Inter',sans-serif;
-  color:#e2d9f3;outline:none;transition:all 0.2s;
-  -webkit-appearance:none;
-}
+input,select,textarea{width:100%;padding:10px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(109,40,217,0.25);border-radius:10px;font-size:13px;font-family:'Inter',sans-serif;color:#e2d9f3;outline:none;transition:all 0.2s;-webkit-appearance:none}
 input::placeholder,textarea::placeholder{color:rgba(167,139,250,0.3)}
 input:focus,select:focus,textarea:focus{border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,0.15);background:rgba(255,255,255,0.07)}
 select option{background:#0d0020;color:#e2d9f3}
 .bp-field input{border-color:rgba(245,158,11,0.35)!important}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.grid-2:last-child,.grid-3:last-child,.grid-4:last-child{margin-bottom:0}
+.grid-2:last-child{margin-bottom:0}
 
-/* ── CHOICE CARDS ── */
+/* ══ CHOICES ══ */
 .choices{display:grid;gap:10px}
 .choices.cols-3{grid-template-columns:repeat(3,1fr)}
 .choices.cols-4{grid-template-columns:repeat(4,1fr)}
 .choices.cols-2{grid-template-columns:1fr 1fr}
-
-.choice{
-  cursor:pointer;border:1.5px solid rgba(109,40,217,0.18);border-radius:12px;
-  padding:14px 12px;transition:all 0.18s;background:rgba(255,255,255,0.025);
-  text-align:center;user-select:none;position:relative;overflow:hidden;
-}
-.choice::before{content:'';position:absolute;inset:0;background:transparent;transition:all 0.18s}
+.choice{cursor:pointer;border:1.5px solid rgba(109,40,217,0.18);border-radius:12px;padding:14px 12px;transition:all 0.18s;background:rgba(255,255,255,0.025);text-align:center;user-select:none;position:relative;overflow:hidden}
 .choice:hover{border-color:rgba(139,92,246,0.5);background:rgba(139,92,246,0.08);transform:translateY(-1px)}
 .choice-label{font-size:13px;font-weight:700;color:#e2d9f3;margin-bottom:6px}
 .choice-sub{font-size:10px;color:rgba(107,114,128,0.7);margin-top:2px}
@@ -109,25 +79,21 @@ select option{background:#0d0020;color:#e2d9f3}
 .badge-green{background:rgba(34,197,94,0.15);color:#4ade80}
 .badge-amber{background:rgba(245,158,11,0.15);color:#fbbf24}
 .badge-blue{background:rgba(59,130,246,0.15);color:#60a5fa}
-.badge-red{background:rgba(239,68,68,0.15);color:#f87171}
 .badge-gray{background:rgba(107,114,128,0.15);color:#9ca3af}
 .badge-purple{background:rgba(139,92,246,0.15);color:#a78bfa}
-
-/* Selected states */
+.badge-orange{background:rgba(249,115,22,0.15);color:#fb923c}
 .sel-green{border-color:#22c55e!important;background:rgba(34,197,94,0.1)!important;box-shadow:0 0 18px rgba(34,197,94,0.2)!important}
 .sel-green .choice-label{color:#4ade80}
 .sel-amber{border-color:#f59e0b!important;background:rgba(245,158,11,0.1)!important;box-shadow:0 0 18px rgba(245,158,11,0.2)!important}
 .sel-amber .choice-label{color:#fbbf24}
 .sel-blue{border-color:#3b82f6!important;background:rgba(59,130,246,0.1)!important;box-shadow:0 0 18px rgba(59,130,246,0.2)!important}
 .sel-blue .choice-label{color:#60a5fa}
-.sel-red{border-color:#ef4444!important;background:rgba(239,68,68,0.1)!important;box-shadow:0 0 18px rgba(239,68,68,0.2)!important}
-.sel-red .choice-label{color:#f87171}
 .sel-gray{border-color:#6b7280!important;background:rgba(107,114,128,0.1)!important}
 .sel-gray .choice-label{color:#9ca3af}
 .sel-purple{border-color:#8b5cf6!important;background:rgba(139,92,246,0.1)!important;box-shadow:0 0 18px rgba(139,92,246,0.2)!important}
 .sel-purple .choice-label{color:#c4b5fd}
 
-/* ── DM BIG CHOICES ── */
+/* ══ DM BIG CHOICES ══ */
 .dm-big{cursor:pointer;border:2px solid rgba(109,40,217,0.2);border-radius:14px;padding:24px;transition:all 0.2s;background:rgba(255,255,255,0.025);text-align:center;user-select:none}
 .dm-big:hover{transform:translateY(-2px)}
 .dm-yes-sel,.dm-yes:hover{border-color:#22c55e!important;background:rgba(34,197,94,0.1)!important;box-shadow:0 0 24px rgba(34,197,94,0.25)!important}
@@ -135,19 +101,42 @@ select option{background:#0d0020;color:#e2d9f3}
 .dm-icon{font-size:38px;margin-bottom:10px}
 .dm-big-label{font-size:20px;font-weight:900;margin-bottom:6px}
 
-/* ══════════════ FINAL SCORE PANEL ══════════════ */
-.result-panel{
-  background:rgba(255,255,255,0.04);
-  border:2px solid rgba(109,40,217,0.35);
-  border-radius:20px;padding:28px;margin-bottom:14px;
-  box-shadow:0 0 60px rgba(109,40,217,0.12),0 8px 32px rgba(0,0,0,0.4);
+/* ══ COMPETITOR FOLLOWUP ══ */
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.followup-block{background:rgba(249,115,22,0.06);border:1.5px solid rgba(249,115,22,0.3);border-radius:12px;padding:16px;margin-top:14px;animation:slideDown 0.25s ease}
+.followup-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#fb923c;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+
+/* ══ COMPETITOR REMINDER BANNER ══ */
+@keyframes reminderIn{from{opacity:0;transform:translateY(-10px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.competitor-reminder{
+  background:linear-gradient(135deg,rgba(249,115,22,0.1),rgba(239,68,68,0.06));
+  border:2px solid rgba(249,115,22,0.4);
+  border-radius:16px;padding:20px;margin-bottom:14px;
+  animation:reminderIn 0.3s ease;
+  box-shadow:0 0 30px rgba(249,115,22,0.12),0 4px 16px rgba(0,0,0,0.3);
 }
+.reminder-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.reminder-icon{font-size:22px;animation:pulse-icon 2s infinite}
+@keyframes pulse-icon{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.reminder-title{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#fb923c}
+.reminder-badge{margin-left:auto;font-size:9px;font-weight:800;padding:3px 10px;border-radius:99px;background:rgba(249,115,22,0.2);color:#fb923c;border:1px solid rgba(249,115,22,0.35);letter-spacing:1px;text-transform:uppercase}
+.reminder-body{font-size:13px;color:#fed7aa;line-height:1.7;margin-bottom:14px}
+.reminder-body strong{color:#fff;font-weight:700}
+.reminder-script{background:rgba(0,0,0,0.25);border:1px solid rgba(249,115,22,0.2);border-left:3px solid #f97316;border-radius:10px;padding:12px 14px;margin-bottom:14px}
+.reminder-script-tag{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#f97316;margin-bottom:6px}
+.reminder-script-body{font-size:13px;color:#fed7aa;line-height:1.7;font-style:italic}
+.reminder-rec{background:rgba(0,0,0,0.2);border-radius:10px;padding:14px;display:flex;align-items:flex-start;gap:12px}
+.reminder-rec-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+.reminder-rec-content{}
+.reminder-rec-title{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#f97316;margin-bottom:4px}
+.reminder-rec-text{font-size:13px;color:#e2d9f3;font-weight:700;margin-bottom:2px}
+.reminder-rec-sub{font-size:11px;color:rgba(249,115,22,0.7);line-height:1.5}
+.competitor-date-display{background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.3);border-radius:8px;padding:8px 14px;margin-top:10px;font-size:13px;color:#fb923c;font-weight:700;display:flex;align-items:center;gap:8px}
+
+/* ══ RESULT PANEL ══ */
+.result-panel{background:rgba(255,255,255,0.04);border:2px solid rgba(109,40,217,0.35);border-radius:20px;padding:28px;margin-bottom:14px;box-shadow:0 0 60px rgba(109,40,217,0.12),0 8px 32px rgba(0,0,0,0.4)}
 .result-top{display:flex;gap:24px;align-items:flex-start;margin-bottom:24px}
-.score-ring{
-  width:148px;height:148px;border-radius:50%;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  border:4px solid;transition:all 0.35s;flex-shrink:0;
-}
+.score-ring{width:148px;height:148px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:4px solid;transition:all 0.35s;flex-shrink:0}
 .ring-none{border-color:#374151;color:#6b7280}
 .ring-high{border-color:#22c55e;color:#4ade80;box-shadow:0 0 40px rgba(34,197,94,0.4)}
 .ring-med{border-color:#f59e0b;color:#fbbf24;box-shadow:0 0 40px rgba(245,158,11,0.4)}
@@ -162,73 +151,48 @@ select option{background:#0d0020;color:#e2d9f3}
 .rec-eyebrow{font-size:9px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:#7c3aed;margin-bottom:8px}
 .rec-action{font-size:17px;font-weight:800;color:#e2d9f3;margin-bottom:6px;line-height:1.3;transition:color 0.25s}
 .rec-sub{font-size:12px;color:#a78bfa;line-height:1.6}
-
 .reason-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .reason-chip{font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;background:rgba(109,40,217,0.15);border:1px solid rgba(109,40,217,0.25);color:#c4b5fd}
 .reason-chip.good{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.25);color:#4ade80}
 .reason-chip.warn{background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.25);color:#fbbf24}
 .reason-chip.bad{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.25);color:#f87171}
 
-/* Breakdown */
 .breakdown{background:rgba(0,0,0,0.2);border:1px solid rgba(109,40,217,0.12);border-radius:10px;padding:14px}
 .bd-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:5px 0;border-bottom:1px solid rgba(109,40,217,0.08)}
 .bd-row:last-child{border-bottom:none;padding-top:10px;margin-top:4px;font-size:13px;font-weight:800;color:#c4b5fd}
 .bd-key{color:rgba(107,114,128,0.8)}
 .bd-val{font-weight:700;font-family:'JetBrains Mono',monospace;font-size:11px;transition:color 0.25s}
 
-/* Booking rules table */
 .rules-table{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:20px}
-.rule-cell{border-radius:10px;padding:12px;text-align:center;border:1px solid}
+.rule-cell{border-radius:10px;padding:12px;text-align:center;border:1px solid;transition:all 0.3s}
 .rule-score{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;margin-bottom:4px}
 .rule-desc{font-size:9px;font-weight:700;letter-spacing:0.5px;line-height:1.4;text-transform:uppercase}
 .rule-h{background:rgba(34,197,94,0.08);border-color:rgba(34,197,94,0.25);color:#4ade80}
 .rule-mh{background:rgba(109,40,217,0.08);border-color:rgba(109,40,217,0.25);color:#c4b5fd}
 .rule-m{background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.25);color:#fbbf24}
 .rule-l{background:rgba(107,114,128,0.08);border-color:rgba(107,114,128,0.25);color:#9ca3af}
+.rule-active{transform:scale(1.05);box-shadow:0 0 20px currentColor;opacity:1!important}
+.rule-inactive{opacity:0.35}
 
-/* Highlight active rule */
-.rule-active{transform:scale(1.04);box-shadow:0 0 20px currentColor;opacity:1!important}
-.rule-inactive{opacity:0.4}
-
-/* ══════════════ QUALIFICATION PANEL (credit + scheduling) ══════════════ */
-.qual-panel{
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(109,40,217,0.25);
-  border-radius:16px;padding:24px;margin-bottom:14px;
-}
+/* ══ QUAL PANEL ══ */
+.qual-panel{background:rgba(255,255,255,0.04);border:1px solid rgba(109,40,217,0.25);border-radius:16px;padding:24px;margin-bottom:14px}
 .qual-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(109,40,217,0.3),transparent);margin:20px 0}
 
-/* ══════════════ ENTHUSIASM (bonus) ══════════════ */
-.bonus-panel{
-  background:rgba(99,102,241,0.06);border:1.5px solid rgba(99,102,241,0.2);
-  border-radius:14px;padding:20px;margin-bottom:14px;
-}
+/* ══ BONUS ══ */
+.bonus-panel{background:rgba(99,102,241,0.06);border:1.5px solid rgba(99,102,241,0.2);border-radius:14px;padding:20px;margin-bottom:14px}
 .bonus-strip{display:flex;gap:20px;margin-top:14px;padding:12px;background:rgba(0,0,0,0.2);border-radius:8px;font-size:12px;color:rgba(99,102,241,0.8)}
 .bonus-strip strong{color:#c4b5fd}
 
-/* ── SUBMIT ── */
+/* ══ SUBMIT ══ */
 .submit-panel{background:rgba(255,255,255,0.03);border:1px solid rgba(109,40,217,0.2);border-radius:16px;padding:24px;margin-bottom:14px}
 .customer-display{background:rgba(109,40,217,0.1);border:1px solid rgba(109,40,217,0.25);border-radius:8px;padding:10px 16px;text-align:center;font-size:16px;font-weight:800;color:#c4b5fd;margin-bottom:16px;font-family:'JetBrains Mono',monospace;min-height:42px}
-.sub-btn{
-  width:100%;padding:18px;border:none;border-radius:12px;cursor:pointer;
-  font-size:14px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
-  background:linear-gradient(135deg,#7c3aed,#5b21b6,#4c1d95);
-  color:#fff;box-shadow:0 6px 24px rgba(124,58,237,0.45);transition:all 0.2s;
-  font-family:'Inter',sans-serif;
-}
+.sub-btn{width:100%;padding:18px;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:800;letter-spacing:2px;text-transform:uppercase;background:linear-gradient(135deg,#7c3aed,#5b21b6,#4c1d95);color:#fff;box-shadow:0 6px 24px rgba(124,58,237,0.45);transition:all 0.2s;font-family:'Inter',sans-serif}
 .sub-btn:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(124,58,237,0.6)}
 
-/* ── TOAST ── */
+/* ══ TOAST ══ */
 @keyframes toastIn{0%{opacity:0;transform:translate(-50%,-50%) scale(0.7)}60%{transform:translate(-50%,-50%) scale(1.06)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 @keyframes toastOut{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(0.85)}}
-.toast{
-  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;
-  background:linear-gradient(135deg,rgba(15,0,40,0.97),rgba(8,0,20,0.97));
-  border:2px solid rgba(139,92,246,0.5);border-radius:22px;
-  padding:26px 42px;text-align:center;
-  box-shadow:0 0 80px rgba(139,92,246,0.4),0 20px 60px rgba(0,0,0,0.6);
-  pointer-events:none;opacity:0;backdrop-filter:blur(30px);min-width:280px;
-}
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:linear-gradient(135deg,rgba(15,0,40,0.97),rgba(8,0,20,0.97));border:2px solid rgba(139,92,246,0.5);border-radius:22px;padding:26px 42px;text-align:center;box-shadow:0 0 80px rgba(139,92,246,0.4),0 20px 60px rgba(0,0,0,0.6);pointer-events:none;opacity:0;backdrop-filter:blur(30px);min-width:280px}
 .toast.show{animation:toastIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards}
 .toast.hide{animation:toastOut 0.25s ease forwards}
 .t-cat{font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#7c3aed;margin-bottom:4px}
@@ -239,28 +203,20 @@ select option{background:#0d0020;color:#e2d9f3}
 .t-num{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;line-height:1}
 .t-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#6b7280;margin-top:3px}
 
-/* ── MODAL ── */
+/* ══ MODAL ══ */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);z-index:9998;align-items:center;justify-content:center}
-.modal-box{
-  background:linear-gradient(135deg,#130028,#0a0018);
-  border:1px solid rgba(139,92,246,0.4);border-radius:20px;
-  padding:32px;max-width:500px;width:92%;text-align:center;
-  box-shadow:0 0 60px rgba(139,92,246,0.3)
-}
+.modal-box{background:linear-gradient(135deg,#130028,#0a0018);border:1px solid rgba(139,92,246,0.4);border-radius:20px;padding:32px;max-width:500px;width:92%;text-align:center;box-shadow:0 0 60px rgba(139,92,246,0.3)}
 .modal-close{background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;padding:10px 28px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;margin-top:14px;font-family:'Inter',sans-serif}
 
-/* ── NAV ── */
+/* ══ NAV & DIVIDERS ══ */
 .nav-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
 .brand-name{font-size:16px;font-weight:900;background:linear-gradient(135deg,#c4b5fd,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .nav-link{padding:7px 16px;border-radius:10px;font-size:10px;font-weight:800;letter-spacing:1.5px;text-decoration:none;text-transform:uppercase;background:rgba(139,92,246,0.12);color:#a78bfa;border:1px solid rgba(139,92,246,0.3);transition:all 0.2s}
 .nav-link:hover{background:rgba(139,92,246,0.22)}
-
-/* ── SECTION DIVIDER ── */
 .section-divider{display:flex;align-items:center;gap:12px;margin:8px 0 14px}
 .section-divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(109,40,217,0.25))}
 .section-divider-label{font-size:9px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:rgba(109,40,217,0.5)}
 
-/* Animations */
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .card,.result-panel,.qual-panel,.bonus-panel,.submit-panel{animation:fadeUp 0.4s ease both}
 </style>
@@ -281,9 +237,9 @@ select option{background:#0d0020;color:#e2d9f3}
     <div class="sb-label">Recommendation</div>
     <div style="font-size:11px;font-weight:700;color:rgba(107,114,128,0.6)" id="sb-rec">Complete the scored sections below</div>
   </div>
-  <div class="sb-progress">
+  <div style="display:flex;align-items:center;gap:10px;padding-left:20px;border-left:1px solid rgba(109,40,217,0.18)">
     <div class="sb-label" style="margin-bottom:4px">Questions</div>
-    <div class="sb-dots" id="sb-dots">
+    <div class="sb-dots">
       <div class="sb-dot" id="dot-urgency" title="Urgency"></div>
       <div class="sb-dot" id="dot-quotes" title="Quotes"></div>
       <div class="sb-dot" id="dot-dm" title="Decision Makers"></div>
@@ -307,7 +263,7 @@ select option{background:#0d0020;color:#e2d9f3}
     <div class="page-sub">Follow the script · Click answers · Get instant scheduling recommendation</div>
   </div>
 
-  <!-- ══ 1. CUSTOMER INFO ══ -->
+  <!-- ══ CUSTOMER INFO ══ -->
   <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Customer Information</div><div class="section-divider-line" style="background:linear-gradient(90deg,rgba(109,40,217,0.25),transparent)"></div></div>
 
   <div class="card">
@@ -333,7 +289,7 @@ select option{background:#0d0020;color:#e2d9f3}
     </div>
   </div>
 
-  <!-- ══ 2. OPENING ══ -->
+  <!-- OPENING SCRIPT -->
   <div class="card">
     <div class="card-header">
       <div class="card-icon ci-info">📞</div>
@@ -349,9 +305,10 @@ select option{background:#0d0020;color:#e2d9f3}
     </div>
   </div>
 
-  <!-- ══ 3. PROJECT DISCOVERY ══ -->
+  <!-- ══ QUALIFICATION QUESTIONS ══ -->
   <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Qualification Questions</div><div class="section-divider-line" style="background:linear-gradient(90deg,rgba(109,40,217,0.25),transparent)"></div></div>
 
+  <!-- PROJECT DISCOVERY -->
   <div class="card">
     <div class="card-header">
       <div class="card-icon ci-info">🚿</div>
@@ -375,7 +332,7 @@ select option{background:#0d0020;color:#e2d9f3}
     </div>
   </div>
 
-  <!-- ══ Q1: URGENCY (20pts) ══ -->
+  <!-- Q1: URGENCY -->
   <div class="card">
     <div class="card-header">
       <div class="card-icon ci-scored">1</div>
@@ -406,7 +363,7 @@ select option{background:#0d0020;color:#e2d9f3}
     </div>
   </div>
 
-  <!-- ══ BUYING READINESS ══ -->
+  <!-- BUYING READINESS -->
   <div class="card">
     <div class="card-header">
       <div class="card-icon ci-info">✅</div>
@@ -419,7 +376,7 @@ select option{background:#0d0020;color:#e2d9f3}
     </div>
   </div>
 
-  <!-- ══ Q2: QUOTES (40pts) ══ -->
+  <!-- Q2: QUOTES — with conditional follow-up -->
   <div class="card">
     <div class="card-header">
       <div class="card-icon ci-scored">2</div>
@@ -440,20 +397,32 @@ select option{background:#0d0020;color:#e2d9f3}
         <div class="choice-sub">Has competitor quote</div>
         <span class="badge badge-green">+40 PTS</span>
       </div>
-      <div class="choice" onclick="pick('quotes','Have Appt Before Us',30,this,'sel-amber','Quotes')">
+      <div class="choice" onclick="pick('quotes','Have Appt Before Us',30,this,'sel-amber','Quotes'); showCompetitorFollowup()">
         <div class="choice-label">Appt Before Us</div>
-        <div class="choice-sub">Scheduled earlier</div>
+        <div class="choice-sub">Competitor appt scheduled</div>
         <span class="badge badge-amber">+30 PTS</span>
       </div>
-      <div class="choice" onclick="pick('quotes','None',10,this,'sel-amber','Quotes')">
+      <div class="choice" onclick="pick('quotes','None',10,this,'sel-amber','Quotes'); hideCompetitorFollowup()">
         <div class="choice-label">None</div>
         <div class="choice-sub">No quote yet</div>
         <span class="badge badge-amber">+10 PTS</span>
       </div>
     </div>
+
+    <!-- CONDITIONAL: Competitor appt date follow-up -->
+    <div class="followup-block" id="competitor-followup" style="display:none">
+      <div class="followup-label">🗓️ Follow-up Question</div>
+      <div class="script" style="margin-bottom:12px">
+        <div class="script-tag">🎙 Ask</div>
+        <div class="script-body"><strong>"When is your appointment with the other company?"</strong></div>
+        <div class="script-listen">👂 Enter the date below</div>
+      </div>
+      <label class="field-label">Competitor Appointment Date</label>
+      <input type="date" id="competitorApptDate" oninput="updateCompetitorDate()">
+    </div>
   </div>
 
-  <!-- ══ Q3: DECISION MAKERS (20pts) ══ -->
+  <!-- Q3: DECISION MAKERS -->
   <div class="card">
     <div class="card-header">
       <div class="card-icon ci-scored">3</div>
@@ -484,7 +453,7 @@ select option{background:#0d0020;color:#e2d9f3}
     </div>
   </div>
 
-  <!-- ══ BUILD VALUE ══ -->
+  <!-- BUILD VALUE -->
   <div class="card">
     <div class="card-header">
       <div class="card-icon ci-info">💎</div>
@@ -499,10 +468,10 @@ select option{background:#0d0020;color:#e2d9f3}
     </div>
   </div>
 
-  <!-- ══ QUALIFICATION PANEL: Credit + Final Score + Scheduling ══ -->
+  <!-- ══ APPOINTMENT QUALIFICATION ══ -->
   <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Appointment Qualification</div><div class="section-divider-line" style="background:linear-gradient(90deg,rgba(109,40,217,0.25),transparent)"></div></div>
 
-  <!-- Q4: CREDIT (20pts) -->
+  <!-- Q4: CREDIT — updated scoring -->
   <div class="qual-panel">
     <div class="card-header" style="margin-bottom:16px">
       <div class="card-icon ci-scored">4</div>
@@ -517,18 +486,19 @@ select option{background:#0d0020;color:#e2d9f3}
       </div>
       <div class="script-listen">👂 Listen — then select below</div>
     </div>
+    <!-- Updated: Good/Excellent=20, Fair=15, Cash=10, Won't Share=5 -->
     <div class="choices cols-4" id="group-credit">
       <div class="choice" onclick="pick('credit','Good / Excellent',20,this,'sel-green','Credit')">
         <div class="choice-label">Good / Excellent</div>
         <span class="badge badge-green">+20 PTS</span>
       </div>
-      <div class="choice" onclick="pick('credit','Cash Project',15,this,'sel-blue','Credit')">
-        <div class="choice-label">Cash Project</div>
-        <span class="badge badge-blue">+15 PTS</span>
-      </div>
-      <div class="choice" onclick="pick('credit','Fair',10,this,'sel-amber','Credit')">
+      <div class="choice" onclick="pick('credit','Fair',15,this,'sel-amber','Credit')">
         <div class="choice-label">Fair</div>
-        <span class="badge badge-amber">+10 PTS</span>
+        <span class="badge badge-amber">+15 PTS</span>
+      </div>
+      <div class="choice" onclick="pick('credit','Cash Project',10,this,'sel-blue','Credit')">
+        <div class="choice-label">Cash Project</div>
+        <span class="badge badge-blue">+10 PTS</span>
       </div>
       <div class="choice" onclick="pick('credit','Won\'t Share',5,this,'sel-gray','Credit')">
         <div class="choice-label">Won't Share</div>
@@ -538,12 +508,10 @@ select option{background:#0d0020;color:#e2d9f3}
 
     <div class="qual-divider"></div>
 
-    <!-- ══ FINAL SCORE + RECOMMENDATION ══ -->
+    <!-- FINAL SCORE + RECOMMENDATION -->
     <div class="result-panel" style="margin-bottom:0;border:2px solid rgba(109,40,217,0.3)">
       <div style="font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#7c3aed;text-align:center;margin-bottom:20px">⚡ Lead Qualification Result</div>
-
       <div class="result-top">
-        <!-- Score Ring -->
         <div style="text-align:center">
           <div class="score-ring ring-none" id="mainRing">
             <div class="ring-num" id="mainScore">0</div>
@@ -553,8 +521,6 @@ select option{background:#0d0020;color:#e2d9f3}
             <span class="sb-pill pill-none" id="mainPill" style="font-size:11px;padding:5px 18px">NO DATA</span>
           </div>
         </div>
-
-        <!-- Recommendation -->
         <div class="rec-block">
           <div class="rec-card">
             <div class="rec-eyebrow">🎯 Scheduling Recommendation</div>
@@ -562,8 +528,6 @@ select option{background:#0d0020;color:#e2d9f3}
             <div class="rec-sub" id="recSub">Urgency · Quotes · Decision Makers · Credit</div>
             <div class="reason-list" id="reasonList"></div>
           </div>
-
-          <!-- Score Breakdown -->
           <div class="breakdown">
             <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#7c3aed;margin-bottom:10px">Score Breakdown</div>
             <div class="bd-row"><span class="bd-key">Urgency</span><span class="bd-val" id="bd-urgency" style="color:#4b5563">—</span></div>
@@ -574,34 +538,58 @@ select option{background:#0d0020;color:#e2d9f3}
           </div>
         </div>
       </div>
-
-      <!-- Booking Rules Reference -->
       <div>
         <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#7c3aed;margin-bottom:10px">📅 Booking Rules</div>
         <div class="rules-table">
-          <div class="rule-cell rule-h" id="rule-90">
-            <div class="rule-score">90 +</div>
-            <div class="rule-desc">Never Double Book</div>
-          </div>
-          <div class="rule-cell rule-mh" id="rule-80">
-            <div class="rule-score">80 – 89</div>
-            <div class="rule-desc">Double Book Only With Low Priority</div>
-          </div>
-          <div class="rule-cell rule-m" id="rule-65">
-            <div class="rule-score">65 – 79</div>
-            <div class="rule-desc">Standard Double Book OK</div>
-          </div>
-          <div class="rule-cell rule-l" id="rule-64">
-            <div class="rule-score">Below 65</div>
-            <div class="rule-desc">Standby / Partner Out</div>
-          </div>
+          <div class="rule-cell rule-h" id="rule-90"><div class="rule-score">90 +</div><div class="rule-desc">Never Double Book</div></div>
+          <div class="rule-cell rule-mh" id="rule-80"><div class="rule-score">80 – 89</div><div class="rule-desc">Double Book Only With Low Priority</div></div>
+          <div class="rule-cell rule-m" id="rule-65"><div class="rule-score">65 – 79</div><div class="rule-desc">Standard Double Book OK</div></div>
+          <div class="rule-cell rule-l" id="rule-64"><div class="rule-score">Below 65</div><div class="rule-desc">Standby / Partner Out</div></div>
         </div>
       </div>
     </div>
 
     <div class="qual-divider"></div>
 
-    <!-- ══ APPOINTMENT BOOKING ══ -->
+    <!-- ══ COMPETITOR REMINDER — shows only when "Appt Before Us" selected ══ -->
+    <div class="competitor-reminder" id="competitor-reminder" style="display:none">
+      <div class="reminder-header">
+        <span class="reminder-icon">⚠️</span>
+        <div class="reminder-title">Scheduling Reminder — Competitor Appointment Detected</div>
+        <span class="reminder-badge">Action Required</span>
+      </div>
+      <div class="reminder-body">
+        This customer already has an appointment with another contractor.<br>
+        <strong>Before selecting a date, confirm their competitor appointment date and book Bathroom Excellence 2 days after.</strong>
+      </div>
+
+      <!-- Script for setter -->
+      <div class="reminder-script">
+        <div class="reminder-script-tag">🎙 Confirm Script</div>
+        <div class="reminder-script-body">"Just to confirm — when is your appointment with the other company again?"</div>
+      </div>
+
+      <!-- Competitor date display -->
+      <div class="competitor-date-display" id="reminder-date-display" style="display:none">
+        <span>📅 Competitor Appointment:</span>
+        <strong id="reminder-competitor-date">—</strong>
+        <span style="margin-left:auto;color:rgba(249,115,22,0.6)">→</span>
+        <span>Book BE:</span>
+        <strong id="reminder-be-date" style="color:#4ade80">—</strong>
+      </div>
+
+      <!-- Recommendation -->
+      <div class="reminder-rec">
+        <span class="reminder-rec-icon">📆</span>
+        <div class="reminder-rec-content">
+          <div class="reminder-rec-title">Recommended Booking</div>
+          <div class="reminder-rec-text">Schedule this appointment <span style="color:#fb923c">2 days after</span> their existing contractor appointment.</div>
+          <div class="reminder-rec-sub">This gives the customer time to receive the competitor's quote before our consultation — increasing the chance they choose Bathroom Excellence.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- APPOINTMENT BOOKING -->
     <div>
       <div class="card-header" style="margin-bottom:16px">
         <div class="card-icon ci-green">📅</div>
@@ -621,7 +609,7 @@ select option{background:#0d0020;color:#e2d9f3}
     </div>
   </div>
 
-  <!-- ══ ADDRESS & CONFIRMATION ══ -->
+  <!-- ADDRESS -->
   <div class="card">
     <div class="card-header">
       <div class="card-icon ci-info">📍</div>
@@ -638,25 +626,20 @@ select option{background:#0d0020;color:#e2d9f3}
     <div><label class="field-label">Property Address</label><input type="text" id="address" placeholder="123 Main St, City, State"></div>
   </div>
 
-  <!-- ══ ENTHUSIASM BONUS ══ -->
+  <!-- ENTHUSIASM BONUS -->
   <div class="bonus-panel">
     <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#6366f1;margin-bottom:3px">⭐ Enthusiasm Bonus — Internal Tracking Only</div>
     <div style="font-size:11px;color:rgba(99,102,241,0.6);margin-bottom:14px">Does NOT affect official qualification score</div>
-    <div class="choices cols-3" id="group-engagement">
+    <div class="choices cols-2" id="group-engagement">
       <div class="choice" onclick="pickBonus('Very Interested',10,this,'sel-purple')">
         <div class="choice-label" style="color:#c4b5fd">Very Interested</div>
-        <div class="choice-sub">Enthusiastic</div>
+        <div class="choice-sub">Enthusiastic buyer</div>
         <span class="badge badge-purple">+10 BONUS</span>
       </div>
       <div class="choice" onclick="pickBonus('Interested',5,this,'sel-amber')">
         <div class="choice-label">Interested</div>
-        <div class="choice-sub">Willing</div>
+        <div class="choice-sub">Willing buyer</div>
         <span class="badge badge-amber">+5 BONUS</span>
-      </div>
-      <div class="choice" onclick="pickBonus('Not Interested',0,this,'sel-red')">
-        <div class="choice-label">Not Interested</div>
-        <div class="choice-sub">Low intent</div>
-        <span class="badge badge-red">0 BONUS</span>
       </div>
     </div>
     <div class="bonus-strip">
@@ -666,7 +649,7 @@ select option{background:#0d0020;color:#e2d9f3}
     </div>
   </div>
 
-  <!-- ══ CALL NOTES ══ -->
+  <!-- CALL NOTES -->
   <div class="card">
     <div class="card-header">
       <div class="card-icon ci-info">📝</div>
@@ -675,7 +658,7 @@ select option{background:#0d0020;color:#e2d9f3}
     <textarea id="callNotes" rows="4" placeholder="Objections, special circumstances, or anything to follow up on..."></textarea>
   </div>
 
-  <!-- ══ SUBMIT ══ -->
+  <!-- SUBMIT -->
   <div class="submit-panel">
     <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#7c3aed;text-align:center;margin-bottom:12px">🚀 Final Submission</div>
     <div class="customer-display" id="finalNameDisplay">— Enter customer name above —</div>
@@ -683,9 +666,9 @@ select option{background:#0d0020;color:#e2d9f3}
     <div style="text-align:center;font-size:10px;color:rgba(107,114,128,0.4);margin-top:8px">Data saves to Google Sheets and BuildersPrime automatically</div>
   </div>
 
-</div><!-- /wrap -->
+</div>
 
-<!-- ══ TOAST ══ -->
+<!-- TOAST -->
 <div class="toast" id="toast">
   <div class="t-cat" id="t-cat">Category</div>
   <div class="t-pts" id="t-pts">+20</div>
@@ -697,7 +680,7 @@ select option{background:#0d0020;color:#e2d9f3}
   </div>
 </div>
 
-<!-- ══ MODAL ══ -->
+<!-- MODAL -->
 <div class="modal-bg" id="modal">
   <div class="modal-box">
     <div style="font-size:44px;margin-bottom:10px">✅</div>
@@ -709,51 +692,62 @@ select option{background:#0d0020;color:#e2d9f3}
 </div>
 
 <script>
-// ══ SCORING ENGINE ══
-// urgency:20 + quotes:40 + dm:20 + credit:20 = 100
+// ══ STATE ══
 const A = { urgency: null, quotes: null, dm: null, credit: null };
 const S = { urgency: 0, quotes: 0, dm: 0, credit: 0 };
 let enthAnswer = null, enthBonus = 0;
 let toastTimer = null;
+let competitorApptExists = false;
 
-// ══ RECOMMENDATION LOGIC ══
+// ══ RECOMMENDATION ENGINE ══
 function getRec(score, answers) {
   const reasons = [];
-  // Positive signals
   if (S.urgency >= 15) reasons.push({ text: answers.urgency === 'ASAP' ? 'Immediate urgency' : 'Near-term timeline', type: 'good' });
   if (S.quotes >= 30) reasons.push({ text: answers.quotes === 'Got 1 Quote' ? 'Has competitor quote' : 'Competitor appt scheduled', type: 'good' });
   if (S.dm === 20) reasons.push({ text: 'All decision makers confirmed', type: 'good' });
-  if (S.credit >= 15) reasons.push({ text: answers.credit === 'Cash Project' ? 'Cash buyer' : 'Strong credit', type: 'good' });
-  // Neutral / weak signals
+  if (S.credit >= 15) reasons.push({ text: answers.credit === 'Fair' ? 'Fair credit' : 'Strong credit', type: 'good' });
   if (S.urgency === 0) reasons.push({ text: 'Shopping around', type: 'warn' });
   if (S.quotes === 10) reasons.push({ text: 'No other quotes yet', type: 'warn' });
   if (S.dm === 0) reasons.push({ text: 'Decision makers unconfirmed', type: 'bad' });
   if (S.credit === 5) reasons.push({ text: "Credit not disclosed", type: 'warn' });
-  if (S.credit === 10) reasons.push({ text: 'Fair credit', type: 'warn' });
-
-  if (score >= 90) return {
-    action: '🚫 NEVER DOUBLE BOOK',
-    sub: 'Schedule in a premium calendar slot — highest close probability.',
-    color: '#4ade80', reasons
-  };
-  if (score >= 80) return {
-    action: '⚡ DOUBLE BOOK WITH CAUTION',
-    sub: 'Only double book alongside a Low Priority lead.',
-    color: '#a78bfa', reasons
-  };
-  if (score >= 65) return {
-    action: '✅ STANDARD DOUBLE BOOK OK',
-    sub: 'Can be double booked on the standard calendar.',
-    color: '#fbbf24', reasons
-  };
-  return {
-    action: '⏳ STANDBY / PARTNER OUT',
-    sub: 'Lower priority — consider standby slot or partner referral.',
-    color: '#9ca3af', reasons
-  };
+  if (score >= 90) return { action: '🚫 NEVER DOUBLE BOOK', sub: 'Schedule in a premium calendar slot — highest close probability.', color: '#4ade80', reasons };
+  if (score >= 80) return { action: '⚡ DOUBLE BOOK WITH CAUTION', sub: 'Only double book alongside a Low Priority lead.', color: '#a78bfa', reasons };
+  if (score >= 65) return { action: '✅ STANDARD DOUBLE BOOK OK', sub: 'Can be double booked on the standard calendar.', color: '#fbbf24', reasons };
+  return { action: '⏳ STANDBY / PARTNER OUT', sub: 'Lower priority — consider standby slot or partner referral.', color: '#9ca3af', reasons };
 }
 
-// ══ PICK OPTIONS ══
+// ══ COMPETITOR FOLLOWUP LOGIC ══
+function showCompetitorFollowup() {
+  competitorApptExists = true;
+  document.getElementById('competitor-followup').style.display = 'block';
+  document.getElementById('competitor-reminder').style.display = 'block';
+  updateCompetitorDate();
+}
+
+function hideCompetitorFollowup() {
+  competitorApptExists = false;
+  document.getElementById('competitor-followup').style.display = 'none';
+  document.getElementById('competitor-reminder').style.display = 'none';
+  document.getElementById('competitorApptDate').value = '';
+  document.getElementById('reminder-date-display').style.display = 'none';
+}
+
+function updateCompetitorDate() {
+  const dateVal = document.getElementById('competitorApptDate').value;
+  if (!dateVal) { document.getElementById('reminder-date-display').style.display = 'none'; return; }
+  const compDate = new Date(dateVal + 'T00:00:00');
+  const beDate = new Date(compDate);
+  beDate.setDate(beDate.getDate() + 2);
+  const fmt = d => d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+  document.getElementById('reminder-competitor-date').textContent = fmt(compDate);
+  document.getElementById('reminder-be-date').textContent = fmt(beDate);
+  document.getElementById('reminder-date-display').style.display = 'flex';
+  // Auto-suggest the appointment date
+  const y = beDate.getFullYear(), m = String(beDate.getMonth()+1).padStart(2,'0'), day = String(beDate.getDate()).padStart(2,'0');
+  document.getElementById('appointmentDate').value = `${y}-${m}-${day}`;
+}
+
+// ══ PICK CHOICES ══
 function pick(group, label, pts, el, cls, catName) {
   document.querySelectorAll('#group-' + group + ' .choice').forEach(c => {
     c.className = c.className.replace(/sel-\w+/g, '').trim();
@@ -762,13 +756,13 @@ function pick(group, label, pts, el, cls, catName) {
   const prev = S[group];
   A[group] = label; S[group] = pts;
   document.getElementById('dot-' + group).classList.add('done');
+  // Hide competitor if switching away from "Appt Before Us"
+  if (group === 'quotes' && label !== 'Have Appt Before Us') hideCompetitorFollowup();
   calc(); showToast(pts, prev, catName);
 }
 
 function pickDM(label, pts, el) {
-  document.querySelectorAll('#group-dm .dm-big').forEach(c => {
-    c.classList.remove('dm-yes-sel', 'dm-no-sel');
-  });
+  document.querySelectorAll('#group-dm .dm-big').forEach(c => c.classList.remove('dm-yes-sel','dm-no-sel'));
   el.classList.add(pts > 0 ? 'dm-yes-sel' : 'dm-no-sel');
   const prev = S.dm;
   A.dm = label; S.dm = pts;
@@ -785,55 +779,44 @@ function pickBonus(label, pts, el, cls) {
   updateBonusDisplay();
 }
 
-// ══ CALCULATE ══
+// ══ CALC ══
 function calc() {
-  const total = Object.values(S).reduce((a, b) => a + b, 0);
-  const done = Object.values(A).filter(v => v !== null).length;
+  const total = Object.values(S).reduce((a,b) => a+b, 0);
+  const done  = Object.values(A).filter(v => v !== null).length;
 
   let priority, pillClass, ringClass, rec = null;
-  if (done === 0) {
-    priority = '—'; pillClass = 'pill-none'; ringClass = 'ring-none';
-  } else if (total >= 80) {
-    priority = 'HIGH'; pillClass = 'pill-high'; ringClass = 'ring-high'; rec = getRec(total, A);
-  } else if (total >= 65) {
-    priority = 'MEDIUM'; pillClass = 'pill-med'; ringClass = 'ring-med'; rec = getRec(total, A);
-  } else {
-    priority = 'LOW'; pillClass = 'pill-low'; ringClass = 'ring-low'; rec = getRec(total, A);
-  }
+  if (done === 0) { priority = '—'; pillClass = 'pill-none'; ringClass = 'ring-none'; }
+  else if (total >= 80) { priority = 'HIGH'; pillClass = 'pill-high'; ringClass = 'ring-high'; rec = getRec(total, A); }
+  else if (total >= 65) { priority = 'MEDIUM'; pillClass = 'pill-med'; ringClass = 'ring-med'; rec = getRec(total, A); }
+  else { priority = 'LOW'; pillClass = 'pill-low'; ringClass = 'ring-low'; rec = getRec(total, A); }
 
-  // — Score bar —
   const scoreColor = done === 0 ? '#4b5563' : total >= 80 ? '#4ade80' : total >= 65 ? '#fbbf24' : '#f87171';
+
+  // Score bar
   const sbScore = document.getElementById('sb-score');
   sbScore.innerHTML = total + '<span style="font-size:13px;opacity:0.4"> / 100</span>';
   sbScore.style.color = scoreColor;
-
   const sbPill = document.getElementById('sb-pill');
   sbPill.textContent = done === 0 ? '—' : priority + ' PRIORITY';
   sbPill.className = 'sb-pill ' + pillClass;
-
   document.getElementById('sb-rec').textContent = rec ? rec.action : 'Complete the scored sections below';
   document.getElementById('sb-rec').style.color = rec ? rec.color : 'rgba(107,114,128,0.6)';
 
-  // — Main ring —
+  // Main ring
   const ring = document.getElementById('mainRing');
   ring.className = 'score-ring ' + ringClass + ' pulse';
   setTimeout(() => ring.classList.remove('pulse'), 350);
   document.getElementById('mainScore').textContent = total;
   document.getElementById('mainScore').style.color = scoreColor;
-
   const mainPill = document.getElementById('mainPill');
   mainPill.textContent = done === 0 ? 'NO DATA' : priority + ' PRIORITY';
   mainPill.className = 'sb-pill ' + pillClass;
-  mainPill.style.cssText += 'font-size:11px;padding:5px 18px';
 
-  // — Recommendation —
+  // Recommendation
   if (rec) {
-    const recAction = document.getElementById('recAction');
-    recAction.textContent = rec.action;
-    recAction.style.color = rec.color;
+    document.getElementById('recAction').textContent = rec.action;
+    document.getElementById('recAction').style.color = rec.color;
     document.getElementById('recSub').textContent = rec.sub;
-
-    // Reasons
     const rl = document.getElementById('reasonList');
     rl.innerHTML = '';
     rec.reasons.forEach(r => {
@@ -849,21 +832,17 @@ function calc() {
     document.getElementById('reasonList').innerHTML = '';
   }
 
-  // — Breakdown —
-  [['urgency','Urgency'],['quotes','Quotes'],['dm','dm'],['credit','Credit']].forEach(([k]) => {
+  // Breakdown
+  ['urgency','quotes','dm','credit'].forEach(k => {
     const el = document.getElementById('bd-' + k);
     if (A[k] === null) { el.textContent = '—'; el.style.color = '#4b5563'; }
     else { el.textContent = S[k] + ' pts'; el.style.color = S[k] > 0 ? '#4ade80' : '#f87171'; }
   });
   document.getElementById('bd-total').textContent = total + ' / 100';
 
-  // — Highlight active booking rule —
+  // Booking rules highlight
   const ruleIds = ['rule-90','rule-80','rule-65','rule-64'];
-  const ruleActive = done === 0 ? null
-    : total >= 90 ? 'rule-90'
-    : total >= 80 ? 'rule-80'
-    : total >= 65 ? 'rule-65'
-    : 'rule-64';
+  const ruleActive = done === 0 ? null : total >= 90 ? 'rule-90' : total >= 80 ? 'rule-80' : total >= 65 ? 'rule-65' : 'rule-64';
   ruleIds.forEach(id => {
     const el = document.getElementById(id);
     if (done === 0) { el.classList.remove('rule-active','rule-inactive'); }
@@ -876,7 +855,7 @@ function calc() {
 }
 
 function updateBonusDisplay() {
-  const base = Object.values(S).reduce((a, b) => a + b, 0);
+  const base = Object.values(S).reduce((a,b) => a+b, 0);
   document.getElementById('bonus-base').textContent = base;
   document.getElementById('bonus-enth').textContent = '+' + enthBonus;
   document.getElementById('bonus-total').textContent = base + enthBonus;
@@ -884,8 +863,8 @@ function updateBonusDisplay() {
 
 function updateNameDisplay() {
   const name = document.getElementById('customerName').value.trim();
-  const total = Object.values(S).reduce((a, b) => a + b, 0);
-  const done = Object.values(A).filter(v => v !== null).length;
+  const total = Object.values(S).reduce((a,b) => a+b, 0);
+  const done  = Object.values(A).filter(v => v !== null).length;
   const display = name ? (done > 0 ? total + ' ' + name : name) : '— Enter customer name above —';
   const el = document.getElementById('finalNameDisplay');
   el.textContent = display;
@@ -894,8 +873,8 @@ function updateNameDisplay() {
 
 // ══ TOAST ══
 function showToast(pts, prevPts, catName) {
-  const total = Object.values(S).reduce((a, b) => a + b, 0);
-  const done = Object.values(A).filter(v => v !== null).length;
+  const total = Object.values(S).reduce((a,b) => a+b, 0);
+  const done  = Object.values(A).filter(v => v !== null).length;
   let pri = '—', tcol = '#9ca3af';
   if (total >= 80) { pri = 'HIGH'; tcol = '#4ade80'; }
   else if (total >= 65) { pri = 'MEDIUM'; tcol = '#fbbf24'; }
@@ -918,7 +897,6 @@ function showToast(pts, prevPts, catName) {
   }, 2400);
 }
 
-// ══ FORM HELPERS ══
 function toggleOther(sel) {
   const o = document.getElementById('projectTypeOther');
   o.style.display = sel.value === 'Other' ? 'block' : 'none';
@@ -928,7 +906,7 @@ function toggleOther(sel) {
 // ══ SUBMIT ══
 function submitLead() {
   const name = document.getElementById('customerName').value.trim() || 'Unknown';
-  const total = Object.values(S).reduce((a, b) => a + b, 0);
+  const total = Object.values(S).reduce((a,b) => a+b, 0);
   const priority = total >= 80 ? 'HIGH' : total >= 65 ? 'MEDIUM' : 'LOW';
   const rec = getRec(total, A);
   const pt = document.getElementById('projectType').value === 'Other'
@@ -946,6 +924,8 @@ function submitLead() {
     project_type: pt,
     appointment_date: document.getElementById('appointmentDate').value,
     appointment_time: document.getElementById('appointmentTime').value,
+    competitor_appt_exists: competitorApptExists,
+    competitor_appt_date: document.getElementById('competitorApptDate').value || null,
     score: total, score_max: 100, priority,
     scheduling_recommendation: rec.action,
     enthusiasm_bonus: enthBonus,
@@ -960,7 +940,7 @@ function submitLead() {
     const existing = JSON.parse(localStorage.getItem('leadRecords') || '[]');
     existing.push(payload);
     localStorage.setItem('leadRecords', JSON.stringify(existing));
-  } catch (e) {}
+  } catch(e) {}
 
   fetch('https://hook.us1.make.com/886k5ojznokp6xytozlgqj1w473lfilt', {
     method: 'POST',
@@ -975,22 +955,22 @@ function submitLead() {
 
 function closeModal() {
   document.getElementById('modal').style.display = 'none';
-  ['customerName', 'callNotes', 'bpLeadId', 'address'].forEach(id => document.getElementById(id).value = '');
-  ['leadSource', 'projectType', 'appointmentDate', 'appointmentTime'].forEach(id => document.getElementById(id).value = '');
+  ['customerName','callNotes','bpLeadId','address','competitorApptDate'].forEach(id => document.getElementById(id).value = '');
+  ['leadSource','projectType','appointmentDate','appointmentTime'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('projectTypeOther').style.display = 'none';
   document.getElementById('projectTypeOther').value = '';
   document.getElementById('setOn').value = new Date().toISOString().split('T')[0];
-
-  document.querySelectorAll('.choice').forEach(c => { c.className = c.className.replace(/sel-\w+/g, '').trim(); });
-  document.querySelectorAll('.dm-big').forEach(c => c.classList.remove('dm-yes-sel', 'dm-no-sel'));
+  document.querySelectorAll('.choice').forEach(c => { c.className = c.className.replace(/sel-\w+/g,'').trim(); });
+  document.querySelectorAll('.dm-big').forEach(c => c.classList.remove('dm-yes-sel','dm-no-sel'));
   document.querySelectorAll('.sb-dot').forEach(d => d.classList.remove('done'));
-
   for (const k in A) { A[k] = null; S[k] = 0; }
   enthAnswer = null; enthBonus = 0;
+  competitorApptExists = false;
+  hideCompetitorFollowup();
   calc();
 }
 
-// ── Init ──
+// Init
 document.getElementById('setOn').value = new Date().toISOString().split('T')[0];
 document.getElementById('customerName').addEventListener('input', updateNameDisplay);
 </script>
