@@ -627,7 +627,18 @@ select option{background:#0d0020;color:#e2d9f3}
         <strong>"Can you please confirm the property address for me?"</strong>
       </div>
     </div>
-    <div><label class="field-label">Property Address</label><input type="text" id="address" placeholder="123 Main St, City, State"></div>
+    <div>
+      <label class="field-label">Property Address</label>
+      <div style="display:flex;gap:10px;align-items:stretch">
+        <input type="text" id="address" placeholder="123 Main St, City, State" oninput="updateMapLink()" style="flex:1">
+        <button onclick="openMap()" id="map-btn" title="Search on Google Maps"
+          style="flex-shrink:0;padding:10px 16px;background:rgba(34,197,94,0.12);border:1.5px solid rgba(34,197,94,0.35);border-radius:10px;color:#4ade80;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;transition:all 0.2s;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px"
+          onmouseover="this.style.background='rgba(34,197,94,0.22)'" onmouseout="this.style.background='rgba(34,197,94,0.12)'">
+          🗺️ Open in Maps
+        </button>
+      </div>
+      <div style="font-size:10px;color:rgba(167,139,250,0.4);margin-top:6px">Type the address then click <strong style="color:rgba(167,139,250,0.6)">Open in Maps</strong> to verify the exact location on Google Maps.</div>
+    </div>
   </div>
 
   <!-- BUILD VALUE / CLOSE -->
@@ -925,6 +936,29 @@ function showToast(pts, prevPts, catName) {
     toast.classList.remove('show'); toast.classList.add('hide');
     setTimeout(() => toast.classList.remove('hide'), 300);
   }, 2400);
+}
+
+// ══ GOOGLE MAPS ADDRESS LOOKUP ══
+function openMap() {
+  const addr = document.getElementById('address').value.trim();
+  const query = addr ? encodeURIComponent(addr) : '';
+  const url = query
+    ? `https://www.google.com/maps/search/?api=1&query=${query}`
+    : `https://www.google.com/maps`;
+  window.open(url, '_blank');
+}
+
+function updateMapLink() {
+  const addr = document.getElementById('address').value.trim();
+  const btn = document.getElementById('map-btn');
+  if (addr) {
+    btn.style.borderColor = 'rgba(34,197,94,0.6)';
+    btn.style.color = '#4ade80';
+    btn.innerHTML = '🗺️ Verify in Maps';
+  } else {
+    btn.style.borderColor = 'rgba(34,197,94,0.35)';
+    btn.innerHTML = '🗺️ Open in Maps';
+  }
 }
 
 function toggleOther(sel) {
