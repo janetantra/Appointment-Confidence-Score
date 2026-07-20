@@ -1134,9 +1134,7 @@ function submitLead() {
   // 8. Sales Agent
   if (!selectedAgent) errors.push('Sales Agent must be selected (Jack or Dave)');
 
-  // 9. Address
-  const addr = document.getElementById('address').value.trim();
-  if (!addr) { errors.push('Property Address is required'); flashError('address', '⚠️ Required!'); }
+  // 9. Address — optional, not required
 
   // ── Block if any errors ──
   if (errors.length > 0) {
@@ -1156,7 +1154,7 @@ function submitLead() {
     bp_lead_id: parseInt(document.getElementById('bpLeadId').value) || null,
     crm_customer_name: total + ' ' + name,
     customer_name: name,
-    address: addr,
+    address: document.getElementById('address').value.trim(),
     set_on: document.getElementById('setOn').value,
     lead_source: src,
     project_type: projectType,
