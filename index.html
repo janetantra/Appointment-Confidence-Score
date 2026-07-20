@@ -750,6 +750,17 @@ select option{background:#0d0020;color:#e2d9f3}
 
 </div>
 
+<!-- VALIDATION MODAL -->
+<div class="modal-bg" id="validationModal" style="display:none">
+  <div class="modal-box" style="border-color:rgba(239,68,68,0.4);box-shadow:0 0 60px rgba(239,68,68,0.2)">
+    <div style="font-size:40px;margin-bottom:10px">⚠️</div>
+    <h2 style="font-size:16px;font-weight:800;color:#f87171;margin-bottom:6px">Please Complete All Required Fields</h2>
+    <p style="font-size:11px;color:rgba(239,68,68,0.6);margin-bottom:16px">Fix the following before submitting:</p>
+    <div id="validationList" style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:12px;text-align:left;max-height:260px;overflow-y:auto;margin-bottom:16px"></div>
+    <button class="modal-close" onclick="document.getElementById('validationModal').style.display='none'" style="background:linear-gradient(135deg,#dc2626,#991b1b)">Got It — Fix Now</button>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast">
   <div class="t-cat" id="t-cat">Category</div>
@@ -1062,40 +1073,93 @@ function toggleOther(sel) {
   if (sel.value !== 'Other') o.value = '';
 }
 
+// ══ VALIDATION HELPERS ══
+function flashError(elId, msg) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.style.borderColor = '#ef4444';
+  el.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.2)';
+  const orig = el.placeholder;
+  if (msg) el.placeholder = msg;
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(() => { el.style.borderColor = ''; el.style.boxShadow = ''; if (msg) el.placeholder = orig; }, 3000);
+}
+
+function showValidationToast(errors) {
+  // Show a blocking validation summary modal instead of the submit modal
+  const box = document.getElementById('validationModal');
+  const list = document.getElementById('validationList');
+  list.innerHTML = errors.map(e => `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(239,68,68,0.1);font-size:12px;color:#fca5a5"><span style="font-size:14px">❌</span>${e}</div>`).join('');
+  box.style.display = 'flex';
+}
+
 // ══ SUBMIT ══
 function submitLead() {
+  const errors = [];
+
+  // 1. Customer Name
   const name = document.getElementById('customerName').value.trim();
-  if (!name) {
-    const el = document.getElementById('customerName');
-    el.style.borderColor = '#ef4444';
-    el.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.2)';
-    el.placeholder = '⚠️ Name is required before submitting!';
-    el.focus();
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    setTimeout(() => {
-      el.style.borderColor = '';
-      el.style.boxShadow = '';
-      el.placeholder = 'John Smith';
-    }, 3000);
+  if (!name) { errors.push('Customer Name is required'); flashError('customerName', '⚠️ Required!'); }
+
+  // 2. BP Opportunity ID
+  const bpId = document.getElementById('bpLeadId').value.trim();
+  if (!bpId) { errors.push('BP Opportunity ID is required'); flashError('bpLeadId', '⚠️ Required!'); }
+
+  // 3. Lead Source
+  const src = document.getElementById('leadSource').value;
+  if (!src) { errors.push('Lead Source must be selected'); document.getElementById('leadSource').style.borderColor = '#ef4444'; setTimeout(() => document.getElementById('leadSource').style.borderColor = '', 3000); }
+
+  // 4. Project Type
+  const pt = document.getElementById('projectType').value;
+  if (!pt) { errors.push('Project Type must be selected'); document.getElementById('projectType').style.borderColor = '#ef4444'; setTimeout(() => document.getElementById('projectType').style.borderColor = '', 3000); }
+
+  // 5. Scored questions — all 4 must be answered
+  if (A.urgency === null) errors.push('Timeline / Urgency answer is required (Section 1)');
+  if (A.quotes === null)  errors.push('Competition / Quotes answer is required (Section 2)');
+  if (A.dm === null)      errors.push('Decision Maker selection is required (Section 3)');
+  if (A.credit === null)  errors.push('Credit / Financing answer is required (Section 4)');
+
+  // 6. Competitor date — required if "Appt Before Us" selected
+  if (competitorApptExists && !document.getElementById('competitorApptDate').value) {
+    errors.push('Competitor appointment date is required when "Appt Before Us" is selected');
+    flashError('competitorApptDate', '⚠️ Required!');
+  }
+
+  // 7. Appointment Date & Time
+  const apptDate = document.getElementById('appointmentDate').value;
+  const apptTime = document.getElementById('appointmentTime').value;
+  if (!apptDate) { errors.push('Appointment Date is required'); flashError('appointmentDate', ''); }
+  if (!apptTime) { errors.push('Appointment Time is required'); flashError('appointmentTime', ''); }
+
+  // 8. Sales Agent
+  if (!selectedAgent) errors.push('Sales Agent must be selected (Jack or Dave)');
+
+  // 9. Address
+  const addr = document.getElementById('address').value.trim();
+  if (!addr) { errors.push('Property Address is required'); flashError('address', '⚠️ Required!'); }
+
+  // ── Block if any errors ──
+  if (errors.length > 0) {
+    showValidationToast(errors);
     return;
   }
+
   const total = Object.values(S).reduce((a,b) => a+b, 0);
   const priority = total >= 80 ? 'HIGH' : total >= 65 ? 'MEDIUM' : 'LOW';
-  // name is guaranteed non-empty from validation above
   const rec = getRec(total, A);
-  const pt = document.getElementById('projectType').value === 'Other'
+  const projectType = pt === 'Other'
     ? 'Other: ' + (document.getElementById('projectTypeOther').value.trim() || 'Not specified')
-    : document.getElementById('projectType').value;
+    : pt;
 
   const payload = {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
     bp_lead_id: parseInt(document.getElementById('bpLeadId').value) || null,
     crm_customer_name: total + ' ' + name,
     customer_name: name,
-    address: document.getElementById('address').value,
+    address: addr,
     set_on: document.getElementById('setOn').value,
-    lead_source: document.getElementById('leadSource').value,
-    project_type: pt,
+    lead_source: src,
+    project_type: projectType,
     appointment_date: document.getElementById('appointmentDate').value,
     appointment_time: document.getElementById('appointmentTime').value,
     sales_agent: selectedAgent,
@@ -1130,6 +1194,7 @@ function submitLead() {
 
 function closeModal() {
   document.getElementById('modal').style.display = 'none';
+  document.getElementById('validationModal').style.display = 'none';
   ['customerName','callNotes','bpLeadId','address','competitorApptDate'].forEach(id => document.getElementById(id).value = '');
   ['leadSource','projectType','appointmentDate','appointmentTime'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('projectTypeOther').style.display = 'none';
