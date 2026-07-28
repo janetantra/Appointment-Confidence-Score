@@ -667,7 +667,7 @@ select option{background:#0d0020;color:#e2d9f3}
       </div>
       <div class="grid-2" style="margin-bottom:12px">
         <div><label class="field-label">Appointment Date</label><input type="date" id="appointmentDate" oninput="updateApptDisplay()"></div>
-        <div><label class="field-label">Appointment Time</label><input type="time" id="appointmentTime" oninput="updateApptDisplay()"></div>
+        <div><label class="field-label">Appointment Time</label><input type="time" id="appointmentTime" step="900" oninput="updateApptDisplay()"></div>
       </div>
 
       <!-- Live start/end display -->
@@ -1235,17 +1235,27 @@ function submitLead() {
     ? 'Other: ' + (document.getElementById('projectTypeOther').value.trim() || 'Not specified')
     : pt;
 
-  // ── Build start/end datetime as plain strings for Make to handle ──
+  // ── Build start/end datetime rounded to 15-min intervals (BuildersPrime requirement) ──
   const buildDateTime = (date, time) => {
     if (!date || !time) return null;
-    return `${date}T${time}:00`;
+    const [h, m] = time.split(':').map(Number);
+    const rounded = Math.round(m / 15) * 15;
+    const finalMin = rounded === 60 ? 0 : rounded;
+    const finalHour = rounded === 60 ? h + 1 : h;
+    const hh = String(finalHour).padStart(2, '0');
+    const mm = String(finalMin).padStart(2, '0');
+    return `${date}T${hh}:${mm}:00`;
   };
   const startDT = buildDateTime(apptDate, apptTime);
   const endDT = (() => {
     if (!startDT) return null;
     const [h, m] = apptTime.split(':').map(Number);
-    const endH = String(h + 1).padStart(2, '0');
-    return `${apptDate}T${endH}:${String(m).padStart(2,'0')}:00`;
+    const rounded = Math.round(m / 15) * 15;
+    const finalMin = rounded === 60 ? 0 : rounded;
+    const finalHour = (rounded === 60 ? h + 1 : h) + 1;
+    const hh = String(finalHour).padStart(2, '0');
+    const mm = String(finalMin).padStart(2, '0');
+    return `${apptDate}T${hh}:${mm}:00`;
   })();
 
   window._pendingPayload = {
