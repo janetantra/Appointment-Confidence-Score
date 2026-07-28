@@ -666,8 +666,23 @@ select option{background:#0d0020;color:#e2d9f3}
         </div>
       </div>
       <div class="grid-2" style="margin-bottom:12px">
-        <div><label class="field-label">Appointment Date</label><input type="date" id="appointmentDate"></div>
-        <div><label class="field-label">Appointment Time</label><input type="time" id="appointmentTime"></div>
+        <div><label class="field-label">Appointment Date</label><input type="date" id="appointmentDate" oninput="updateApptDisplay()"></div>
+        <div><label class="field-label">Appointment Time</label><input type="time" id="appointmentTime" oninput="updateApptDisplay()"></div>
+      </div>
+
+      <!-- Live start/end display -->
+      <div id="apptDateTimeDisplay" style="display:none;background:rgba(109,40,217,0.08);border:1px solid rgba(109,40,217,0.25);border-radius:10px;padding:12px 16px;margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <div>
+            <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#7c3aed;margin-bottom:4px">Start</div>
+            <div id="apptStartDisplay" style="font-size:13px;font-weight:700;color:#4ade80;font-family:'JetBrains Mono',monospace"></div>
+          </div>
+          <div style="color:rgba(109,40,217,0.5);font-size:18px">→</div>
+          <div>
+            <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#7c3aed;margin-bottom:4px">End (1 hr)</div>
+            <div id="apptEndDisplay" style="font-size:13px;font-weight:700;color:#a78bfa;font-family:'JetBrains Mono',monospace"></div>
+          </div>
+        </div>
       </div>
       <div>
         <label class="field-label">Sales Agent</label>
@@ -1125,6 +1140,23 @@ function updateMapLink() {
   }
 }
 
+// ══ LIVE APPT DATE/TIME DISPLAY ══
+function updateApptDisplay() {
+  const date = document.getElementById('appointmentDate').value;
+  const time = document.getElementById('appointmentTime').value;
+  const display = document.getElementById('apptDateTimeDisplay');
+  if (!date || !time) { display.style.display = 'none'; return; }
+  const start = new Date(`${date}T${time}:00`);
+  const end   = new Date(start.getTime() + 60 * 60 * 1000);
+  const fmt = d => d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' })
+    + ' · ' + d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit', hour12:true });
+  document.getElementById('apptStartDisplay').textContent = fmt(start);
+  document.getElementById('apptEndDisplay').textContent   = fmt(end);
+  display.style.display = 'block';
+  // Also update competitor date if it changes
+  updateCompetitorDate();
+}
+
 function toggleOther(sel) {
   const o = document.getElementById('projectTypeOther');
   o.style.display = sel.value === 'Other' ? 'block' : 'none';
@@ -1203,6 +1235,14 @@ function submitLead() {
     ? 'Other: ' + (document.getElementById('projectTypeOther').value.trim() || 'Not specified')
     : pt;
 
+  // ── Build start/end datetime as Unix ms (matches existing sheet format) ──
+  const buildDateTime = (date, time) => {
+    if (!date || !time) return null;
+    return new Date(`${date}T${time}:00`).getTime();
+  };
+  const startDT = buildDateTime(apptDate, apptTime);
+  const endDT = startDT ? startDT + (60 * 60 * 1000) : null; // +1 hour in ms
+
   window._pendingPayload = {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
     bp_lead_id: parseInt(document.getElementById('bpLeadId').value) || null,
@@ -1214,6 +1254,8 @@ function submitLead() {
     project_type: projectType,
     appointment_date: apptDate,
     appointment_time: apptTime,
+    start_datetime: startDT,
+    end_datetime: endDT,
     sales_agent: selectedAgent,
     competitor_appt_exists: competitorApptExists,
     competitor_appt_date: document.getElementById('competitorApptDate').value || null,
@@ -1393,7 +1435,7 @@ function closeModal() {
   window._pendingPayload = null;
   ['customerName','callNotes','bpLeadId','address','competitorApptDate'].forEach(id => document.getElementById(id).value = '');
   ['leadSource','projectType','appointmentDate','appointmentTime'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('projectTypeOther').style.display = 'none';
+  document.getElementById('apptDateTimeDisplay').style.display = 'none';
   document.getElementById('projectTypeOther').value = '';
   document.getElementById('setOn').value = new Date().toISOString().split('T')[0];
   document.querySelectorAll('.choice').forEach(c => { c.className = c.className.replace(/sel-\w+/g,'').trim(); });
