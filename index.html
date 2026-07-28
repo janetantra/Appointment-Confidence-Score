@@ -1235,7 +1235,7 @@ function submitLead() {
     ? 'Other: ' + (document.getElementById('projectTypeOther').value.trim() || 'Not specified')
     : pt;
 
-  // ── Build start/end datetime rounded to 15-min intervals (BuildersPrime requirement) ──
+  // ── Build start/end as Unix ms for Chicago time (matches BP accepted format) ──
   const buildDateTime = (date, time) => {
     if (!date || !time) return null;
     const [h, m] = time.split(':').map(Number);
@@ -1244,19 +1244,13 @@ function submitLead() {
     const finalHour = rounded === 60 ? h + 1 : h;
     const hh = String(finalHour).padStart(2, '0');
     const mm = String(finalMin).padStart(2, '0');
-    return `${date}T${hh}:${mm}:00`;
+    // Build as Chicago time — UTC-5 (CDT) or UTC-6 (CST)
+    // Append Chicago offset so Date parses it correctly
+    const chicagoStr = `${date}T${hh}:${mm}:00-05:00`;
+    return new Date(chicagoStr).getTime();
   };
   const startDT = buildDateTime(apptDate, apptTime);
-  const endDT = (() => {
-    if (!startDT) return null;
-    const [h, m] = apptTime.split(':').map(Number);
-    const rounded = Math.round(m / 15) * 15;
-    const finalMin = rounded === 60 ? 0 : rounded;
-    const finalHour = (rounded === 60 ? h + 1 : h) + 1;
-    const hh = String(finalHour).padStart(2, '0');
-    const mm = String(finalMin).padStart(2, '0');
-    return `${apptDate}T${hh}:${mm}:00`;
-  })();
+  const endDT = startDT ? startDT + (60 * 60 * 1000) : null;
 
   window._pendingPayload = {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
