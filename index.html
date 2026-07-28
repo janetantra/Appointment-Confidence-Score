@@ -1235,21 +1235,18 @@ function submitLead() {
     ? 'Other: ' + (document.getElementById('projectTypeOther').value.trim() || 'Not specified')
     : pt;
 
-  // ── Build start/end datetime in Chicago time (America/Chicago) ──
+  // ── Build start/end datetime as plain strings for Make to handle ──
   const buildDateTime = (date, time) => {
     if (!date || !time) return null;
-    // Format as Chicago local time string then get Unix ms
-    const localStr = `${date}T${time}:00`;
-    const chicagoStr = new Date(localStr).toLocaleString('en-US', { timeZone: 'America/Chicago' });
-    const chicagoDate = new Date(chicagoStr);
-    // Get the offset and apply it
-    const utcDate = new Date(localStr);
-    const targetDate = new Date(utcDate.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
-    const offset = utcDate - targetDate;
-    return utcDate.getTime() + offset;
+    return `${date}T${time}:00`;
   };
   const startDT = buildDateTime(apptDate, apptTime);
-  const endDT = startDT ? startDT + (60 * 60 * 1000) : null;
+  const endDT = (() => {
+    if (!startDT) return null;
+    const [h, m] = apptTime.split(':').map(Number);
+    const endH = String(h + 1).padStart(2, '0');
+    return `${apptDate}T${endH}:${String(m).padStart(2,'0')}:00`;
+  })();
 
   window._pendingPayload = {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
