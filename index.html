@@ -1148,10 +1148,10 @@ function updateApptDisplay() {
   if (!date || !time) { display.style.display = 'none'; return; }
   const start = new Date(`${date}T${time}:00`);
   const end   = new Date(start.getTime() + 60 * 60 * 1000);
-  const fmt = d => d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' })
-    + ' · ' + d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit', hour12:true });
-  document.getElementById('apptStartDisplay').textContent = fmt(start);
-  document.getElementById('apptEndDisplay').textContent   = fmt(end);
+  const fmt = d => d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', timeZone:'America/Chicago' })
+    + ' · ' + d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit', hour12:true, timeZone:'America/Chicago' });
+  document.getElementById('apptStartDisplay').textContent = fmt(new Date(startDT)) + ' (Chicago)';
+  document.getElementById('apptEndDisplay').textContent   = fmt(new Date(endDT)) + ' (Chicago)';
   display.style.display = 'block';
   // Also update competitor date if it changes
   updateCompetitorDate();
@@ -1235,13 +1235,18 @@ function submitLead() {
     ? 'Other: ' + (document.getElementById('projectTypeOther').value.trim() || 'Not specified')
     : pt;
 
-  // ── Build start/end datetime as Unix ms in LOCAL time ──
+  // ── Build start/end datetime in Chicago time (America/Chicago) ──
   const buildDateTime = (date, time) => {
     if (!date || !time) return null;
-    // Parse as local time, not UTC
-    const [y,m,d] = date.split('-').map(Number);
-    const [h,min] = time.split(':').map(Number);
-    return new Date(y, m-1, d, h, min, 0).getTime();
+    // Format as Chicago local time string then get Unix ms
+    const localStr = `${date}T${time}:00`;
+    const chicagoStr = new Date(localStr).toLocaleString('en-US', { timeZone: 'America/Chicago' });
+    const chicagoDate = new Date(chicagoStr);
+    // Get the offset and apply it
+    const utcDate = new Date(localStr);
+    const targetDate = new Date(utcDate.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+    const offset = utcDate - targetDate;
+    return utcDate.getTime() + offset;
   };
   const startDT = buildDateTime(apptDate, apptTime);
   const endDT = startDT ? startDT + (60 * 60 * 1000) : null;
