@@ -1235,13 +1235,16 @@ function submitLead() {
     ? 'Other: ' + (document.getElementById('projectTypeOther').value.trim() || 'Not specified')
     : pt;
 
-  // ── Build start/end datetime as Unix ms (matches existing sheet format) ──
+  // ── Build start/end datetime as Unix ms in LOCAL time ──
   const buildDateTime = (date, time) => {
     if (!date || !time) return null;
-    return new Date(`${date}T${time}:00`).getTime();
+    // Parse as local time, not UTC
+    const [y,m,d] = date.split('-').map(Number);
+    const [h,min] = time.split(':').map(Number);
+    return new Date(y, m-1, d, h, min, 0).getTime();
   };
   const startDT = buildDateTime(apptDate, apptTime);
-  const endDT = startDT ? startDT + (60 * 60 * 1000) : null; // +1 hour in ms
+  const endDT = startDT ? startDT + (60 * 60 * 1000) : null;
 
   window._pendingPayload = {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
