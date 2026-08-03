@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lead Scoring · Bathroom Excellence</title>
+<!-- Dummy favicon to silence console 404 error -->
+<link rel="icon" href="data:,">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700&display=swap');
@@ -244,6 +246,7 @@ select option{background:#0d0020;color:#e2d9f3}
 .login-box{animation:loginIn 0.35s cubic-bezier(0.34,1.2,0.64,1)}
 @keyframes gateOut{from{opacity:1}to{opacity:0;pointer-events:none}}
 .login-gate.hide{animation:gateOut 0.4s ease forwards}
+
 /* ══ REVIEW MODAL ══ */
 .review-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:9997;align-items:center;justify-content:center;padding:16px}
 .review-box{background:linear-gradient(135deg,#130028,#0a0018);border:1px solid rgba(109,40,217,0.45);border-radius:20px;padding:0;max-width:560px;width:100%;max-height:90vh;overflow:hidden;box-shadow:0 0 80px rgba(109,40,217,0.25),0 20px 60px rgba(0,0,0,0.6);display:flex;flex-direction:column}
@@ -439,9 +442,7 @@ select option{background:#0d0020;color:#e2d9f3}
     </div>
   </div>
 
-
-
-  <!-- Q2: QUOTES — with conditional follow-up -->
+  <!-- Q2: QUOTES -->
   <div class="card">
     <div class="card-header">
       <div class="card-icon ci-scored">2</div>
@@ -527,13 +528,10 @@ select option{background:#0d0020;color:#e2d9f3}
     </div>
   </div>
 
-  <!-- BUILD VALUE — moved to after schedule/address per new script order -->
-  
-
   <!-- ══ APPOINTMENT QUALIFICATION ══ -->
   <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Appointment Qualification</div><div class="section-divider-line" style="background:linear-gradient(90deg,rgba(109,40,217,0.25),transparent)"></div></div>
 
-  <!-- Q4: CREDIT — updated scoring -->
+  <!-- Q4: CREDIT -->
   <div class="qual-panel">
     <div class="card-header" style="margin-bottom:16px">
       <div class="card-icon ci-scored">4</div>
@@ -549,7 +547,6 @@ select option{background:#0d0020;color:#e2d9f3}
       </div>
       <div class="script-listen">👂 Listen — then select below</div>
     </div>
-    <!-- Updated: Good/Excellent=20, Fair=15, Cash=10, Won't Share=5 -->
     <div class="choices cols-4" id="group-credit">
       <div class="choice" onclick="pick('credit','Good / Excellent',20,this,'sel-green','Credit')">
         <div class="choice-label">Good / Excellent</div>
@@ -614,7 +611,7 @@ select option{background:#0d0020;color:#e2d9f3}
 
     <div class="qual-divider"></div>
 
-    <!-- ══ COMPETITOR REMINDER — shows only when "Appt Before Us" selected ══ -->
+    <!-- COMPETITOR REMINDER -->
     <div class="competitor-reminder" id="competitor-reminder" style="display:none">
       <div class="reminder-header">
         <span class="reminder-icon">⚠️</span>
@@ -626,13 +623,11 @@ select option{background:#0d0020;color:#e2d9f3}
         <strong>Before selecting a date, confirm their competitor appointment date and book Bathroom Excellence 2 days after.</strong>
       </div>
 
-      <!-- Script for setter -->
       <div class="reminder-script">
         <div class="reminder-script-tag">🎙 Confirm Script</div>
         <div class="reminder-script-body">"Just to confirm — when is your appointment with the other company again?"</div>
       </div>
 
-      <!-- Competitor date display -->
       <div class="competitor-date-display" id="reminder-date-display" style="display:none">
         <span>📅 Competitor Appointment:</span>
         <strong id="reminder-competitor-date">—</strong>
@@ -641,7 +636,6 @@ select option{background:#0d0020;color:#e2d9f3}
         <strong id="reminder-be-date" style="color:#4ade80">—</strong>
       </div>
 
-      <!-- Recommendation -->
       <div class="reminder-rec">
         <span class="reminder-rec-icon">📆</span>
         <div class="reminder-rec-content">
@@ -793,9 +787,7 @@ select option{background:#0d0020;color:#e2d9f3}
       <div class="review-title">Review Before Submitting</div>
       <div class="review-sub">Check all details carefully — then click Confirm & Submit</div>
     </div>
-    <div class="review-body" id="reviewBody">
-      <!-- filled dynamically -->
-    </div>
+    <div class="review-body" id="reviewBody"></div>
     <div class="review-footer">
       <button class="review-edit-btn" onclick="document.getElementById('reviewModal').style.display='none'">✏️ Edit</button>
       <button class="review-confirm-btn" onclick="confirmAndSubmit()">🚀 Confirm & Submit to CRM</button>
@@ -855,7 +847,6 @@ select option{background:#0d0020;color:#e2d9f3}
 
 <script>
 // ══ AUTH ══
-// Add / remove users here: { username, password, displayName }
 const USERS = [
   { username: 'arnold',   password: 'BE@arnold2024',  displayName: 'Arnold' },
   { username: 'jack',     password: 'BE@jack2024',    displayName: 'Jack' },
@@ -898,7 +889,6 @@ function doLogout() {
   location.reload();
 }
 
-// Run on page load
 checkSession();
 
 // ══ STATE ══
@@ -960,7 +950,6 @@ function updateCompetitorDate() {
   document.getElementById('reminder-competitor-date').textContent = fmt(compDate);
   document.getElementById('reminder-be-date').textContent = fmt(beDate);
   document.getElementById('reminder-date-display').style.display = 'flex';
-  // Auto-suggest the appointment date
   const y = beDate.getFullYear(), m = String(beDate.getMonth()+1).padStart(2,'0'), day = String(beDate.getDate()).padStart(2,'0');
   document.getElementById('appointmentDate').value = `${y}-${m}-${day}`;
 }
@@ -974,7 +963,6 @@ function pick(group, label, pts, el, cls, catName) {
   const prev = S[group];
   A[group] = label; S[group] = pts;
   document.getElementById('dot-' + group).classList.add('done');
-  // Hide competitor if switching away from "Appt Before Us"
   if (group === 'quotes' && label !== 'Have Appt Before Us') hideCompetitorFollowup();
   calc(); showToast(pts, prev, catName);
 }
@@ -1010,7 +998,6 @@ function calc() {
 
   const scoreColor = done === 0 ? '#4b5563' : total >= 80 ? '#4ade80' : total >= 65 ? '#fbbf24' : '#f87171';
 
-  // Score bar
   const sbScore = document.getElementById('sb-score');
   sbScore.innerHTML = total + '<span style="font-size:13px;opacity:0.4"> / 100</span>';
   sbScore.style.color = scoreColor;
@@ -1020,7 +1007,6 @@ function calc() {
   document.getElementById('sb-rec').textContent = rec ? rec.action : 'Complete the scored sections below';
   document.getElementById('sb-rec').style.color = rec ? rec.color : 'rgba(107,114,128,0.6)';
 
-  // Main ring
   const ring = document.getElementById('mainRing');
   ring.className = 'score-ring ' + ringClass + ' pulse';
   setTimeout(() => ring.classList.remove('pulse'), 350);
@@ -1030,7 +1016,6 @@ function calc() {
   mainPill.textContent = done === 0 ? 'NO DATA' : priority + ' PRIORITY';
   mainPill.className = 'sb-pill ' + pillClass;
 
-  // Recommendation
   if (rec) {
     document.getElementById('recAction').textContent = rec.action;
     document.getElementById('recAction').style.color = rec.color;
@@ -1050,7 +1035,6 @@ function calc() {
     document.getElementById('reasonList').innerHTML = '';
   }
 
-  // Breakdown
   ['urgency','quotes','dm','credit'].forEach(k => {
     const el = document.getElementById('bd-' + k);
     if (A[k] === null) { el.textContent = '—'; el.style.color = '#4b5563'; }
@@ -1058,7 +1042,6 @@ function calc() {
   });
   document.getElementById('bd-total').textContent = total + ' / 100';
 
-  // Booking rules highlight
   const ruleIds = ['rule-90','rule-80','rule-65','rule-64'];
   const ruleActive = done === 0 ? null : total >= 90 ? 'rule-90' : total >= 80 ? 'rule-80' : total >= 65 ? 'rule-65' : 'rule-64';
   ruleIds.forEach(id => {
@@ -1142,14 +1125,17 @@ function updateApptDisplay() {
   const time = document.getElementById('appointmentTime').value;
   const display = document.getElementById('apptDateTimeDisplay');
   if (!date || !time) { display.style.display = 'none'; return; }
+  
   const start = new Date(`${date}T${time}:00`);
   const end   = new Date(start.getTime() + 60 * 60 * 1000);
-  const fmt = d => d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', timeZone:'America/Chicago' })
-    + ' · ' + d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit', hour12:true, timeZone:'America/Chicago' });
-  document.getElementById('apptStartDisplay').textContent = fmt(new Date(startDT)) + ' (Chicago)';
-  document.getElementById('apptEndDisplay').textContent   = fmt(new Date(endDT)) + ' (Chicago)';
+  
+  const fmt = d => d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' })
+    + ' · ' + d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit', hour12:true });
+    
+  document.getElementById('apptStartDisplay').textContent = fmt(start);
+  document.getElementById('apptEndDisplay').textContent   = fmt(end);
   display.style.display = 'block';
-  // Also update competitor date if it changes
+  
   updateCompetitorDate();
 }
 
@@ -1172,7 +1158,6 @@ function flashError(elId, msg) {
 }
 
 function showValidationToast(errors) {
-  // Show a blocking validation summary modal instead of the submit modal
   const box = document.getElementById('validationModal');
   const list = document.getElementById('validationList');
   list.innerHTML = errors.map(e => `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(239,68,68,0.1);font-size:12px;color:#fca5a5"><span style="font-size:14px">❌</span>${e}</div>`).join('');
@@ -1183,42 +1168,30 @@ function showValidationToast(errors) {
 function submitLead() {
   const errors = [];
 
-  // 1. Customer Name
   const name = document.getElementById('customerName').value.trim();
   if (!name) { errors.push('Customer Name is required'); flashError('customerName', '⚠️ Required!'); }
 
-  // 2. BP Opportunity ID
   const bpId = document.getElementById('bpLeadId').value.trim();
   if (!bpId) { errors.push('BP Opportunity ID is required'); flashError('bpLeadId', '⚠️ Required!'); }
 
-  // 3. Lead Source
   const src = document.getElementById('leadSource').value;
   if (!src) { errors.push('Lead Source must be selected'); document.getElementById('leadSource').style.borderColor = '#ef4444'; setTimeout(() => document.getElementById('leadSource').style.borderColor = '', 3000); }
 
-  // 4. Project Type
   const pt = document.getElementById('projectType').value;
   if (!pt) { errors.push('Project Type must be selected'); document.getElementById('projectType').style.borderColor = '#ef4444'; setTimeout(() => document.getElementById('projectType').style.borderColor = '', 3000); }
 
-  // 5. Scored questions — all 4 must be answered
   if (A.urgency === null) errors.push('Timeline / Urgency answer is required (Section 1)');
   if (A.quotes === null)  errors.push('Competition / Quotes answer is required (Section 2)');
   if (A.dm === null)      errors.push('Decision Maker selection is required (Section 3)');
   if (A.credit === null)  errors.push('Credit / Financing answer is required (Section 4)');
 
-  // 6. Competitor date — optional even if "Appt Before Us" selected
-
-  // 7. Appointment Date & Time
   const apptDate = document.getElementById('appointmentDate').value;
   const apptTime = document.getElementById('appointmentTime').value;
   if (!apptDate) { errors.push('Appointment Date is required'); flashError('appointmentDate', ''); }
   if (!apptTime) { errors.push('Appointment Time is required'); flashError('appointmentTime', ''); }
 
-  // 8. Sales Agent
   if (!selectedAgent) errors.push('Sales Agent must be selected (Jack or Dave)');
 
-  // 9. Address — optional, not required
-
-  // ── Block if any errors ──
   if (errors.length > 0) {
     showValidationToast(errors);
     return;
@@ -1231,7 +1204,6 @@ function submitLead() {
     ? 'Other: ' + (document.getElementById('projectTypeOther').value.trim() || 'Not specified')
     : pt;
 
-  // ── Build start/end as Unix ms for Chicago time (matches BP accepted format) ──
   const buildDateTime = (date, time) => {
     if (!date || !time) return null;
     const [h, m] = time.split(':').map(Number);
@@ -1240,8 +1212,6 @@ function submitLead() {
     const finalHour = rounded === 60 ? h + 1 : h;
     const hh = String(finalHour).padStart(2, '0');
     const mm = String(finalMin).padStart(2, '0');
-    // Build as Chicago time — UTC-5 (CDT) or UTC-6 (CST)
-    // Append Chicago offset so Date parses it correctly
     const chicagoStr = `${date}T${hh}:${mm}:00-05:00`;
     return new Date(chicagoStr).getTime();
   };
@@ -1348,7 +1318,6 @@ function confirmAndSubmit() {
     body: JSON.stringify(p)
   }).catch(e => console.warn('Webhook error:', e));
 
-  // ── Build formatted CRM note ──
   const fmtDate = d => {
     if (!d) return '—';
     const dt = new Date(d + 'T00:00:00');
