@@ -9,15 +9,11 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700&display=swap');
-
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;min-height:100vh;background:#080014;color:#e2d9f3}
-
 body::before{content:'';position:fixed;top:-300px;right:-200px;width:800px;height:800px;background:radial-gradient(circle,rgba(109,40,217,0.18) 0%,transparent 65%);border-radius:50%;pointer-events:none;z-index:0}
 body::after{content:'';position:fixed;bottom:-200px;left:-100px;width:600px;height:600px;background:radial-gradient(circle,rgba(79,70,229,0.12) 0%,transparent 65%);border-radius:50%;pointer-events:none;z-index:0}
-
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:rgba(255,255,255,0.03)}::-webkit-scrollbar-thumb{background:rgba(139,92,246,0.4);border-radius:99px}
-
 /* ══ SCORE BAR ══ */
 .score-bar{position:fixed;top:0;left:0;right:0;z-index:600;height:64px;background:rgba(8,0,20,0.93);backdrop-filter:blur(24px);border-bottom:1px solid rgba(109,40,217,0.25);display:flex;align-items:center;padding:0 24px}
 .sb-segment{display:flex;flex-direction:column;justify-content:center;padding:0 20px;border-right:1px solid rgba(109,40,217,0.18)}
@@ -32,14 +28,12 @@ body::after{content:'';position:fixed;bottom:-200px;left:-100px;width:600px;heig
 .sb-dots{display:flex;gap:5px}
 .sb-dot{width:8px;height:8px;border-radius:50%;background:rgba(109,40,217,0.25);transition:all 0.3s}
 .sb-dot.done{background:#7c3aed;box-shadow:0 0 6px rgba(124,58,237,0.6)}
-
 /* ══ LAYOUT ══ */
 .wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:80px 16px 40px}
 .page-header{text-align:center;margin-bottom:32px;padding:28px 0 20px}
 .brand{font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:rgba(167,139,250,0.5);margin-bottom:10px}
 .page-title{font-size:28px;font-weight:900;background:linear-gradient(135deg,#ddd6fe,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2;margin-bottom:8px}
 .page-sub{font-size:12px;color:rgba(167,139,250,0.45);letter-spacing:0.5px}
-
 /* ══ CARDS ══ */
 .card{background:rgba(255,255,255,0.04);border:1px solid rgba(109,40,217,0.2);border-radius:16px;padding:24px;margin-bottom:14px;backdrop-filter:blur(12px)}
 .card-header{display:flex;align-items:center;gap:10px;margin-bottom:18px}
@@ -50,14 +44,12 @@ body::after{content:'';position:fixed;bottom:-200px;left:-100px;width:600px;heig
 .ci-orange{background:rgba(249,115,22,0.15);border:1px solid rgba(249,115,22,0.3)}
 .card-title{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#a78bfa}
 .card-pts{margin-left:auto;font-size:10px;font-weight:600;color:rgba(167,139,250,0.4);white-space:nowrap}
-
 /* ══ SCRIPT BLOCK ══ */
 .script{background:rgba(109,40,217,0.07);border:1px solid rgba(109,40,217,0.18);border-left:3px solid #7c3aed;border-radius:10px;padding:14px 16px;margin-bottom:16px}
 .script-tag{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#7c3aed;margin-bottom:7px}
 .script-body{font-size:13px;color:#c4b5fd;line-height:1.8}
 .script-body strong{color:#e2d9f3;font-weight:700}
 .script-listen{font-size:11px;color:#818cf8;font-style:italic;margin-top:8px;opacity:0.8}
-
 /* ══ INPUTS ══ */
 .field-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(167,139,250,0.6);margin-bottom:6px;display:block}
 input,select,textarea{width:100%;padding:10px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(109,40,217,0.25);border-radius:10px;font-size:13px;font-family:'Inter',sans-serif;color:#e2d9f3;outline:none;transition:all 0.2s;-webkit-appearance:none}
@@ -67,7 +59,6 @@ select option{background:#0d0020;color:#e2d9f3}
 .bp-field input{border-color:rgba(245,158,11,0.35)!important}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 .grid-2:last-child{margin-bottom:0}
-
 /* ══ CHOICES ══ */
 .choices{display:grid;gap:10px}
 .choices.cols-3{grid-template-columns:repeat(3,1fr)}
@@ -94,7 +85,6 @@ select option{background:#0d0020;color:#e2d9f3}
 .sel-gray .choice-label{color:#9ca3af}
 .sel-purple{border-color:#8b5cf6!important;background:rgba(139,92,246,0.1)!important;box-shadow:0 0 18px rgba(139,92,246,0.2)!important}
 .sel-purple .choice-label{color:#c4b5fd}
-
 /* ══ DM BIG CHOICES ══ */
 .dm-big{cursor:pointer;border:2px solid rgba(109,40,217,0.2);border-radius:14px;padding:24px;transition:all 0.2s;background:rgba(255,255,255,0.025);text-align:center;user-select:none}
 .dm-big:hover{transform:translateY(-2px)}
@@ -102,12 +92,10 @@ select option{background:#0d0020;color:#e2d9f3}
 .dm-no-sel,.dm-no:hover{border-color:#ef4444!important;background:rgba(239,68,68,0.1)!important;box-shadow:0 0 24px rgba(239,68,68,0.25)!important}
 .dm-icon{font-size:38px;margin-bottom:10px}
 .dm-big-label{font-size:20px;font-weight:900;margin-bottom:6px}
-
 /* ══ COMPETITOR FOLLOWUP ══ */
 @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 .followup-block{background:rgba(249,115,22,0.06);border:1.5px solid rgba(249,115,22,0.3);border-radius:12px;padding:16px;margin-top:14px;animation:slideDown 0.25s ease}
 .followup-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#fb923c;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-
 /* ══ COMPETITOR REMINDER BANNER ══ */
 @keyframes reminderIn{from{opacity:0;transform:translateY(-10px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 .competitor-reminder{
@@ -134,7 +122,6 @@ select option{background:#0d0020;color:#e2d9f3}
 .reminder-rec-text{font-size:13px;color:#e2d9f3;font-weight:700;margin-bottom:2px}
 .reminder-rec-sub{font-size:11px;color:rgba(249,115,22,0.7);line-height:1.5}
 .competitor-date-display{background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.3);border-radius:8px;padding:8px 14px;margin-top:10px;font-size:13px;color:#fb923c;font-weight:700;display:flex;align-items:center;gap:8px}
-
 /* ══ RESULT PANEL ══ */
 .result-panel{background:rgba(255,255,255,0.04);border:2px solid rgba(109,40,217,0.35);border-radius:20px;padding:28px;margin-bottom:14px;box-shadow:0 0 60px rgba(109,40,217,0.12),0 8px 32px rgba(0,0,0,0.4)}
 .result-top{display:flex;gap:24px;align-items:flex-start;margin-bottom:24px}
@@ -147,7 +134,6 @@ select option{background:#0d0020;color:#e2d9f3}
 .ring-denom{font-size:11px;font-weight:500;opacity:0.5;margin-top:2px}
 @keyframes pulse-ring{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
 .pulse{animation:pulse-ring 0.3s ease}
-
 .rec-block{flex:1;display:flex;flex-direction:column;gap:12px}
 .rec-card{background:rgba(0,0,0,0.25);border:1px solid rgba(109,40,217,0.18);border-radius:12px;padding:16px}
 .rec-eyebrow{font-size:9px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:#7c3aed;margin-bottom:8px}
@@ -158,13 +144,11 @@ select option{background:#0d0020;color:#e2d9f3}
 .reason-chip.good{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.25);color:#4ade80}
 .reason-chip.warn{background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.25);color:#fbbf24}
 .reason-chip.bad{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.25);color:#f87171}
-
 .breakdown{background:rgba(0,0,0,0.2);border:1px solid rgba(109,40,217,0.12);border-radius:10px;padding:14px}
 .bd-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:5px 0;border-bottom:1px solid rgba(109,40,217,0.08)}
 .bd-row:last-child{border-bottom:none;padding-top:10px;margin-top:4px;font-size:13px;font-weight:800;color:#c4b5fd}
 .bd-key{color:rgba(107,114,128,0.8)}
 .bd-val{font-weight:700;font-family:'JetBrains Mono',monospace;font-size:11px;transition:color 0.25s}
-
 .rules-table{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:20px}
 .rule-cell{border-radius:10px;padding:12px;text-align:center;border:1px solid;transition:all 0.3s}
 .rule-score{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;margin-bottom:4px}
@@ -175,22 +159,18 @@ select option{background:#0d0020;color:#e2d9f3}
 .rule-l{background:rgba(107,114,128,0.08);border-color:rgba(107,114,128,0.25);color:#9ca3af}
 .rule-active{transform:scale(1.05);box-shadow:0 0 20px currentColor;opacity:1!important}
 .rule-inactive{opacity:0.35}
-
 /* ══ QUAL PANEL ══ */
 .qual-panel{background:rgba(255,255,255,0.04);border:1px solid rgba(109,40,217,0.25);border-radius:16px;padding:24px;margin-bottom:14px}
 .qual-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(109,40,217,0.3),transparent);margin:20px 0}
-
 /* ══ BONUS ══ */
 .bonus-panel{background:rgba(99,102,241,0.06);border:1.5px solid rgba(99,102,241,0.2);border-radius:14px;padding:20px;margin-bottom:14px}
 .bonus-strip{display:flex;gap:20px;margin-top:14px;padding:12px;background:rgba(0,0,0,0.2);border-radius:8px;font-size:12px;color:rgba(99,102,241,0.8)}
 .bonus-strip strong{color:#c4b5fd}
-
 /* ══ SUBMIT ══ */
 .submit-panel{background:rgba(255,255,255,0.03);border:1px solid rgba(109,40,217,0.2);border-radius:16px;padding:24px;margin-bottom:14px}
 .customer-display{background:rgba(109,40,217,0.1);border:1px solid rgba(109,40,217,0.25);border-radius:8px;padding:10px 16px;text-align:center;font-size:16px;font-weight:800;color:#c4b5fd;margin-bottom:16px;font-family:'JetBrains Mono',monospace;min-height:42px}
 .sub-btn{width:100%;padding:18px;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:800;letter-spacing:2px;text-transform:uppercase;background:linear-gradient(135deg,#7c3aed,#5b21b6,#4c1d95);color:#fff;box-shadow:0 6px 24px rgba(124,58,237,0.45);transition:all 0.2s;font-family:'Inter',sans-serif}
 .sub-btn:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(124,58,237,0.6)}
-
 /* ══ TOAST ══ */
 @keyframes toastIn{0%{opacity:0;transform:translate(-50%,-50%) scale(0.7)}60%{transform:translate(-50%,-50%) scale(1.06)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 @keyframes toastOut{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(0.85)}}
@@ -204,12 +184,10 @@ select option{background:#0d0020;color:#e2d9f3}
 .t-row{display:flex;justify-content:center;gap:32px}
 .t-num{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;line-height:1}
 .t-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#6b7280;margin-top:3px}
-
 /* ══ MODAL ══ */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);z-index:9998;align-items:center;justify-content:center}
 .modal-box{background:linear-gradient(135deg,#130028,#0a0018);border:1px solid rgba(139,92,246,0.4);border-radius:20px;padding:32px;max-width:500px;width:92%;text-align:center;box-shadow:0 0 60px rgba(139,92,246,0.3)}
 .modal-close{background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;padding:10px 28px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;margin-top:14px;font-family:'Inter',sans-serif}
-
 /* ══ NAV & DIVIDERS ══ */
 .nav-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
 .brand-name{font-size:16px;font-weight:900;background:linear-gradient(135deg,#c4b5fd,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
@@ -218,10 +196,8 @@ select option{background:#0d0020;color:#e2d9f3}
 .section-divider{display:flex;align-items:center;gap:12px;margin:8px 0 14px}
 .section-divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(109,40,217,0.25))}
 .section-divider-label{font-size:9px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:rgba(109,40,217,0.5)}
-
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .card,.result-panel,.qual-panel,.bonus-panel,.submit-panel{animation:fadeUp 0.4s ease both}
-
 /* ══ LOGIN GATE ══ */
 .login-gate{position:fixed;inset:0;z-index:9999;background:#080014;display:flex;align-items:center;justify-content:center}
 .login-gate::before{content:'';position:fixed;top:-200px;right:-200px;width:700px;height:700px;background:radial-gradient(circle,rgba(109,40,217,0.22) 0%,transparent 65%);border-radius:50%;pointer-events:none}
@@ -246,7 +222,6 @@ select option{background:#0d0020;color:#e2d9f3}
 .login-box{animation:loginIn 0.35s cubic-bezier(0.34,1.2,0.64,1)}
 @keyframes gateOut{from{opacity:1}to{opacity:0;pointer-events:none}}
 .login-gate.hide{animation:gateOut 0.4s ease forwards}
-
 /* ══ REVIEW MODAL ══ */
 .review-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:9997;align-items:center;justify-content:center;padding:16px}
 .review-box{background:linear-gradient(135deg,#130028,#0a0018);border:1px solid rgba(109,40,217,0.45);border-radius:20px;padding:0;max-width:560px;width:100%;max-height:90vh;overflow:hidden;box-shadow:0 0 80px rgba(109,40,217,0.25),0 20px 60px rgba(0,0,0,0.6);display:flex;flex-direction:column}
@@ -270,7 +245,6 @@ select option{background:#0d0020;color:#e2d9f3}
 </style>
 </head>
 <body>
-
 <!-- ══ LOGIN GATE ══ -->
 <div class="login-gate" id="loginGate">
   <div class="login-box">
@@ -291,7 +265,6 @@ select option{background:#0d0020;color:#e2d9f3}
     <div class="login-error" id="loginError">Incorrect username or password. Please try again.</div>
   </div>
 </div>
-
 <!-- ══ LIVE SCORE BAR ══ -->
 <div class="score-bar">
   <div class="sb-segment" style="padding-left:0">
@@ -316,9 +289,7 @@ select option{background:#0d0020;color:#e2d9f3}
     </div>
   </div>
 </div>
-
 <div class="wrap">
-
   <!-- NAV -->
   <div class="nav-bar">
     <div class="brand-name">⚡ Bathroom Excellence</div>
@@ -328,17 +299,14 @@ select option{background:#0d0020;color:#e2d9f3}
       <button onclick="doLogout()" style="padding:7px 16px;border-radius:10px;font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.25);cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s" onmouseover="this.style.background='rgba(239,68,68,0.2)'" onmouseout="this.style.background='rgba(239,68,68,0.1)'">🚪 Sign Out</button>
     </div>
   </div>
-
   <!-- HEADER -->
   <div class="page-header">
     <div class="brand">Appointment Qualification Assistant</div>
     <div class="page-title">Lead Qualification</div>
     <div class="page-sub">Follow the script · Click answers · Get instant scheduling recommendation</div>
   </div>
-
   <!-- ══ CUSTOMER INFO ══ -->
   <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Customer Information</div><div class="section-divider-line" style="background:linear-gradient(90deg,rgba(109,40,217,0.25),transparent)"></div></div>
-
   <div class="card">
     <div class="card-header">
       <div class="card-icon ci-info">📋</div>
@@ -361,7 +329,6 @@ select option{background:#0d0020;color:#e2d9f3}
       </div>
     </div>
   </div>
-
   <!-- OPENING SCRIPT -->
   <div class="card">
     <div class="card-header">
@@ -377,10 +344,8 @@ select option{background:#0d0020;color:#e2d9f3}
       </div>
     </div>
   </div>
-
   <!-- ══ QUALIFICATION QUESTIONS ══ -->
   <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Qualification Questions</div><div class="section-divider-line" style="background:linear-gradient(90deg,rgba(109,40,217,0.25),transparent)"></div></div>
-
   <!-- PROJECT DISCOVERY -->
   <div class="card">
     <div class="card-header">
@@ -405,7 +370,6 @@ select option{background:#0d0020;color:#e2d9f3}
       <input type="text" id="projectTypeOther" placeholder="Describe project..." style="display:none;margin-top:8px">
     </div>
   </div>
-
   <!-- Q1: URGENCY -->
   <div class="card">
     <div class="card-header">
@@ -441,7 +405,6 @@ select option{background:#0d0020;color:#e2d9f3}
       </div>
     </div>
   </div>
-
   <!-- Q2: QUOTES -->
   <div class="card">
     <div class="card-header">
@@ -476,7 +439,6 @@ select option{background:#0d0020;color:#e2d9f3}
         <span class="badge badge-amber">+10 PTS</span>
       </div>
     </div>
-
     <!-- CONDITIONAL: Competitor appt date follow-up -->
     <div class="followup-block" id="competitor-followup" style="display:none">
       <div class="followup-label">🗓️ Follow-up Question</div>
@@ -489,7 +451,6 @@ select option{background:#0d0020;color:#e2d9f3}
       <input type="date" id="competitorApptDate" oninput="updateCompetitorDate()">
     </div>
   </div>
-
   <!-- Q3: DECISION MAKERS -->
   <div class="card">
     <div class="card-header">
@@ -500,12 +461,18 @@ select option{background:#0d0020;color:#e2d9f3}
     <div class="script">
       <div class="script-tag">🎙 Ask</div>
       <div class="script-body">
-        <strong>"Besides yourself, will anyone else be involved in making the final decision? Such as a spouse or partner?"</strong><br><br>
-        <span style="color:#4ade80">If YES →</span> "Perfect. Since Jack will be discussing design ideas, pricing, and financing options, we ask that everyone involved in the decision be present so everyone hears the same information together."<br><br>
-        <strong>"What's the best time that works for the both of you — morning, afternoon, or evening?"</strong>
+        "Just so we can provide the most accurate estimate and go over all available discounts and financing options, I just need to confirm that all decision-makers will be present. That's a requirement for our free in-home consultation so our project manager can provide the official estimate and answer everyone's questions in a single visit. That way, we can make the best use of everyone's time and avoid the need for a second appointment. Sound good?<br>
+        What day and time will work best for all of the decision-makers to be available?"
       </div>
     </div>
-    <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(167,139,250,0.5);margin-bottom:10px">Select Decision Maker Age Group</div>
+    <div class="script">
+      <div class="script-tag">🎙 Rebuttal</div>
+      <div class="script-body">
+        if customer says just them, or yes but they make the decision, or partner is busy:<br>
+        I completely understand, and I respect that. However, out of respect for your significant other, we'd like both of you to be present during the appointment. Jack/Dave, our manager, will be discussing important details and options that may affect both of you, so we'd want everyone involved in the decision to hear the same information. With that in mind, what day and time would work best for both of you?
+      </div>
+    </div>
+    <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(167,139,250,0.5);margin:16px 0 10px">Select Decision Maker Age Group</div>
     <div class="choices cols-3" id="group-dm">
       <div class="dm-big dm-yes" onclick="pickDM('Senior',20,this)">
         <div class="dm-icon">👴</div>
@@ -527,10 +494,8 @@ select option{background:#0d0020;color:#e2d9f3}
       </div>
     </div>
   </div>
-
   <!-- ══ APPOINTMENT QUALIFICATION ══ -->
   <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Appointment Qualification</div><div class="section-divider-line" style="background:linear-gradient(90deg,rgba(109,40,217,0.25),transparent)"></div></div>
-
   <!-- Q4: CREDIT -->
   <div class="qual-panel">
     <div class="card-header" style="margin-bottom:16px">
@@ -565,9 +530,7 @@ select option{background:#0d0020;color:#e2d9f3}
         <span class="badge badge-gray">+5 PTS</span>
       </div>
     </div>
-
     <div class="qual-divider"></div>
-
     <!-- FINAL SCORE + RECOMMENDATION -->
     <div class="result-panel" style="margin-bottom:0;border:2px solid rgba(109,40,217,0.3)">
       <div style="font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#7c3aed;text-align:center;margin-bottom:20px">⚡ Lead Qualification Result</div>
@@ -608,9 +571,7 @@ select option{background:#0d0020;color:#e2d9f3}
         </div>
       </div>
     </div>
-
     <div class="qual-divider"></div>
-
     <!-- COMPETITOR REMINDER -->
     <div class="competitor-reminder" id="competitor-reminder" style="display:none">
       <div class="reminder-header">
@@ -622,12 +583,10 @@ select option{background:#0d0020;color:#e2d9f3}
         This customer already has an appointment with another contractor.<br>
         <strong>Before selecting a date, confirm their competitor appointment date and book Bathroom Excellence 2 days after.</strong>
       </div>
-
       <div class="reminder-script">
         <div class="reminder-script-tag">🎙 Confirm Script</div>
         <div class="reminder-script-body">"Just to confirm — when is your appointment with the other company again?"</div>
       </div>
-
       <div class="competitor-date-display" id="reminder-date-display" style="display:none">
         <span>📅 Competitor Appointment:</span>
         <strong id="reminder-competitor-date">—</strong>
@@ -635,7 +594,6 @@ select option{background:#0d0020;color:#e2d9f3}
         <span>Book BE:</span>
         <strong id="reminder-be-date" style="color:#4ade80">—</strong>
       </div>
-
       <div class="reminder-rec">
         <span class="reminder-rec-icon">📆</span>
         <div class="reminder-rec-content">
@@ -645,7 +603,6 @@ select option{background:#0d0020;color:#e2d9f3}
         </div>
       </div>
     </div>
-
     <!-- APPOINTMENT BOOKING -->
     <div>
       <div class="card-header" style="margin-bottom:16px">
@@ -663,7 +620,6 @@ select option{background:#0d0020;color:#e2d9f3}
         <div><label class="field-label">Appointment Date</label><input type="date" id="appointmentDate" oninput="updateApptDisplay()"></div>
         <div><label class="field-label">Appointment Time</label><input type="time" id="appointmentTime" step="900" oninput="updateApptDisplay()"></div>
       </div>
-
       <!-- Live start/end display -->
       <div id="apptDateTimeDisplay" style="display:none;background:rgba(109,40,217,0.08);border:1px solid rgba(109,40,217,0.25);border-radius:10px;padding:12px 16px;margin-bottom:14px">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
@@ -693,7 +649,6 @@ select option{background:#0d0020;color:#e2d9f3}
       </div>
     </div>
   </div>
-
   <!-- ADDRESS -->
   <div class="card">
     <div class="card-header">
@@ -719,7 +674,6 @@ select option{background:#0d0020;color:#e2d9f3}
       <div style="font-size:10px;color:rgba(167,139,250,0.4);margin-top:6px">Type the address then click <strong style="color:rgba(167,139,250,0.6)">Open in Maps</strong> to verify the exact location on Google Maps.</div>
     </div>
   </div>
-
   <!-- BUILD VALUE / CLOSE -->
   <div class="card">
     <div class="card-header">
@@ -736,7 +690,6 @@ select option{background:#0d0020;color:#e2d9f3}
       </div>
     </div>
   </div>
-
   <!-- ENTHUSIASM BONUS -->
   <div class="bonus-panel">
     <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#6366f1;margin-bottom:3px">⭐ Enthusiasm Bonus — Internal Tracking Only</div>
@@ -759,7 +712,6 @@ select option{background:#0d0020;color:#e2d9f3}
       <div style="margin-left:auto">Combined (internal): <strong id="bonus-total">0</strong></div>
     </div>
   </div>
-
   <!-- CALL NOTES -->
   <div class="card">
     <div class="card-header">
@@ -768,7 +720,6 @@ select option{background:#0d0020;color:#e2d9f3}
     </div>
     <textarea id="callNotes" rows="4" placeholder="Objections, special circumstances, or anything to follow up on..."></textarea>
   </div>
-
   <!-- SUBMIT -->
   <div class="submit-panel">
     <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#7c3aed;text-align:center;margin-bottom:12px">🚀 Final Submission</div>
@@ -776,9 +727,7 @@ select option{background:#0d0020;color:#e2d9f3}
     <button class="sub-btn" onclick="submitLead()">🚀 SUBMIT TO CRM — Google Sheets + BuildersPrime</button>
     <div style="text-align:center;font-size:10px;color:rgba(107,114,128,0.4);margin-top:8px">Data saves to Google Sheets and BuildersPrime automatically</div>
   </div>
-
 </div>
-
 <!-- REVIEW & CONFIRM MODAL -->
 <div class="review-modal-bg" id="reviewModal">
   <div class="review-box">
@@ -794,7 +743,6 @@ select option{background:#0d0020;color:#e2d9f3}
     </div>
   </div>
 </div>
-
 <!-- VALIDATION MODAL -->
 <div class="modal-bg" id="validationModal" style="display:none">
   <div class="modal-box" style="border-color:rgba(239,68,68,0.4);box-shadow:0 0 60px rgba(239,68,68,0.2)">
@@ -805,7 +753,6 @@ select option{background:#0d0020;color:#e2d9f3}
     <button class="modal-close" onclick="document.getElementById('validationModal').style.display='none'" style="background:linear-gradient(135deg,#dc2626,#991b1b)">Got It — Fix Now</button>
   </div>
 </div>
-
 <!-- TOAST -->
 <div class="toast" id="toast">
   <div class="t-cat" id="t-cat">Category</div>
@@ -817,7 +764,6 @@ select option{background:#0d0020;color:#e2d9f3}
     <div style="text-align:center"><div class="t-num" id="t-pri" style="color:#4ade80">—</div><div class="t-label">Priority</div></div>
   </div>
 </div>
-
 <!-- MODAL -->
 <div class="modal-bg" id="modal">
   <div class="modal-box" style="max-width:560px;padding:0;overflow:hidden;max-height:90vh;display:flex;flex-direction:column">
@@ -826,7 +772,6 @@ select option{background:#0d0020;color:#e2d9f3}
       <h2 style="font-size:16px;font-weight:800;color:#c4b5fd;margin-bottom:4px">Lead Submitted Successfully!</h2>
       <p style="font-size:11px;color:#7c3aed" id="modalSummary"></p>
     </div>
-
     <!-- Copyable Note -->
     <div style="padding:18px 26px;flex:1;overflow-y:auto">
       <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#7c3aed;margin-bottom:10px">📋 CRM Note — Copy &amp; Paste</div>
@@ -838,13 +783,11 @@ select option{background:#0d0020;color:#e2d9f3}
         </button>
       </div>
     </div>
-
     <div style="padding:14px 26px 20px;border-top:1px solid rgba(109,40,217,0.2);flex-shrink:0;display:flex;gap:10px">
       <button class="modal-close" style="flex:1;margin-top:0" onclick="closeModal()">🔄 New Call</button>
     </div>
   </div>
 </div>
-
 <script>
 // ══ AUTH ══
 const USERS = [
@@ -853,7 +796,6 @@ const USERS = [
   { username: 'dave',     password: 'BE@dave2024',    displayName: 'Dave' },
   { username: 'admin',    password: 'BE@admin2024',   displayName: 'Admin' },
 ];
-
 function checkSession() {
   const s = sessionStorage.getItem('be_user');
   if (s) {
@@ -862,7 +804,6 @@ function checkSession() {
     document.getElementById('navUserName').textContent = u.displayName;
   }
 }
-
 function doLogin() {
   const user = document.getElementById('loginUser').value.trim().toLowerCase();
   const pass = document.getElementById('loginPass').value;
@@ -883,14 +824,11 @@ function doLogin() {
     setTimeout(() => { document.getElementById('loginPass').style.borderColor = ''; }, 2000);
   }
 }
-
 function doLogout() {
   sessionStorage.removeItem('be_user');
   location.reload();
 }
-
 checkSession();
-
 // ══ STATE ══
 const A = { urgency: null, quotes: null, dm: null, credit: null };
 const S = { urgency: 0, quotes: 0, dm: 0, credit: 0 };
@@ -898,7 +836,6 @@ let enthAnswer = null, enthBonus = 0;
 let toastTimer = null;
 let competitorApptExists = false;
 let selectedAgent = null;
-
 function pickAgent(name, el) {
   document.querySelectorAll('#group-agent .choice').forEach(c => {
     c.className = c.className.replace(/sel-\w+/g,'').trim();
@@ -906,7 +843,6 @@ function pickAgent(name, el) {
   el.classList.add('sel-purple');
   selectedAgent = name;
 }
-
 // ══ RECOMMENDATION ENGINE ══
 function getRec(score, answers) {
   const reasons = [];
@@ -923,7 +859,6 @@ function getRec(score, answers) {
   if (score >= 65) return { action: '✅ STANDARD DOUBLE BOOK OK', sub: 'Can be double booked on the standard calendar.', color: '#fbbf24', reasons };
   return { action: '⏳ STANDBY / PARTNER OUT', sub: 'Lower priority — consider standby slot or partner referral.', color: '#9ca3af', reasons };
 }
-
 // ══ COMPETITOR FOLLOWUP LOGIC ══
 function showCompetitorFollowup() {
   competitorApptExists = true;
@@ -931,7 +866,6 @@ function showCompetitorFollowup() {
   document.getElementById('competitor-reminder').style.display = 'block';
   updateCompetitorDate();
 }
-
 function hideCompetitorFollowup() {
   competitorApptExists = false;
   document.getElementById('competitor-followup').style.display = 'none';
@@ -939,7 +873,6 @@ function hideCompetitorFollowup() {
   document.getElementById('competitorApptDate').value = '';
   document.getElementById('reminder-date-display').style.display = 'none';
 }
-
 function updateCompetitorDate() {
   const dateVal = document.getElementById('competitorApptDate').value;
   if (!dateVal) { document.getElementById('reminder-date-display').style.display = 'none'; return; }
@@ -953,7 +886,6 @@ function updateCompetitorDate() {
   const y = beDate.getFullYear(), m = String(beDate.getMonth()+1).padStart(2,'0'), day = String(beDate.getDate()).padStart(2,'0');
   document.getElementById('appointmentDate').value = `${y}-${m}-${day}`;
 }
-
 // ══ PICK CHOICES ══
 function pick(group, label, pts, el, cls, catName) {
   document.querySelectorAll('#group-' + group + ' .choice').forEach(c => {
@@ -966,7 +898,6 @@ function pick(group, label, pts, el, cls, catName) {
   if (group === 'quotes' && label !== 'Have Appt Before Us') hideCompetitorFollowup();
   calc(); showToast(pts, prev, catName);
 }
-
 function pickDM(label, pts, el) {
   document.querySelectorAll('#group-dm .dm-big').forEach(c => c.classList.remove('dm-yes-sel','dm-no-sel'));
   el.classList.add(pts > 0 ? 'dm-yes-sel' : 'dm-no-sel');
@@ -975,7 +906,6 @@ function pickDM(label, pts, el) {
   document.getElementById('dot-dm').classList.add('done');
   calc(); showToast(pts, prev, 'Decision Makers');
 }
-
 function pickBonus(label, pts, el, cls) {
   document.querySelectorAll('#group-engagement .choice').forEach(c => {
     c.className = c.className.replace(/sel-\w+/g, '').trim();
@@ -984,20 +914,16 @@ function pickBonus(label, pts, el, cls) {
   enthAnswer = label; enthBonus = pts;
   updateBonusDisplay();
 }
-
 // ══ CALC ══
 function calc() {
   const total = Object.values(S).reduce((a,b) => a+b, 0);
   const done  = Object.values(A).filter(v => v !== null).length;
-
   let priority, pillClass, ringClass, rec = null;
   if (done === 0) { priority = '—'; pillClass = 'pill-none'; ringClass = 'ring-none'; }
   else if (total >= 80) { priority = 'HIGH'; pillClass = 'pill-high'; ringClass = 'ring-high'; rec = getRec(total, A); }
   else if (total >= 65) { priority = 'MEDIUM'; pillClass = 'pill-med'; ringClass = 'ring-med'; rec = getRec(total, A); }
   else { priority = 'LOW'; pillClass = 'pill-low'; ringClass = 'ring-low'; rec = getRec(total, A); }
-
   const scoreColor = done === 0 ? '#4b5563' : total >= 80 ? '#4ade80' : total >= 65 ? '#fbbf24' : '#f87171';
-
   const sbScore = document.getElementById('sb-score');
   sbScore.innerHTML = total + '<span style="font-size:13px;opacity:0.4"> / 100</span>';
   sbScore.style.color = scoreColor;
@@ -1006,7 +932,6 @@ function calc() {
   sbPill.className = 'sb-pill ' + pillClass;
   document.getElementById('sb-rec').textContent = rec ? rec.action : 'Complete the scored sections below';
   document.getElementById('sb-rec').style.color = rec ? rec.color : 'rgba(107,114,128,0.6)';
-
   const ring = document.getElementById('mainRing');
   ring.className = 'score-ring ' + ringClass + ' pulse';
   setTimeout(() => ring.classList.remove('pulse'), 350);
@@ -1015,7 +940,6 @@ function calc() {
   const mainPill = document.getElementById('mainPill');
   mainPill.textContent = done === 0 ? 'NO DATA' : priority + ' PRIORITY';
   mainPill.className = 'sb-pill ' + pillClass;
-
   if (rec) {
     document.getElementById('recAction').textContent = rec.action;
     document.getElementById('recAction').style.color = rec.color;
@@ -1034,14 +958,12 @@ function calc() {
     document.getElementById('recSub').textContent = 'Urgency · Quotes · Decision Makers · Credit';
     document.getElementById('reasonList').innerHTML = '';
   }
-
   ['urgency','quotes','dm','credit'].forEach(k => {
     const el = document.getElementById('bd-' + k);
     if (A[k] === null) { el.textContent = '—'; el.style.color = '#4b5563'; }
     else { el.textContent = S[k] + ' pts'; el.style.color = S[k] > 0 ? '#4ade80' : '#f87171'; }
   });
   document.getElementById('bd-total').textContent = total + ' / 100';
-
   const ruleIds = ['rule-90','rule-80','rule-65','rule-64'];
   const ruleActive = done === 0 ? null : total >= 90 ? 'rule-90' : total >= 80 ? 'rule-80' : total >= 65 ? 'rule-65' : 'rule-64';
   ruleIds.forEach(id => {
@@ -1050,18 +972,15 @@ function calc() {
     else if (id === ruleActive) { el.classList.add('rule-active'); el.classList.remove('rule-inactive'); }
     else { el.classList.add('rule-inactive'); el.classList.remove('rule-active'); }
   });
-
   updateNameDisplay();
   updateBonusDisplay();
 }
-
 function updateBonusDisplay() {
   const base = Object.values(S).reduce((a,b) => a+b, 0);
   document.getElementById('bonus-base').textContent = base;
   document.getElementById('bonus-enth').textContent = '+' + enthBonus;
   document.getElementById('bonus-total').textContent = base + enthBonus;
 }
-
 function updateNameDisplay() {
   const name = document.getElementById('customerName').value.trim();
   const total = Object.values(S).reduce((a,b) => a+b, 0);
@@ -1071,7 +990,6 @@ function updateNameDisplay() {
   el.textContent = display;
   el.style.color = name ? '#c4b5fd' : 'rgba(167,139,250,0.3)';
 }
-
 // ══ TOAST ══
 function showToast(pts, prevPts, catName) {
   const total = Object.values(S).reduce((a,b) => a+b, 0);
@@ -1097,7 +1015,6 @@ function showToast(pts, prevPts, catName) {
     setTimeout(() => toast.classList.remove('hide'), 300);
   }, 2400);
 }
-
 // ══ GOOGLE MAPS ADDRESS LOOKUP ══
 function openMap() {
   const addr = document.getElementById('address').value.trim();
@@ -1105,7 +1022,6 @@ function openMap() {
   const url = `https://www.google.com/maps/search/?api=1&query=${query}`;
   window.open(url, '_blank');
 }
-
 function updateMapLink() {
   const addr = document.getElementById('address').value.trim();
   const btn = document.getElementById('map-btn');
@@ -1118,33 +1034,30 @@ function updateMapLink() {
     btn.innerHTML = '🗺️ Open in Maps';
   }
 }
-
 // ══ LIVE APPT DATE/TIME DISPLAY ══
 function updateApptDisplay() {
   const date = document.getElementById('appointmentDate').value;
   const time = document.getElementById('appointmentTime').value;
   const display = document.getElementById('apptDateTimeDisplay');
   if (!date || !time) { display.style.display = 'none'; return; }
-  
+
   const start = new Date(`${date}T${time}:00`);
   const end   = new Date(start.getTime() + 60 * 60 * 1000);
-  
+
   const fmt = d => d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' })
     + ' · ' + d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit', hour12:true });
-    
+
   document.getElementById('apptStartDisplay').textContent = fmt(start);
   document.getElementById('apptEndDisplay').textContent   = fmt(end);
   display.style.display = 'block';
-  
+
   updateCompetitorDate();
 }
-
 function toggleOther(sel) {
   const o = document.getElementById('projectTypeOther');
   o.style.display = sel.value === 'Other' ? 'block' : 'none';
   if (sel.value !== 'Other') o.value = '';
 }
-
 // ══ VALIDATION HELPERS ══
 function flashError(elId, msg) {
   const el = document.getElementById(elId);
@@ -1156,54 +1069,42 @@ function flashError(elId, msg) {
   el.scrollIntoView({ behavior: 'smooth', block: 'center' });
   setTimeout(() => { el.style.borderColor = ''; el.style.boxShadow = ''; if (msg) el.placeholder = orig; }, 3000);
 }
-
 function showValidationToast(errors) {
   const box = document.getElementById('validationModal');
   const list = document.getElementById('validationList');
   list.innerHTML = errors.map(e => `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(239,68,68,0.1);font-size:12px;color:#fca5a5"><span style="font-size:14px">❌</span>${e}</div>`).join('');
   box.style.display = 'flex';
 }
-
 // ══ SUBMIT ══
 function submitLead() {
   const errors = [];
-
   const name = document.getElementById('customerName').value.trim();
   if (!name) { errors.push('Customer Name is required'); flashError('customerName', '⚠️ Required!'); }
-
   const bpId = document.getElementById('bpLeadId').value.trim();
   if (!bpId) { errors.push('BP Opportunity ID is required'); flashError('bpLeadId', '⚠️ Required!'); }
-
   const src = document.getElementById('leadSource').value;
   if (!src) { errors.push('Lead Source must be selected'); document.getElementById('leadSource').style.borderColor = '#ef4444'; setTimeout(() => document.getElementById('leadSource').style.borderColor = '', 3000); }
-
   const pt = document.getElementById('projectType').value;
   if (!pt) { errors.push('Project Type must be selected'); document.getElementById('projectType').style.borderColor = '#ef4444'; setTimeout(() => document.getElementById('projectType').style.borderColor = '', 3000); }
-
   if (A.urgency === null) errors.push('Timeline / Urgency answer is required (Section 1)');
   if (A.quotes === null)  errors.push('Competition / Quotes answer is required (Section 2)');
   if (A.dm === null)      errors.push('Decision Maker selection is required (Section 3)');
   if (A.credit === null)  errors.push('Credit / Financing answer is required (Section 4)');
-
   const apptDate = document.getElementById('appointmentDate').value;
   const apptTime = document.getElementById('appointmentTime').value;
   if (!apptDate) { errors.push('Appointment Date is required'); flashError('appointmentDate', ''); }
   if (!apptTime) { errors.push('Appointment Time is required'); flashError('appointmentTime', ''); }
-
   if (!selectedAgent) errors.push('Sales Agent must be selected (Jack or Dave)');
-
   if (errors.length > 0) {
     showValidationToast(errors);
     return;
   }
-
   const total = Object.values(S).reduce((a,b) => a+b, 0);
   const priority = total >= 80 ? 'HIGH' : total >= 65 ? 'MEDIUM' : 'LOW';
   const rec = getRec(total, A);
   const projectType = pt === 'Other'
     ? 'Other: ' + (document.getElementById('projectTypeOther').value.trim() || 'Not specified')
     : pt;
-
   const buildDateTime = (date, time) => {
     if (!date || !time) return null;
     const [h, m] = time.split(':').map(Number);
@@ -1217,7 +1118,6 @@ function submitLead() {
   };
   const startDT = buildDateTime(apptDate, apptTime);
   const endDT = startDT ? startDT + (60 * 60 * 1000) : null;
-
   window._pendingPayload = {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
     bp_lead_id: parseInt(document.getElementById('bpLeadId').value) || null,
@@ -1243,16 +1143,13 @@ function submitLead() {
     notes: document.getElementById('callNotes').value,
     call_timestamp: new Date().toISOString()
   };
-
   showReviewModal(window._pendingPayload, total, priority, rec);
 }
-
 function showReviewModal(p, total, priority, rec) {
   const scoreColor = total >= 80 ? '#4ade80' : total >= 65 ? '#fbbf24' : '#f87171';
   const fmt = val => val || '<span style="color:rgba(167,139,250,0.3);font-weight:400">—</span>';
   const fmtDate = d => d ? new Date(d + 'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}) : '—';
   const fmtTime = t => { if(!t) return '—'; const [h,m]=t.split(':'); const ampm=+h>=12?'PM':'AM'; return `${+h%12||12}:${m} ${ampm}`; };
-
   document.getElementById('reviewBody').innerHTML = `
     <div class="review-score-block">
       <div>
@@ -1265,7 +1162,6 @@ function showReviewModal(p, total, priority, rec) {
         <div style="font-size:11px;color:#a78bfa;font-weight:700">${rec.action}</div>
       </div>
     </div>
-
     <div class="review-section">
       <div class="review-section-title">👤 Customer Information</div>
       <div class="review-row"><span class="review-key">Customer Name</span><span class="review-val">${fmt(p.customer_name)}</span></div>
@@ -1274,7 +1170,6 @@ function showReviewModal(p, total, priority, rec) {
       <div class="review-row"><span class="review-key">Project Type</span><span class="review-val">${fmt(p.project_type)}</span></div>
       <div class="review-row"><span class="review-key">Set On</span><span class="review-val">${fmtDate(p.set_on)}</span></div>
     </div>
-
     <div class="review-section">
       <div class="review-section-title">⚡ Scored Answers</div>
       <div class="review-row"><span class="review-key">Timeline / Urgency</span><span class="review-val">${fmt(p.answers.urgency)} <span style="color:#7c3aed;font-size:10px">(${p.scores.urgency} pts)</span></span></div>
@@ -1282,7 +1177,6 @@ function showReviewModal(p, total, priority, rec) {
       <div class="review-row"><span class="review-key">Decision Maker</span><span class="review-val">${fmt(p.answers.dm)} <span style="color:#7c3aed;font-size:10px">(${p.scores.dm} pts)</span></span></div>
       <div class="review-row"><span class="review-key">Credit / Financing</span><span class="review-val">${fmt(p.answers.credit)} <span style="color:#7c3aed;font-size:10px">(${p.scores.credit} pts)</span></span></div>
     </div>
-
     <div class="review-section">
       <div class="review-section-title">📅 Appointment Details</div>
       <div class="review-row"><span class="review-key">Date</span><span class="review-val">${fmtDate(p.appointment_date)}</span></div>
@@ -1291,7 +1185,6 @@ function showReviewModal(p, total, priority, rec) {
       <div class="review-row"><span class="review-key">Property Address</span><span class="review-val">${fmt(p.address)}</span></div>
       ${p.competitor_appt_exists ? `<div class="review-row"><span class="review-key">⚠️ Competitor Appt</span><span class="review-val" style="color:#fb923c">${fmtDate(p.competitor_appt_date)}</span></div>` : ''}
     </div>
-
     <div class="review-section">
       <div class="review-section-title">⭐ Additional Info</div>
       ${p.enthusiasm_answer ? `<div class="review-row"><span class="review-key">Enthusiasm</span><span class="review-val">${p.enthusiasm_answer} (+${p.enthusiasm_bonus} bonus)</span></div>` : ''}
@@ -1300,24 +1193,20 @@ function showReviewModal(p, total, priority, rec) {
   `;
   document.getElementById('reviewModal').style.display = 'flex';
 }
-
 function confirmAndSubmit() {
   const p = window._pendingPayload;
   if (!p) return;
   document.getElementById('reviewModal').style.display = 'none';
-
   try {
     const existing = JSON.parse(localStorage.getItem('leadRecords') || '[]');
     existing.push(p);
     localStorage.setItem('leadRecords', JSON.stringify(existing));
   } catch(e) {}
-
   fetch('https://hook.us1.make.com/yharagyhivkjpq46tujwsuhqip475fuk', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(p)
   }).catch(e => console.warn('Webhook error:', e));
-
   const fmtDate = d => {
     if (!d) return '—';
     const dt = new Date(d + 'T00:00:00');
@@ -1333,7 +1222,6 @@ function confirmAndSubmit() {
     const ampm = +h >= 12 ? 'PM' : 'AM';
     return `${+h%12||12}:${m} ${ampm}`;
   };
-
   const agent    = p.sales_agent || 'Arnold';
   const source   = p.lead_source || '';
   const setOn    = fmtDate(p.set_on);
@@ -1349,12 +1237,10 @@ function confirmAndSubmit() {
   const compLine = p.competitor_appt_exists && p.competitor_appt_date
     ? `\nCompetitor Appt: ${fmtDateLong(p.competitor_appt_date)}`
     : '';
-
   const crmNote =
 `*Lead Introduction Video sent on: ${apptSetDate}
 *Appt Set Video sent on: ${apptSetDate}
 *Appt Day Before reminder sent on:
-
 ${agent} | ${source}
 -set on ${setOn}
 Project: ${project}
@@ -1362,15 +1248,12 @@ DM: ${dm}
 Quote/s: ${quotes}${compLine}
 CS: ${credit}
 Score: ${score}/100${notes}
-
 Appt: ${apptDate} at ${apptTime} with ${p.sales_agent || agent}`;
-
   document.getElementById('crmNote').textContent = crmNote;
   document.getElementById('modalSummary').textContent = `${p.crm_customer_name} · ${p.priority} · ${score}/100`;
   document.getElementById('modal').style.display = 'flex';
   window._pendingPayload = null;
 }
-
 function copyCrmNote(){
   const text = document.getElementById('crmNote').textContent;
   navigator.clipboard.writeText(text).then(() => {
@@ -1386,7 +1269,6 @@ function copyCrmNote(){
     window.getSelection().removeAllRanges();
   });
 }
-
 function closeModal() {
   document.getElementById('modal').style.display = 'none';
   document.getElementById('validationModal').style.display = 'none';
@@ -1408,7 +1290,6 @@ function closeModal() {
   hideCompetitorFollowup();
   calc();
 }
-
 // Init
 document.getElementById('setOn').value = new Date().toISOString().split('T')[0];
 document.getElementById('customerName').addEventListener('input', updateNameDisplay);
