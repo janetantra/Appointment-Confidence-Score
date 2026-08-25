@@ -319,7 +319,7 @@ select option{background:#0d0020;color:#e2d9f3}
     <div class="grid-2">
       <div><label class="field-label">Set On</label><input type="date" id="setOn"></div>
       <div><label class="field-label">Lead Source</label>
-        <select id="leadSource">
+        <select id="leadSource" onchange="updateSharedLead()">
           <option value="">Select source...</option>
           <option>APPOINTX</option><option>FACEBOOK</option><option>GOOGLE ADS</option>
           <option>HOME ADVISOR</option><option>HOME BUDDY</option><option>MOD-MODERNIZE</option>
@@ -456,7 +456,7 @@ select option{background:#0d0020;color:#e2d9f3}
     <div class="card-header">
       <div class="card-icon ci-scored">3</div>
       <div class="card-title">Decision Maker Confirmation</div>
-      <div class="card-pts">MAX 20 PTS</div>
+      <div class="card-pts">MAX 20 PTS · -30 IF ONE-LEGGER RISK</div>
     </div>
     <div class="script">
       <div class="script-tag">🎙 Ask</div>
@@ -492,6 +492,33 @@ select option{background:#0d0020;color:#e2d9f3}
         <div class="dm-big-label" style="color:#4ade80">40s Below</div>
         <div style="font-size:11px;color:rgba(107,114,128,0.7);margin-bottom:10px">Younger decision maker</div>
         <span class="badge badge-green" style="font-size:11px;padding:4px 14px">+20 PTS</span>
+      </div>
+    </div>
+    <!-- Jack: age group alone doesn't say whether this person is deciding
+         alone - that's the actual one-legger risk signal, scored below
+         together with house story. -->
+    <div style="margin-top:16px">
+      <label class="field-label">Is this the only decision maker?</label>
+      <div class="choices cols-2" id="group-soledm" style="margin-top:0">
+        <div class="choice" onclick="pickSoleDM('Yes',this)">
+          <div class="choice-label">🙋 Yes</div>
+          <div class="choice-sub">No spouse/partner involved</div>
+        </div>
+        <div class="choice" onclick="pickSoleDM('No',this)">
+          <div class="choice-label">👥 No</div>
+          <div class="choice-sub">Someone else is involved too</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:14px">
+      <label class="field-label">How many stories is the home?</label>
+      <div class="choices cols-2" id="group-housestory" style="margin-top:0">
+        <div class="choice" onclick="pickHouseStory('One Story',this)">
+          <div class="choice-label">🏠 One Story</div>
+        </div>
+        <div class="choice" onclick="pickHouseStory('Two+ Story',this)">
+          <div class="choice-label">🏘️ Two+ Story</div>
+        </div>
       </div>
     </div>
   </div>
@@ -849,7 +876,7 @@ function doLogout() {
 checkSession();
 // ══ STATE ══
 const A = { urgency: null, quotes: null, dm: null, credit: null };
-const S = { urgency: 0, quotes: 0, dm: 0, credit: 0 };
+const S = { urgency: 0, quotes: 0, dm: 0, credit: 0, dmRisk: 0, sharedLead: 0 };
 let enthAnswer = null, enthBonus = 0;
 let toastTimer = null;
 let competitorApptExists = false;
@@ -947,6 +974,44 @@ function pickDM(label, pts, el) {
   A.dm = label; S.dm = pts;
   document.getElementById('dot-dm').classList.add('done');
   calc(); showToast(pts, prev, 'Decision Makers');
+}
+let soleDM = null;
+function pickSoleDM(val, el) {
+  document.querySelectorAll('#group-soledm .choice').forEach(c => {
+    c.className = c.className.replace(/sel-\w+/g,'').trim();
+  });
+  el.classList.add('sel-purple');
+  soleDM = val;
+  updateDmRisk();
+}
+let houseStory = null;
+function pickHouseStory(val, el) {
+  document.querySelectorAll('#group-housestory .choice').forEach(c => {
+    c.className = c.className.replace(/sel-\w+/g,'').trim();
+  });
+  el.classList.add('sel-purple');
+  houseStory = val;
+  updateDmRisk();
+}
+// Jack: a two-story house where the caller claims to be the only
+// decision maker is a strong one-legger signal - "negative thirty points
+// big time." Derived from two answers, not a single pick, so it's scored
+// here rather than in pick()/pickDM().
+function updateDmRisk() {
+  const prev = S.dmRisk;
+  S.dmRisk = (houseStory === 'Two+ Story' && soleDM === 'Yes') ? -30 : 0;
+  calc();
+  if (S.dmRisk !== prev) showToast(S.dmRisk, prev, 'One-Legger Risk');
+}
+// Jack: shared leads (sold to multiple contractors) likely already have or
+// will get competing quotes regardless of what they tell us - score that
+// skepticism automatically the moment the source is picked.
+function updateSharedLead() {
+  const SHARED_SOURCES = ['HOME ADVISOR', 'MOD-MODERNIZE', 'THUMBTACK'];
+  const prev = S.sharedLead;
+  S.sharedLead = SHARED_SOURCES.indexOf(document.getElementById('leadSource').value) > -1 ? 30 : 0;
+  calc();
+  if (S.sharedLead !== prev) showToast(S.sharedLead, prev, 'Shared Lead');
 }
 function pickBonus(label, pts, el, cls) {
   document.querySelectorAll('#group-engagement .choice').forEach(c => {
@@ -1176,6 +1241,8 @@ function submitLead() {
     end_datetime: endDT,
     sales_agent: selectedAgent,
     set_by: selectedSetBy,
+    house_story: houseStory,
+    sole_decision_maker: soleDM,
     competitor_appt_exists: competitorApptExists,
     competitor_appt_date: document.getElementById('competitorApptDate').value || null,
     score: total, score_max: 100, priority,
@@ -1219,6 +1286,10 @@ function showReviewModal(p, total, priority, rec) {
       <div class="review-row"><span class="review-key">Timeline / Urgency</span><span class="review-val">${fmt(p.answers.urgency)} <span style="color:#7c3aed;font-size:10px">(${p.scores.urgency} pts)</span></span></div>
       <div class="review-row"><span class="review-key">Quotes / Competition</span><span class="review-val">${fmt(p.answers.quotes)} <span style="color:#7c3aed;font-size:10px">(${p.scores.quotes} pts)</span></span></div>
       <div class="review-row"><span class="review-key">Decision Maker</span><span class="review-val">${fmt(p.answers.dm)} <span style="color:#7c3aed;font-size:10px">(${p.scores.dm} pts)</span></span></div>
+      <div class="review-row"><span class="review-key">Sole Decision Maker?</span><span class="review-val">${fmt(p.sole_decision_maker)}</span></div>
+      <div class="review-row"><span class="review-key">House Story</span><span class="review-val">${fmt(p.house_story)}</span></div>
+      ${p.scores.dmRisk ? `<div class="review-row"><span class="review-key">⚠️ One-Legger Risk</span><span class="review-val" style="color:#f87171">${p.scores.dmRisk} pts</span></div>` : ''}
+      ${p.scores.sharedLead ? `<div class="review-row"><span class="review-key">Shared Lead Bonus</span><span class="review-val" style="color:#4ade80">+${p.scores.sharedLead} pts</span></div>` : ''}
       <div class="review-row"><span class="review-key">Credit / Financing</span><span class="review-val">${fmt(p.answers.credit)} <span style="color:#7c3aed;font-size:10px">(${p.scores.credit} pts)</span></span></div>
     </div>
     <div class="review-section">
@@ -1269,6 +1340,8 @@ function confirmAndSubmit() {
   };
   const agent    = p.sales_agent || 'Arnold';
   const setBy    = p.set_by || '—';
+  const houseStoryTxt = p.house_story || '—';
+  const soleDMTxt = p.sole_decision_maker || '—';
   const source   = p.lead_source || '';
   const setOn    = fmtDate(p.set_on);
   const project  = p.project_type || '—';
@@ -1289,6 +1362,7 @@ function confirmAndSubmit() {
 *Appt Day Before reminder sent on:
 ${agent} | ${source}
 Set By: ${setBy}
+House Story: ${houseStoryTxt} | Sole DM: ${soleDMTxt}
 -set on ${setOn}
 Project: ${project}
 DM: ${dm}
@@ -1330,6 +1404,8 @@ function closeModal() {
   document.querySelectorAll('.dm-big').forEach(c => c.classList.remove('dm-yes-sel','dm-no-sel'));
   document.querySelectorAll('.sb-dot').forEach(d => d.classList.remove('done'));
   for (const k in A) { A[k] = null; S[k] = 0; }
+  S.dmRisk = 0; S.sharedLead = 0;
+  soleDM = null; houseStory = null;
   enthAnswer = null; enthBonus = 0;
   competitorApptExists = false;
   selectedAgent = null;
