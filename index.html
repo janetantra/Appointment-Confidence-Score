@@ -648,6 +648,19 @@ select option{background:#0d0020;color:#e2d9f3}
           </div>
         </div>
       </div>
+      <div style="margin-top:14px">
+        <label class="field-label">Set By</label>
+        <div class="choices cols-2" id="group-setby" style="margin-top:0">
+          <div class="choice" onclick="pickSetBy('Hazel',this)" id="setby-hazel">
+            <div class="choice-label">📞 Hazel</div>
+            <div class="choice-sub">Appointment Setter</div>
+          </div>
+          <div class="choice" onclick="pickSetBy('Arnold',this)" id="setby-arnold">
+            <div class="choice-label">📞 Arnold</div>
+            <div class="choice-sub">Appointment Setter</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <!-- ADDRESS -->
@@ -843,6 +856,14 @@ function pickAgent(name, el) {
   });
   el.classList.add('sel-purple');
   selectedAgent = name;
+}
+let selectedSetBy = null;
+function pickSetBy(name, el) {
+  document.querySelectorAll('#group-setby .choice').forEach(c => {
+    c.className = c.className.replace(/sel-\w+/g,'').trim();
+  });
+  el.classList.add('sel-purple');
+  selectedSetBy = name;
 }
 // ══ RECOMMENDATION ENGINE ══
 function getRec(score, answers) {
@@ -1096,6 +1117,7 @@ function submitLead() {
   if (!apptDate) { errors.push('Appointment Date is required'); flashError('appointmentDate', ''); }
   if (!apptTime) { errors.push('Appointment Time is required'); flashError('appointmentTime', ''); }
   if (!selectedAgent) errors.push('Sales Agent must be selected (Jack or Dave)');
+  if (!selectedSetBy) errors.push('Set By must be selected (Hazel or Arnold)');
   if (errors.length > 0) {
     showValidationToast(errors);
     return;
@@ -1133,6 +1155,7 @@ function submitLead() {
     start_datetime: startDT,
     end_datetime: endDT,
     sales_agent: selectedAgent,
+    set_by: selectedSetBy,
     competitor_appt_exists: competitorApptExists,
     competitor_appt_date: document.getElementById('competitorApptDate').value || null,
     score: total, score_max: 100, priority,
@@ -1183,6 +1206,7 @@ function showReviewModal(p, total, priority, rec) {
       <div class="review-row"><span class="review-key">Date</span><span class="review-val">${fmtDate(p.appointment_date)}</span></div>
       <div class="review-row"><span class="review-key">Time</span><span class="review-val">${fmtTime(p.appointment_time)}</span></div>
       <div class="review-row"><span class="review-key">Sales Agent</span><span class="review-val">${fmt(p.sales_agent)}</span></div>
+      <div class="review-row"><span class="review-key">Set By</span><span class="review-val">${fmt(p.set_by)}</span></div>
       <div class="review-row"><span class="review-key">Property Address</span><span class="review-val">${fmt(p.address)}</span></div>
       ${p.competitor_appt_exists ? `<div class="review-row"><span class="review-key">⚠️ Competitor Appt</span><span class="review-val" style="color:#fb923c">${fmtDate(p.competitor_appt_date)}</span></div>` : ''}
     </div>
@@ -1224,6 +1248,7 @@ function confirmAndSubmit() {
     return `${+h%12||12}:${m} ${ampm}`;
   };
   const agent    = p.sales_agent || 'Arnold';
+  const setBy    = p.set_by || '—';
   const source   = p.lead_source || '';
   const setOn    = fmtDate(p.set_on);
   const project  = p.project_type || '—';
@@ -1243,6 +1268,7 @@ function confirmAndSubmit() {
 *Appt Set Video sent on: ${apptSetDate}
 *Appt Day Before reminder sent on:
 ${agent} | ${source}
+Set By: ${setBy}
 -set on ${setOn}
 Project: ${project}
 DM: ${dm}
@@ -1287,6 +1313,7 @@ function closeModal() {
   enthAnswer = null; enthBonus = 0;
   competitorApptExists = false;
   selectedAgent = null;
+  selectedSetBy = null;
   document.querySelectorAll('#group-agent .choice').forEach(c => { c.className = c.className.replace(/sel-\w+/g,'').trim(); });
   hideCompetitorFollowup();
   calc();
