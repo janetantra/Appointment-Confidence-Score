@@ -585,6 +585,8 @@ select option{background:#0d0020;color:#e2d9f3}
             <div class="bd-row"><span class="bd-key">Quotes</span><span class="bd-val" id="bd-quotes" style="color:#4b5563">—</span></div>
             <div class="bd-row"><span class="bd-key">Decision Makers</span><span class="bd-val" id="bd-dm" style="color:#4b5563">—</span></div>
             <div class="bd-row"><span class="bd-key">Credit / Financing</span><span class="bd-val" id="bd-credit" style="color:#4b5563">—</span></div>
+            <div class="bd-row"><span class="bd-key">Shared Lead</span><span class="bd-val" id="bd-sharedLead" style="color:#4b5563">—</span></div>
+            <div class="bd-row"><span class="bd-key">One-Legger Risk</span><span class="bd-val" id="bd-dmRisk" style="color:#4b5563">—</span></div>
             <div class="bd-row"><span>Total</span><span class="bd-val" id="bd-total" style="color:#c4b5fd">0 / 100</span></div>
           </div>
         </div>
@@ -1090,6 +1092,11 @@ function calc() {
     const el = document.getElementById('bd-' + k);
     if (A[k] === null) { el.textContent = '—'; el.style.color = '#4b5563'; }
     else { el.textContent = S[k] + ' pts'; el.style.color = S[k] > 0 ? '#4ade80' : '#f87171'; }
+  });
+  ['sharedLead','dmRisk'].forEach(k => {
+    const el = document.getElementById('bd-' + k);
+    if (!S[k]) { el.textContent = '—'; el.style.color = '#4b5563'; }
+    else { el.textContent = (S[k] > 0 ? '+' : '') + S[k] + ' pts'; el.style.color = S[k] > 0 ? '#4ade80' : '#f87171'; }
   });
   document.getElementById('bd-total').textContent = total + ' / 100';
   const ruleIds = ['rule-90','rule-80','rule-65','rule-64'];
