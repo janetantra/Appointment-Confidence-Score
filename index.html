@@ -321,7 +321,7 @@ select option{background:#0d0020;color:#e2d9f3}
       <div><label class="field-label">Lead Source</label>
         <select id="leadSource" onchange="updateSharedLead()">
           <option value="">Select source...</option>
-          <option>APPOINTX</option><option>FACEBOOK</option><option>GOOGLE ADS</option>
+          <option>ANGI</option><option>APPOINTX</option><option>FACEBOOK</option><option>GOOGLE ADS</option>
           <option>HOME ADVISOR</option><option>HOME BUDDY</option><option>MOD-MODERNIZE</option>
           <option>PRO-REMODEL</option><option>SEARCH GOOGLE & ORGANIC</option>
           <option>THUMBTACK</option><option>WEBSITE FORM</option><option>Other</option>
@@ -647,6 +647,14 @@ select option{background:#0d0020;color:#e2d9f3}
           <strong>"Let me go ahead and check Jack's availability…"</strong><br><br>
           "I have: Tuesday at 2:00 PM or Wednesday at 5:00 PM. Which works better for you?"
         </div>
+      </div>
+      <!-- Jack: shared leads already have (or will get) competing quotes -
+           guide the agent to book 7 days out. Advisory only - Jack wants
+           the agent picking the actual slot manually, not the calendar
+           blocked, unlike the online form's auto-picked slots. -->
+      <div id="sharedLeadWarning" style="display:none;background:rgba(251,146,60,0.1);border:1.5px solid rgba(251,146,60,0.4);border-radius:10px;padding:12px 16px;margin-bottom:14px">
+        <div style="font-size:12px;font-weight:800;color:#fb923c;margin-bottom:4px">⚠️ SHARED LEAD SOURCE</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.75);line-height:1.5">This lead is sold to multiple contractors — book <strong>5 to 7 days out</strong> to give them time to shop around before we show up. Suggested window: <strong id="sharedLeadMinDateText" style="color:#4ade80">—</strong></div>
       </div>
       <div class="grid-2" style="margin-bottom:12px">
         <div><label class="field-label">Appointment Date</label><input type="date" id="appointmentDate" oninput="updateApptDisplay()"></div>
@@ -1007,11 +1015,24 @@ function updateDmRisk() {
 // will get competing quotes regardless of what they tell us - score that
 // skepticism automatically the moment the source is picked.
 function updateSharedLead() {
-  const SHARED_SOURCES = ['HOME ADVISOR', 'MOD-MODERNIZE', 'THUMBTACK'];
+  // Jack, corrected: Modernize, Home Advisor, Angi, and Thumbtack -
+  // not the three originally guessed from the call recording.
+  const SHARED_SOURCES = ['HOME ADVISOR', 'MOD-MODERNIZE', 'ANGI', 'THUMBTACK'];
+  const isShared = SHARED_SOURCES.indexOf(document.getElementById('leadSource').value) > -1;
   const prev = S.sharedLead;
-  S.sharedLead = SHARED_SOURCES.indexOf(document.getElementById('leadSource').value) > -1 ? 30 : 0;
+  S.sharedLead = isShared ? 40 : 0;
   calc();
   if (S.sharedLead !== prev) showToast(S.sharedLead, prev, 'Shared Lead');
+  const warning = document.getElementById('sharedLeadWarning');
+  if (isShared) {
+    const fmt = d => d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+    const minDate = new Date(); minDate.setDate(minDate.getDate() + 5);
+    const maxDate = new Date(); maxDate.setDate(maxDate.getDate() + 7);
+    document.getElementById('sharedLeadMinDateText').textContent = `${fmt(minDate)} – ${fmt(maxDate)}`;
+    warning.style.display = 'block';
+  } else {
+    warning.style.display = 'none';
+  }
 }
 function pickBonus(label, pts, el, cls) {
   document.querySelectorAll('#group-engagement .choice').forEach(c => {
@@ -1406,6 +1427,7 @@ function closeModal() {
   for (const k in A) { A[k] = null; S[k] = 0; }
   S.dmRisk = 0; S.sharedLead = 0;
   soleDM = null; houseStory = null;
+  document.getElementById('sharedLeadWarning').style.display = 'none';
   enthAnswer = null; enthBonus = 0;
   competitorApptExists = false;
   selectedAgent = null;
