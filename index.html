@@ -418,7 +418,7 @@ select option{background:#0d0020;color:#e2d9f3}
         <strong>"Have you had any other companies come out yet?"</strong><br><br>
         <span style="color:#4ade80">If YES →</span> <strong>"Great! That's gonna be an additional discount for you!"</strong> We don't need to know which company nor how much the offer is — we just want you to have something to compare us with, price wise and quality wise.<br><br>
         <span style="color:#f87171">If NO →</span> "Just so you know, I am not booking you with any regular agent — I am booking you with the manager himself. That being said, it's a guarantee that you will be offered a significant discount on top of the promotion you already qualified for. We highly recommend that you get a quote before our visit if possible, doesn't really matter which company nor how much the offer is — we will never ask, we just want you to have something to compare us with, price wise and quality wise."<br><br>
-        <strong>"Do you think 7 days out is enough for you to get a quote?"</strong>
+        <strong>"So let's give you about a week — do you think 5 to 7 days is enough time for you to get that other quote in?"</strong>
       </div>
       <div class="script-listen">👂 Listen — then select below</div>
     </div>
@@ -436,7 +436,20 @@ select option{background:#0d0020;color:#e2d9f3}
       <div class="choice" onclick="pick('quotes','None',10,this,'sel-amber','Quotes'); hideCompetitorFollowup()">
         <div class="choice-label">None</div>
         <div class="choice-sub">No quote yet</div>
-        <span class="badge badge-amber">+10 PTS</span>
+        <span class="badge badge-amber" id="badge-quotes-none">+10 PTS</span>
+      </div>
+    </div>
+    <!-- CONDITIONAL: no quotes yet - Jack's rule is they go out a minimum of
+         5 days so the competition gets there first. Framed for the customer
+         as time we're giving THEM, never as a delay on our end. -->
+    <div class="followup-block" id="no-quotes-followup" style="display:none">
+      <div class="followup-label">🗓️ Book This One Out — Minimum 5 Days</div>
+      <div class="script" style="margin-bottom:0">
+        <div class="script-tag">🎙 Say — while you pick the date</div>
+        <div class="script-body">
+          <strong>"What I'm going to do is push you out to <span id="noQuotesDateText" style="color:#4ade80">—</span>. That gives you a full week to get another price in hand, so when our manager sits down with you, you can see exactly how we stack up — and you're not making a decision with nothing to compare it to."</strong><br><br>
+          <span style="color:#fb923c">If they push for sooner →</span> "I hear you, and I want to get you taken care of. The reason I don't want to come out tomorrow is you'd have nothing to compare us against, and you deserve to know you got the best deal. Let's give it those few days — it works in your favor, I promise."
+        </div>
       </div>
     </div>
     <!-- CONDITIONAL: Competitor appt date follow-up -->
@@ -655,8 +668,8 @@ select option{background:#0d0020;color:#e2d9f3}
            the agent picking the actual slot manually, not the calendar
            blocked, unlike the online form's auto-picked slots. -->
       <div id="sharedLeadWarning" style="display:none;background:rgba(251,146,60,0.1);border:1.5px solid rgba(251,146,60,0.4);border-radius:10px;padding:12px 16px;margin-bottom:14px">
-        <div style="font-size:12px;font-weight:800;color:#fb923c;margin-bottom:4px">⚠️ SHARED LEAD SOURCE</div>
-        <div style="font-size:12px;color:rgba(255,255,255,0.75);line-height:1.5">This lead is sold to multiple contractors — book <strong>5 to 7 days out</strong> to give them time to shop around before we show up. Suggested window: <strong id="sharedLeadMinDateText" style="color:#4ade80">—</strong></div>
+        <div style="font-size:12px;font-weight:800;color:#fb923c;margin-bottom:4px">⚠️ BOOK MINIMUM 5 DAYS OUT</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.75);line-height:1.5"><span id="bookingDelayReason"></span> Let the competition go first — book <strong>5 to 7 days out</strong>. Suggested window: <strong id="sharedLeadMinDateText" style="color:#4ade80">—</strong></div>
       </div>
       <!-- Jack: a two-story house where the caller claims to be the only
            decision maker is a one-legger in the making. Morning and
@@ -895,7 +908,22 @@ function doLogout() {
 checkSession();
 // ══ STATE ══
 const A = { urgency: null, quotes: null, dm: null, credit: null };
-const S = { urgency: 0, quotes: 0, dm: 0, credit: 0, dmRisk: 0, sharedLead: 0 };
+/* Positive categories total exactly 100: quotes 40 + urgency 20 + dm 20 +
+   credit 20. dmRisk is a deduction, not a category, so a perfect lead that
+   trips the one-legger rule lands at 60 - LOW priority, which is the whole
+   point of the -40. Shared-lead is NOT a fifth category: it raises the
+   quotes score instead, because "shared lead" and "has competition" are
+   the same fact and scoring both paid it twice and pushed the max to 140. */
+const S = { urgency: 0, quotes: 0, dm: 0, credit: 0, dmRisk: 0 };
+const SHARED_SOURCES = ['HOME ADVISOR', 'MOD-MODERNIZE', 'QUINSTREET', 'THUMBTACK'];
+/* Jack: a shared lead who hasn't seen a price yet is worth real points -
+   they'll almost certainly have quotes before we arrive - but less than
+   someone who already holds one, since an unseen price can still cancel
+   the appointment. Sits below "appt before us" (30), well above a genuine
+   no-competition lead (10). */
+const SHARED_QUOTES_FLOOR = 25;
+let rawQuotesPts = null;   // the answer's own points, before any floor
+let sharedBoost = 0;       // display only - already baked into S.quotes
 let enthAnswer = null, enthBonus = 0;
 let toastTimer = null;
 let competitorApptExists = false;
@@ -981,10 +1009,26 @@ function pick(group, label, pts, el, cls, catName) {
   });
   el.classList.add(cls);
   const prev = S[group];
-  A[group] = label; S[group] = pts;
+  A[group] = label;
+  /* Quotes is the one category whose final score isn't just the answer's
+     own points - a shared lead source raises it. Everything else is direct. */
+  if (group === 'quotes') { rawQuotesPts = pts; applyQuotesScore(); }
+  else { S[group] = pts; }
   document.getElementById('dot-' + group).classList.add('done');
   if (group === 'quotes' && label !== 'Have Appt Before Us') hideCompetitorFollowup();
-  calc(); showToast(pts, prev, catName);
+  calc(); showToast(S[group], prev, catName);
+  if (group === 'quotes') updateBookingDelay();
+}
+function isSharedLead() {
+  return SHARED_SOURCES.indexOf(document.getElementById('leadSource').value) > -1;
+}
+/* Floor the quotes score for shared leads instead of adding a separate
+   bonus - same signal, counted once, keeps the ceiling at 100. */
+function applyQuotesScore() {
+  if (rawQuotesPts === null) { S.quotes = 0; sharedBoost = 0; return; }
+  const floored = isSharedLead() ? Math.max(rawQuotesPts, SHARED_QUOTES_FLOOR) : rawQuotesPts;
+  sharedBoost = floored - rawQuotesPts;
+  S.quotes = floored;
 }
 function pickDM(label, pts, el) {
   document.querySelectorAll('#group-dm .dm-big').forEach(c => c.classList.remove('dm-yes-sel','dm-no-sel'));
@@ -1025,30 +1069,35 @@ function updateDmRisk() {
   calc();
   if (S.dmRisk !== prev) showToast(S.dmRisk, prev, 'One-Legger Risk');
 }
-// Jack: shared leads (sold to multiple contractors) likely already have or
-// will get competing quotes regardless of what they tell us - score that
-// skepticism automatically the moment the source is picked.
+/* Lead Source drives the quotes floor, so re-run the quotes maths whenever
+   it changes - the source is often picked after the quotes answer. */
 function updateSharedLead() {
-  // Jack: Angi is the same company as Home Advisor and Modernize is the
-  // same company as QuinStreet - Angi, Facebook, and Pro-Remodel are
-  // explicitly excluded from this bonus (Angi's leads already come in
-  // labeled Home Advisor in practice).
-  const SHARED_SOURCES = ['HOME ADVISOR', 'MOD-MODERNIZE', 'QUINSTREET', 'THUMBTACK'];
-  const isShared = SHARED_SOURCES.indexOf(document.getElementById('leadSource').value) > -1;
-  const prev = S.sharedLead;
-  S.sharedLead = isShared ? 40 : 0;
+  const prevQuotes = S.quotes;
+  applyQuotesScore();
   calc();
-  if (S.sharedLead !== prev) showToast(S.sharedLead, prev, 'Shared Lead');
-  const warning = document.getElementById('sharedLeadWarning');
-  if (isShared) {
-    const fmt = d => d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-    const minDate = new Date(); minDate.setDate(minDate.getDate() + 5);
-    const maxDate = new Date(); maxDate.setDate(maxDate.getDate() + 7);
-    document.getElementById('sharedLeadMinDateText').textContent = `${fmt(minDate)} – ${fmt(maxDate)}`;
-    warning.style.display = 'block';
-  } else {
-    warning.style.display = 'none';
+  if (S.quotes !== prevQuotes) showToast(S.quotes, prevQuotes, 'Quotes (shared lead)');
+  updateBookingDelay();
+}
+/* Jack's booking rule, one banner for both reasons: anyone without a quote
+   in hand goes out a minimum of 5 days so the competition gets there first.
+   Advisory only - the setter still picks the actual slot. */
+function updateBookingDelay() {
+  const noQuotes = (A.quotes === 'None');
+  const shared = isSharedLead();
+  const show = noQuotes || shared;
+  const fmt = d => d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  const minDate = new Date(); minDate.setDate(minDate.getDate() + 5);
+  const maxDate = new Date(); maxDate.setDate(maxDate.getDate() + 7);
+  const windowText = `${fmt(minDate)} – ${fmt(maxDate)}`;
+  document.getElementById('sharedLeadWarning').style.display = show ? 'block' : 'none';
+  if (show) {
+    document.getElementById('sharedLeadMinDateText').textContent = windowText;
+    document.getElementById('bookingDelayReason').textContent = noQuotes
+      ? 'No quote in hand yet — they need time to get one before we show up.'
+      : 'Shared lead source — sold to multiple contractors, so they will be shopping.';
   }
+  document.getElementById('no-quotes-followup').style.display = noQuotes ? 'block' : 'none';
+  if (noQuotes) document.getElementById('noQuotesDateText').textContent = fmt(minDate);
 }
 function pickBonus(label, pts, el, cls) {
   document.querySelectorAll('#group-engagement .choice').forEach(c => {
@@ -1107,11 +1156,14 @@ function calc() {
     if (A[k] === null) { el.textContent = '—'; el.style.color = '#4b5563'; }
     else { el.textContent = S[k] + ' pts'; el.style.color = S[k] > 0 ? '#4ade80' : '#f87171'; }
   });
-  ['sharedLead','dmRisk'].forEach(k => {
-    const el = document.getElementById('bd-' + k);
-    if (!S[k]) { el.textContent = '—'; el.style.color = '#4b5563'; }
-    else { el.textContent = (S[k] > 0 ? '+' : '') + S[k] + ' pts'; el.style.color = S[k] > 0 ? '#4ade80' : '#f87171'; }
-  });
+  /* Shown for transparency, but NOT added to the total - the boost is
+     already inside S.quotes above, and adding it here would double it. */
+  const bdShared = document.getElementById('bd-sharedLead');
+  if (!sharedBoost) { bdShared.textContent = '—'; bdShared.style.color = '#4b5563'; }
+  else { bdShared.textContent = `included (+${sharedBoost} to Quotes)`; bdShared.style.color = '#4ade80'; }
+  const bdRisk = document.getElementById('bd-dmRisk');
+  if (!S.dmRisk) { bdRisk.textContent = '—'; bdRisk.style.color = '#4b5563'; }
+  else { bdRisk.textContent = S.dmRisk + ' pts'; bdRisk.style.color = '#f87171'; }
   document.getElementById('bd-total').textContent = total + ' / 100';
   const ruleIds = ['rule-90','rule-80','rule-65','rule-64'];
   const ruleActive = done === 0 ? null : total >= 90 ? 'rule-90' : total >= 80 ? 'rule-80' : total >= 65 ? 'rule-65' : 'rule-64';
@@ -1292,7 +1344,10 @@ function submitLead() {
     enthusiasm_bonus: enthBonus,
     enthusiasm_answer: enthAnswer,
     combined_score: total + enthBonus,
-    answers: { ...A }, scores: { ...S },
+    /* sharedLead is reported separately so the Google Sheet column and the
+       Make mapper keep working - it is already counted inside scores.quotes,
+       so never add it to a total downstream. */
+    answers: { ...A }, scores: { ...S, sharedLead: sharedBoost, quotesRaw: rawQuotesPts },
     notes: document.getElementById('callNotes').value,
     call_timestamp: new Date().toISOString()
   };
@@ -1335,7 +1390,7 @@ function showReviewModal(p, total, priority, rec) {
       <div class="review-row"><span class="review-key">Sole Decision Maker?</span><span class="review-val">${fmt(p.sole_decision_maker)}</span></div>
       <div class="review-row"><span class="review-key">House Story</span><span class="review-val">${fmt(p.house_story)}</span></div>
       ${p.scores.dmRisk ? `<div class="review-row"><span class="review-key">⚠️ One-Legger Risk</span><span class="review-val" style="color:#f87171">${p.scores.dmRisk} pts</span></div>` : ''}
-      ${p.scores.sharedLead ? `<div class="review-row"><span class="review-key">Shared Lead Bonus</span><span class="review-val" style="color:#4ade80">+${p.scores.sharedLead} pts</span></div>` : ''}
+      ${p.scores.sharedLead ? `<div class="review-row"><span class="review-key">Shared Lead</span><span class="review-val" style="color:#4ade80">Quotes raised ${p.scores.quotesRaw} → ${p.scores.quotes}</span></div>` : ''}
       <div class="review-row"><span class="review-key">Credit / Financing</span><span class="review-val">${fmt(p.answers.credit)} <span style="color:#7c3aed;font-size:10px">(${p.scores.credit} pts)</span></span></div>
     </div>
     <div class="review-section">
@@ -1450,10 +1505,12 @@ function closeModal() {
   document.querySelectorAll('.dm-big').forEach(c => c.classList.remove('dm-yes-sel','dm-no-sel'));
   document.querySelectorAll('.sb-dot').forEach(d => d.classList.remove('done'));
   for (const k in A) { A[k] = null; S[k] = 0; }
-  S.dmRisk = 0; S.sharedLead = 0;
+  S.dmRisk = 0;
+  rawQuotesPts = null; sharedBoost = 0;
   soleDM = null; houseStory = null;
   document.getElementById('sharedLeadWarning').style.display = 'none';
   document.getElementById('eveningOnlyWarning').style.display = 'none';
+  document.getElementById('no-quotes-followup').style.display = 'none';
   enthAnswer = null; enthBonus = 0;
   competitorApptExists = false;
   selectedAgent = null;
