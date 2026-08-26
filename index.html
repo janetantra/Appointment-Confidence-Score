@@ -323,7 +323,7 @@ select option{background:#0d0020;color:#e2d9f3}
           <option value="">Select source...</option>
           <option>ANGI</option><option>APPOINTX</option><option>FACEBOOK</option><option>GOOGLE ADS</option>
           <option>HOME ADVISOR</option><option>HOME BUDDY</option><option>MOD-MODERNIZE</option>
-          <option>PRO-REMODEL</option><option>SEARCH GOOGLE & ORGANIC</option>
+          <option>PRO-REMODEL</option><option>QUINSTREET</option><option>SEARCH GOOGLE & ORGANIC</option>
           <option>THUMBTACK</option><option>WEBSITE FORM</option><option>Other</option>
         </select>
       </div>
@@ -1017,9 +1017,11 @@ function updateDmRisk() {
 // will get competing quotes regardless of what they tell us - score that
 // skepticism automatically the moment the source is picked.
 function updateSharedLead() {
-  // Jack, corrected: Modernize, Home Advisor, Angi, and Thumbtack -
-  // not the three originally guessed from the call recording.
-  const SHARED_SOURCES = ['HOME ADVISOR', 'MOD-MODERNIZE', 'ANGI', 'THUMBTACK'];
+  // Jack: Angi is the same company as Home Advisor and Modernize is the
+  // same company as QuinStreet - Angi, Facebook, and Pro-Remodel are
+  // explicitly excluded from this bonus (Angi's leads already come in
+  // labeled Home Advisor in practice).
+  const SHARED_SOURCES = ['HOME ADVISOR', 'MOD-MODERNIZE', 'QUINSTREET', 'THUMBTACK'];
   const isShared = SHARED_SOURCES.indexOf(document.getElementById('leadSource').value) > -1;
   const prev = S.sharedLead;
   S.sharedLead = isShared ? 40 : 0;
