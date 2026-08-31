@@ -684,6 +684,8 @@ select option{background:#0d0020;color:#e2d9f3}
         <div><label class="field-label">Appointment Date</label><input type="date" id="appointmentDate" oninput="updateApptDisplay()"></div>
         <div><label class="field-label">Appointment Time</label><input type="time" id="appointmentTime" step="900" oninput="updateApptDisplay()"></div>
       </div>
+      <!-- Live agent-calendar availability -->
+      <div id="availabilityNotice" style="display:none;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:13px;font-weight:700;line-height:1.45"></div>
       <!-- Live start/end display -->
       <div id="apptDateTimeDisplay" style="display:none;background:rgba(109,40,217,0.08);border:1px solid rgba(109,40,217,0.25);border-radius:10px;padding:12px 16px;margin-bottom:14px">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
@@ -934,6 +936,7 @@ function pickAgent(name, el) {
   });
   el.classList.add('sel-purple');
   selectedAgent = name;
+  refreshAvailability();
 }
 let selectedSetBy = null;
 function pickSetBy(name, el) {
@@ -1240,7 +1243,7 @@ function updateApptDisplay() {
   const date = document.getElementById('appointmentDate').value;
   const time = document.getElementById('appointmentTime').value;
   const display = document.getElementById('apptDateTimeDisplay');
-  if (!date || !time) { display.style.display = 'none'; return; }
+  if (!date || !time) { display.style.display = 'none'; refreshAvailability(); return; }
 
   const start = new Date(`${date}T${time}:00`);
   const end   = new Date(start.getTime() + 60 * 60 * 1000);
@@ -1253,6 +1256,7 @@ function updateApptDisplay() {
   display.style.display = 'block';
 
   updateCompetitorDate();
+  refreshAvailability();
 }
 function toggleOther(sel) {
   const o = document.getElementById('projectTypeOther');
@@ -1297,6 +1301,7 @@ function submitLead() {
   if (!apptTime) { errors.push('Appointment Time is required'); flashError('appointmentTime', ''); }
   if (!selectedAgent) errors.push('Sales Agent must be selected (Jack or Dave)');
   if (!selectedSetBy) errors.push('Set By must be selected (Hazel or Arnold)');
+  if (availabilityState.status === 'taken') errors.push((selectedAgent || 'That agent') + ' already has an appointment at this date/time - please pick another slot');
   if (errors.length > 0) {
     showValidationToast(errors);
     return;
@@ -1315,7 +1320,7 @@ function submitLead() {
     const finalHour = rounded === 60 ? h + 1 : h;
     const hh = String(finalHour).padStart(2, '0');
     const mm = String(finalMin).padStart(2, '0');
-    const chicagoStr = `${date}T${hh}:${mm}:00-05:00`;
+    const chicagoStr = `${date}T${hh}:${mm}:00` + chicagoOffsetString(date, finalHour, finalMin);
     return new Date(chicagoStr).getTime();
   };
   const startDT = buildDateTime(apptDate, apptTime);
@@ -1413,6 +1418,13 @@ function showReviewModal(p, total, priority, rec) {
 function confirmAndSubmit() {
   const p = window._pendingPayload;
   if (!p) return;
+  // Last-second re-check: the slot may have been taken while this form was open.
+  if (availabilityState.status === 'taken') {
+    document.getElementById('reviewModal').style.display = 'none';
+    renderAvailability(availabilityState);
+    showValidationToast([(selectedAgent || 'That agent') + ' already has an appointment at this date/time - please pick another slot']);
+    return;
+  }
   document.getElementById('reviewModal').style.display = 'none';
   try {
     const existing = JSON.parse(localStorage.getItem('leadRecords') || '[]');
@@ -1499,6 +1511,8 @@ function closeModal() {
   ['customerName','callNotes','bpLeadId','address','competitorApptDate'].forEach(id => document.getElementById(id).value = '');
   ['leadSource','projectType','appointmentDate','appointmentTime'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('apptDateTimeDisplay').style.display = 'none';
+  document.getElementById('availabilityNotice').style.display = 'none';
+  availabilityState = { status: 'unknown', conflicts: [] };
   document.getElementById('projectTypeOther').value = '';
   document.getElementById('setOn').value = new Date().toISOString().split('T')[0];
   document.querySelectorAll('.choice').forEach(c => { c.className = c.className.replace(/sel-\w+/g,'').trim(); });
@@ -1519,9 +1533,172 @@ function closeModal() {
   hideCompetitorFollowup();
   calc();
 }
+// ══ AGENT CALENDAR AVAILABILITY ══
+// Reads the same live Builder Prime feed the Big Boy booking form uses, so the
+// setter finds out a slot is taken here instead of after the lead is submitted.
+// Make still enforces the real conflict gate server-side; this is the early warning.
+const AVAILABILITY_URL   = 'https://hook.us1.make.com/7gsn1pbwj987s5dysghdnwk6buf69yqt';
+const AGENT_EMPLOYEE_IDS = { Jack: 16410, Dave: 20307 };
+const SLOT_MINUTES       = 60;      // BP meetings are 1 hour
+const AVAIL_CACHE_MS     = 120000;  // re-fetch at most every 2 minutes
+const AVAIL_TIMEOUT_MS   = 12000;
+
+let availabilityState = { status: 'unknown', conflicts: [] };
+let availCache = { at: 0, data: null, inflight: null };
+
+// Minutes Chicago is offset from UTC at a given instant: CDT -> -300, CST -> -360.
+function chicagoOffsetMinutes(utcMs) {
+  const dtf = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Chicago', hour12: false,
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+  const p = {};
+  for (const part of dtf.formatToParts(new Date(utcMs))) p[part.type] = part.value;
+  const hour = p.hour === '24' ? '0' : p.hour;
+  const asUTC = Date.UTC(+p.year, +p.month - 1, +p.day, +hour, +p.minute, +p.second);
+  return (asUTC - utcMs) / 60000;
+}
+
+// 'YYYY-MM-DD' + Chicago wall-clock hour/minute -> epoch ms
+function chicagoToEpoch(dateStr, hh, mm) {
+  const b = String(dateStr).split('-');
+  const guess = Date.UTC(+b[0], +b[1] - 1, +b[2], hh, mm, 0);
+  let off = chicagoOffsetMinutes(guess);            // first pass
+  off = chicagoOffsetMinutes(guess - off * 60000);  // second pass fixes DST edges
+  return guess - off * 60000;
+}
+
+// '-05:00' or '-06:00' for that Chicago wall time. Replaces the old hardcoded
+// -05:00, which wrote every appointment an hour off from Nov to Mar.
+function chicagoOffsetString(dateStr, hh, mm) {
+  const off = chicagoOffsetMinutes(chicagoToEpoch(dateStr, hh, mm));
+  const sign = off <= 0 ? '-' : '+';
+  const a = Math.abs(off);
+  return sign + String(Math.floor(a / 60)).padStart(2, '0') + ':' + String(a % 60).padStart(2, '0');
+}
+
+function loadAvailability(force) {
+  const now = Date.now();
+  if (!force && availCache.data && (now - availCache.at) < AVAIL_CACHE_MS) {
+    return Promise.resolve(availCache.data);
+  }
+  if (availCache.inflight) return availCache.inflight;
+
+  const ctl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+  const timer = setTimeout(() => { if (ctl) ctl.abort(); }, AVAIL_TIMEOUT_MS);
+
+  availCache.inflight = fetch(AVAILABILITY_URL + '?t=' + now, {
+    method: 'GET', cache: 'no-store', signal: ctl ? ctl.signal : undefined
+  })
+    .then(r => r.json())
+    .then(j => {
+      clearTimeout(timer);
+      availCache.inflight = null;
+      if (!j || j.ok !== true) throw new Error('bad payload');
+      availCache.at = Date.now();
+      availCache.data = { busy: j.busy || [], marks: j.marks || [], now: j.now || Date.now() };
+      return availCache.data;
+    })
+    .catch(e => {
+      clearTimeout(timer);
+      availCache.inflight = null;
+      console.warn('Availability check unavailable:', e);
+      return null;   // fail OPEN - never block a booking because the check broke
+    });
+
+  return availCache.inflight;
+}
+
+function employeeIdFor(name) {
+  if (!name) return null;
+  const n = String(name).toLowerCase();
+  for (const k in AGENT_EMPLOYEE_IDS) {
+    if (n.indexOf(k.toLowerCase()) > -1) return AGENT_EMPLOYEE_IDS[k];
+  }
+  return null;
+}
+
+// -> { status: 'free' | 'taken' | 'held' | 'unknown', conflicts: [] }
+function checkSlot(agentName, dateStr, timeStr, data) {
+  if (!data) return { status: 'unknown', conflicts: [] };
+  const empId = employeeIdFor(agentName);
+  if (!empId || !dateStr || !timeStr) return { status: 'unknown', conflicts: [] };
+
+  const [h, m] = timeStr.split(':').map(Number);
+  if (isNaN(h) || isNaN(m)) return { status: 'unknown', conflicts: [] };
+
+  const start = chicagoToEpoch(dateStr, h, m);
+  const end   = start + SLOT_MINUTES * 60000;
+  const now   = Date.now();
+
+  // Hard block: real Builder Prime meetings. c:1 means cancelled - not a conflict.
+  const hits = data.busy.filter(b =>
+    b && b.c !== 1 && String(b.e) === String(empId) && b.s < end && b.n > start);
+  if (hits.length) return { status: 'taken', conflicts: hits };
+
+  // Soft warn: unexpired holds placed by the Big Boy online form.
+  const held = data.marks.filter(mk => {
+    if (!mk || !mk.s) return false;
+    if (mk.x && mk.x < now) return false;                     // hold already expired
+    const mkId = employeeIdFor(mk.a);
+    if (mkId && String(mkId) !== String(empId)) return false;
+    return mk.s < end && (mk.s + SLOT_MINUTES * 60000) > start;
+  });
+  if (held.length) return { status: 'held', conflicts: held };
+
+  return { status: 'free', conflicts: [] };
+}
+
+function renderAvailability(res) {
+  const el = document.getElementById('availabilityNotice');
+  if (!el) return;
+  const agent = selectedAgent || 'This agent';
+  if (res.status === 'taken') {
+    el.style.display = 'block';
+    el.style.background = 'rgba(239,68,68,0.14)';
+    el.style.border = '2px solid #ef4444';
+    el.style.color = '#fca5a5';
+    el.textContent = '⛔ ' + agent + ' already has an appointment at this time. Pick another slot.';
+  } else if (res.status === 'held') {
+    el.style.display = 'block';
+    el.style.background = 'rgba(251,146,60,0.1)';
+    el.style.border = '1.5px solid rgba(251,146,60,0.4)';
+    el.style.color = '#fdba74';
+    el.textContent = '⚠️ Someone is holding this slot on the online booking form. It may be gone by the time you submit.';
+  } else if (res.status === 'free') {
+    el.style.display = 'block';
+    el.style.background = 'rgba(74,222,128,0.1)';
+    el.style.border = '1.5px solid rgba(74,222,128,0.4)';
+    el.style.color = '#4ade80';
+    el.textContent = '✅ ' + agent + ' is open at this time.';
+  } else {
+    el.style.display = 'none';
+    el.textContent = '';
+  }
+}
+
+function refreshAvailability() {
+  const date = document.getElementById('appointmentDate').value;
+  const time = document.getElementById('appointmentTime').value;
+  if (!date || !time || !selectedAgent) {
+    availabilityState = { status: 'unknown', conflicts: [] };
+    renderAvailability(availabilityState);
+    return;
+  }
+  loadAvailability(false).then(data => {
+    // Guard against a slow response landing after the setter changed the slot.
+    if (document.getElementById('appointmentDate').value !== date ||
+        document.getElementById('appointmentTime').value !== time) return;
+    availabilityState = checkSlot(selectedAgent, date, time, data);
+    renderAvailability(availabilityState);
+  });
+}
+
 // Init
 document.getElementById('setOn').value = new Date().toISOString().split('T')[0];
 document.getElementById('customerName').addEventListener('input', updateNameDisplay);
+loadAvailability(true);   // warm the agent-calendar cache
 </script>
 </body>
 </html>
