@@ -750,6 +750,26 @@ select option{background:#0d0020;color:#e2d9f3}
         </div>
         <div style="font-size:12px;color:#6d7e8b;margin-top:6px;line-height:1.4">A "Yes" puts a <strong style="color:#4ade80">$</strong> next to the score on the calendar, so Jack and Dave can spot moveable appointments when a gap opens.</div>
       </div>
+      <div style="margin-top:18px">
+        <div class="script">
+          <div class="script-tag">🎙 Ask &mdash; read this one word for word</div>
+          <div class="script-body" id="smsConsentScript">
+            "And is it alright if we send you a few texts &mdash; your appointment confirmation, a reminder, and our ballpark pricing so you have it before we come out? Message and data rates may apply, and you can reply STOP any time to opt out."
+          </div>
+          <div class="script-listen">A "No" is completely fine and does not affect their appointment &mdash; just mark it honestly. We are only allowed to text people who said yes.</div>
+        </div>
+        <label class="field-label">Okay To Text?</label>
+        <div class="choices cols-2" id="group-sms" style="margin-top:0">
+          <div class="choice" onclick="pickSms('Yes',this)" id="sms-yes">
+            <div class="choice-label">📱 Yes</div>
+            <div class="choice-sub">We can text them</div>
+          </div>
+          <div class="choice" onclick="pickSms('No',this)" id="sms-no">
+            <div class="choice-label">🚫 No</div>
+            <div class="choice-sub">Phone and email only</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <!-- ADDRESS -->
@@ -961,6 +981,21 @@ function pickAgent(name, el) {
   el.classList.add('sel-purple');
   selectedAgent = name;
   refreshAvailability();
+}
+/* The exact words the setter reads. Logged with every lead so there is a record
+   of what the customer actually agreed to - the wording is also what gets
+   registered for A2P 10DLC, so bump the version if it ever changes. */
+const SMS_CONSENT_VERSION = '2026-08-form1-v1';
+const SMS_CONSENT_TEXT = 'And is it alright if we send you a few texts - your appointment confirmation, a reminder, and our ballpark pricing so you have it before we come out? Message and data rates may apply, and you can reply STOP any time to opt out.';
+let selectedSms = null;
+let smsConsentAt = null;
+function pickSms(name, el) {
+  document.querySelectorAll('#group-sms .choice').forEach(c => {
+    c.className = c.className.replace(/sel-\w+/g,'').trim();
+  });
+  el.classList.add('sel-purple');
+  selectedSms = name;
+  smsConsentAt = new Date().toISOString();
 }
 let selectedFlex = null;
 function pickFlex(name, el) {
@@ -1334,6 +1369,7 @@ function submitLead() {
   if (!selectedAgent) errors.push('Sales Agent must be selected (Jack or Dave)');
   if (!selectedSetBy) errors.push('Set By must be selected (Hazel or Arnold)');
   if (!selectedFlex) errors.push('Flexible On Timing must be answered (Yes or No)');
+  if (!selectedSms) errors.push('Okay To Text must be answered (Yes or No)');
   if (availabilityState.status === 'taken') errors.push((selectedAgent || 'That agent') + ' already has an appointment at this date/time - please pick another slot');
   if (errors.length > 0) {
     showValidationToast(errors);
@@ -1373,6 +1409,11 @@ function submitLead() {
     end_datetime: endDT,
     sales_agent: selectedAgent,
     flex_on_cancellation: selectedFlex,
+    sms_email_opt_in: selectedSms === 'Yes',
+    consent_text: SMS_CONSENT_TEXT,
+    consent_text_version: SMS_CONSENT_VERSION,
+    consent_captured_at: selectedSms === 'Yes' ? smsConsentAt : null,
+    consent_method: 'verbal - read aloud by setter on recorded call',
     set_by: selectedSetBy,
     house_story: houseStory,
     sole_decision_maker: soleDM,
@@ -1564,6 +1605,9 @@ function closeModal() {
   selectedAgent = null;
   selectedSetBy = null;
   selectedFlex = null;
+  selectedSms = null;
+  smsConsentAt = null;
+  document.querySelectorAll('#group-sms .choice').forEach(c => { c.className = c.className.replace(/sel-\w+/g,'').trim(); });
   document.querySelectorAll('#group-flex .choice').forEach(c => { c.className = c.className.replace(/sel-\w+/g,'').trim(); });
   document.querySelectorAll('#group-agent .choice').forEach(c => { c.className = c.className.replace(/sel-\w+/g,'').trim(); });
   hideCompetitorFollowup();
