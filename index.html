@@ -751,20 +751,14 @@ select option{background:#0d0020;color:#e2d9f3}
         <div style="font-size:12px;color:#6d7e8b;margin-top:6px;line-height:1.4">A "Yes" puts a <strong style="color:#4ade80">$</strong> next to the score on the calendar, so Jack and Dave can spot moveable appointments when a gap opens.</div>
       </div>
       <div style="margin-top:18px">
-        <div class="script">
-          <div class="script-tag">🎙 Ask &mdash; read this one word for word</div>
-          <div class="script-body" id="smsConsentScript">
-            "And is it alright if we send you a few texts &mdash; your appointment confirmation, a reminder, and our ballpark pricing so you have it before we come out? Message and data rates may apply, and you can reply STOP any time to opt out."
-          </div>
-          <div class="script-listen">A "No" is completely fine and does not affect their appointment &mdash; just mark it honestly. We are only allowed to text people who said yes.</div>
-        </div>
         <div class="script" style="border-left-color:#4ade80">
-          <div class="script-tag" style="color:#4ade80">&#128233; Before you hang up &mdash; only if they said yes</div>
+          <div class="script-tag" style="color:#4ade80">&#128233; Do not ask &mdash; consent already given at the lead source</div>
           <div class="script-body">
-            "After this call, we&rsquo;ll be sending you two text messages. The first will have your appointment details, followed by the ballpark pricing for each type of project."
+            These homeowners agreed to be contacted when they submitted their information, so there is nothing to ask on this call. Every text we send still ends with <strong>"Reply STOP to opt out."</strong>
           </div>
+          <div class="script-listen">Only change this to <strong>No</strong> if the customer actually tells you not to text them. Marking No stops every text to that appointment &mdash; confirmation, reminder and pricing.</div>
         </div>
-        <label class="field-label">Okay To Text?</label>
+        <label class="field-label">Okay To Text? <span style="color:#4ade80;font-weight:600;letter-spacing:0">&mdash; defaults to Yes, change only if they object</span></label>
         <div class="choices cols-2" id="group-sms" style="margin-top:0">
           <div class="choice" onclick="pickSms('Yes',this)" id="sms-yes">
             <div class="choice-label">📱 Yes</div>
@@ -811,11 +805,14 @@ select option{background:#0d0020;color:#e2d9f3}
     </div>
     <div class="script">
       <div class="script-tag">🎙 Say to Close</div>
-      <div class="script-body">
-        <strong>"Alright, you are all set on [DATE AND TIME]."</strong><br><br>
-        "Jack will see you then. He will take measurements, go over different design options, explain the installation process, answer any questions you have, and provide pricing during the appointment."<br><br>
-        "That way you'll have everything you need to make an informed decision — there's absolutely no obligation."<br><br>
-        <strong>"Just wait for the text message I'll be sending you in a few that will have our company name, our website, and a phone number to call or text in case you need to reschedule. Thank you and have a great day!"</strong>
+      <div class="script-body" id="closingScript">
+        <strong>"Alright, you're all set! After this call, you'll receive two text messages. The first will be your appointment confirmation, which will also include our company details. The second will include our price ranges on the project we discussed on this call. Please reply to that message to confirm your appointment. Have a great day!"</strong>
+      </div>
+      <!-- The old two-text-messages line lived behind "only if they said yes". That gate has
+           to survive the move into the close, or a customer who declined texts gets promised
+           two of them. Shown automatically when Okay To Text is answered No. -->
+      <div class="script-listen" id="closingNoTextNote" style="display:none">
+        ⚠️ They said <strong>No</strong> to texts — skip the two sentences about text messages. Close with: <strong>"Alright, you're all set! Have a great day!"</strong>
       </div>
     </div>
   </div>
@@ -988,12 +985,14 @@ function pickAgent(name, el) {
   selectedAgent = name;
   refreshAvailability();
 }
-/* The exact words the setter reads. Logged with every lead so there is a record
-   of what the customer actually agreed to - the wording is also what gets
-   registered for A2P 10DLC, so bump the version if it ever changes. */
-const SMS_CONSENT_VERSION = '2026-08-form1-v1';
-const SMS_CONSENT_TEXT = 'And is it alright if we send you a few texts - your appointment confirmation, a reminder, and our ballpark pricing so you have it before we come out? Message and data rates may apply, and you can reply STOP any time to opt out.';
-let selectedSms = null;
+/* 3 Sep: the setter no longer asks for texting permission - Jack and Marvin's position is
+   that these homeowners already opted in at the original lead source when they submitted
+   their information. So the record can no longer claim a setter read anything aloud; it now
+   states where the consent actually came from, and names the source on each lead. Bump the
+   version whenever this basis changes - it is the paper trail for A2P 10DLC. */
+const SMS_CONSENT_VERSION = '2026-09-form1-v2-leadsource';
+const SMS_CONSENT_TEXT = 'Not asked on this call. Consent relied upon is the opt-in the homeowner gave at the original lead source when submitting their information. Every outbound message ends with "Reply STOP to opt out."';
+let selectedSms = 'Yes';
 let smsConsentAt = null;
 function pickSms(name, el) {
   document.querySelectorAll('#group-sms .choice').forEach(c => {
@@ -1002,6 +1001,8 @@ function pickSms(name, el) {
   el.classList.add('sel-purple');
   selectedSms = name;
   smsConsentAt = new Date().toISOString();
+  const note = document.getElementById('closingNoTextNote');
+  if (note) note.style.display = (name === 'No') ? 'block' : 'none';
 }
 let selectedFlex = null;
 function pickFlex(name, el) {
@@ -1419,7 +1420,9 @@ function submitLead() {
     consent_text: SMS_CONSENT_TEXT,
     consent_text_version: SMS_CONSENT_VERSION,
     consent_captured_at: selectedSms === 'Yes' ? smsConsentAt : null,
-    consent_method: 'verbal - read aloud by setter on recorded call',
+    consent_method: selectedSms === 'Yes'
+      ? ('prior opt-in at original lead source: ' + (src || 'unspecified'))
+      : 'customer declined texts on the call',
     set_by: selectedSetBy,
     house_story: houseStory,
     sole_decision_maker: soleDM,
@@ -1611,12 +1614,12 @@ function closeModal() {
   selectedAgent = null;
   selectedSetBy = null;
   selectedFlex = null;
-  selectedSms = null;
   smsConsentAt = null;
   document.querySelectorAll('#group-sms .choice').forEach(c => { c.className = c.className.replace(/sel-\w+/g,'').trim(); });
   document.querySelectorAll('#group-flex .choice').forEach(c => { c.className = c.className.replace(/sel-\w+/g,'').trim(); });
   document.querySelectorAll('#group-agent .choice').forEach(c => { c.className = c.className.replace(/sel-\w+/g,'').trim(); });
   hideCompetitorFollowup();
+  defaultSmsYes();
   calc();
 }
 // ══ AGENT CALENDAR AVAILABILITY ══
@@ -1781,8 +1784,26 @@ function refreshAvailability() {
   });
 }
 
+/* Texts default to Yes now that consent is not asked for on the call. This is load-bearing:
+   the ballpark sender only texts meetings whose Builder Prime description carries
+   "Texts OK: YES", which is written from this answer. Leave it unset and every customer
+   silently stops receiving texts. */
+function defaultSmsYes() {
+  const el = document.getElementById('sms-yes');
+  if (!el) return;
+  document.querySelectorAll('#group-sms .choice').forEach(c => {
+    c.className = c.className.replace(/sel-\w+/g,'').trim();
+  });
+  el.classList.add('sel-purple');
+  selectedSms = 'Yes';
+  smsConsentAt = new Date().toISOString();
+  const note = document.getElementById('closingNoTextNote');
+  if (note) note.style.display = 'none';
+}
+
 // Init
 document.getElementById('setOn').value = new Date().toISOString().split('T')[0];
+defaultSmsYes();
 document.getElementById('customerName').addEventListener('input', updateNameDisplay);
 loadAvailability(true);   // warm the agent-calendar cache
 </script>
