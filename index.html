@@ -339,7 +339,8 @@ select option{background:#0d0020;color:#e2d9f3}
       <div class="script-tag">🎙 Say This</div>
       <div class="script-body">
         <strong>"Hi [Name], this is Arnold with Bathroom Excellence."</strong><br><br>
-        "I'm following up on the information you submitted about your bathroom project. Jack, my manager, asked me to reach out and get everything set up for your free in-home estimate."<br><br>
+        "I'm following up on the information you submitted about your bathroom project. Jack, my manager, asked me to reach out and get everything set up for your free in-home estimate. I also want to let you know that at the end of this call, I'll text you the price ranges for the project we're about to discuss."<br><br>
+        "Before we get into everything, I also wanted to let you know that we're currently looking for a bathroom in your area to feature in our before-and-after photo campaign, which comes with a significant discount."<br><br>
         "Before we pick a time, I just want to learn a little more about your project so Jack can come prepared with the best recommendations."
       </div>
     </div>
@@ -815,13 +816,17 @@ select option{background:#0d0020;color:#e2d9f3}
     <div class="script">
       <div class="script-tag">🎙 Say to Close</div>
       <div class="script-body" id="closingScript">
-        <strong>"Alright, you're all set! After this call, you'll receive two text messages. The first will be your appointment confirmation, which will also include our company details. The second will include our price ranges on the project we discussed on this call. Please reply to that message to confirm your appointment. Have a great day!"</strong>
+        <strong>"Alright, you're all set! Now for the exciting part — based on what you've told me, here's the general ballpark for a project like yours: Tub-to-Shower is $7,000 to $14,000, a Full Remodel is $13,000 to $26,000, and a Custom Project is $20,000 to $40,000. Of course, that's just a general range — Jack will be able to give you an exact quote once he sees the bathroom, takes measurements, and goes over your options with you."</strong><br><br>
+        <strong>"I just sent you a text with your appointment details and the ballpark pricing. Can you pull that up for me while I have you on the phone and reply '1' to confirm your appointment?"</strong>
+        <div class="script-listen">👂 Wait for them to reply on their phone before you hang up — that's the whole point, get the confirmation while they're still with you. Once they reply: <strong style="color:#e2d9f3">"Perfect, I got your confirmation. Thank you!"</strong></div>
       </div>
       <!-- The old two-text-messages line lived behind "only if they said yes". That gate has
            to survive the move into the close, or a customer who declined texts gets promised
-           two of them. Shown automatically when Okay To Text is answered No. -->
+           two of them. Shown automatically when Okay To Text is answered No. Also corrects
+           the previous "two text messages" claim - the confirmation + ballpark pricing has
+           been ONE combined text since the 9 Sep rebuild, and the close now matches that. -->
       <div class="script-listen" id="closingNoTextNote" style="display:none">
-        ⚠️ They said <strong>No</strong> to texts — skip the two sentences about text messages. Close with: <strong>"Alright, you're all set! Have a great day!"</strong>
+        ⚠️ They said <strong>No</strong> to texts — skip the ballpark-text confirmation lines above entirely (no text was sent). Close with: <strong>"Alright, you're all set! Have a great day!"</strong>
       </div>
     </div>
   </div>
