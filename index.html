@@ -766,13 +766,6 @@ select option{background:#0d0020;color:#e2d9f3}
         <div style="font-size:12px;color:#6d7e8b;margin-top:6px;line-height:1.4">A "Yes" puts a <strong style="color:#4ade80">$</strong> next to the score on the calendar, so Jack and Dave can spot moveable appointments when a gap opens.</div>
       </div>
       <div style="margin-top:18px">
-        <div class="script" style="border-left-color:#4ade80">
-          <div class="script-tag" style="color:#4ade80">&#128233; Do not ask &mdash; consent already given at the lead source</div>
-          <div class="script-body">
-            These homeowners agreed to be contacted when they submitted their information, so there is nothing to ask on this call. Every text we send still ends with <strong>"Reply STOP to opt out."</strong>
-          </div>
-          <div class="script-listen">Only change this to <strong>No</strong> if the customer actually tells you not to text them. Marking No stops every text to that appointment &mdash; confirmation, reminder and pricing.</div>
-        </div>
         <label class="field-label">Okay To Text? <span style="color:#4ade80;font-weight:600;letter-spacing:0">&mdash; defaults to Yes, change only if they object</span></label>
         <div class="choices cols-2" id="group-sms" style="margin-top:0">
           <div class="choice" onclick="pickSms('Yes',this)" id="sms-yes">
@@ -1419,10 +1412,6 @@ async function bookAndTextNow() {
   if (!src) errors.push('Lead Source must be selected');
   const pt = document.getElementById('projectType').value;
   if (!pt) errors.push('Project Type must be selected');
-  if (A.urgency === null) errors.push('Timeline / Urgency answer is required (Section 1)');
-  if (A.quotes === null)  errors.push('Competition / Quotes answer is required (Section 2)');
-  if (A.dm === null)      errors.push('Decision Maker selection is required (Section 3)');
-  if (A.credit === null)  errors.push('Credit / Financing answer is required (Section 4)');
   const apptDate = document.getElementById('appointmentDate').value;
   const apptTime = document.getElementById('appointmentTime').value;
   if (!apptDate) errors.push('Appointment Date is required');
