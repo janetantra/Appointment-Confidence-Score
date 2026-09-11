@@ -288,7 +288,15 @@ select option{background:#0d0020;color:#e2d9f3}
       <div class="sb-dot" id="dot-credit" title="Credit"></div>
     </div>
   </div>
+  <div style="display:flex;align-items:center;padding-left:20px;border-left:1px solid rgba(109,40,217,0.18)">
+    <button type="button" id="bookAndTextNowBtn" onclick="bookAndTextNow()"
+      title="Books the real appointment in Builder Prime immediately and sends the confirmation + ballpark text right now — use this before the Build Value & Close step, while the customer is still on the phone. Requires Date, Time, Agent, Set By, Flexible On Timing and Okay To Text to already be answered. Once booked, those fields lock — the address and call notes are attached to this same appointment when you finish with Submit."
+      style="padding:9px 16px;background:rgba(74,222,128,0.14);border:2px solid #4ade80;border-radius:8px;color:#4ade80;font-size:11px;font-weight:900;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:0.2px;line-height:1.25;max-width:190px;white-space:normal">
+      Click Here To send the Confirmation Message
+    </button>
+  </div>
 </div>
+<div id="earlySendStatus" style="display:none;position:fixed;top:70px;right:24px;max-width:360px;z-index:599;padding:10px 14px;border-radius:8px;font-size:12px;font-weight:700;line-height:1.5;box-shadow:0 8px 24px rgba(0,0,0,0.35)"></div>
 <div class="wrap">
   <!-- NAV -->
   <div class="nav-bar">
@@ -776,14 +784,6 @@ select option{background:#0d0020;color:#e2d9f3}
             <div class="choice-sub">Phone and email only</div>
           </div>
         </div>
-      </div>
-      <div style="margin-top:18px;padding-top:16px;border-top:1.5px dashed rgba(74,222,128,0.25)">
-        <button type="button" id="bookAndTextNowBtn" onclick="bookAndTextNow()"
-          style="width:100%;padding:14px;background:rgba(74,222,128,0.14);border:2px solid #4ade80;border-radius:10px;color:#4ade80;font-size:14px;font-weight:900;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:0.3px">
-          📲 Book Appointment &amp; Text Now
-        </button>
-        <div style="font-size:11px;color:#6d7e8b;margin-top:6px;line-height:1.4">Books the real appointment in Builder Prime immediately and sends the confirmation + ballpark text right now &mdash; use this <strong style="color:#a78bfa">before</strong> the Build Value &amp; Close step, while the customer is still on the phone. Requires Date, Time, Agent, Set By, Flexible On Timing and Okay To Text to already be answered above. Once booked, those fields lock &mdash; the address and call notes below are attached to this same appointment when you finish with Submit.</div>
-        <div id="earlySendStatus" style="display:none;margin-top:10px;padding:10px 14px;border-radius:8px;font-size:12px;font-weight:700;line-height:1.5"></div>
       </div>
     </div>
   </div>
@@ -1491,7 +1491,7 @@ async function bookAndTextNow() {
     btn.disabled = false;
     btn.style.opacity = '';
     btn.style.cursor = 'pointer';
-    btn.textContent = '📲 Book Appointment & Text Now';
+    btn.textContent = 'Click Here To send the Confirmation Message';
     showValidationToast([msg]);
   }
 
@@ -1813,7 +1813,7 @@ function closeModal() {
     bookBtn.style.opacity = '';
     bookBtn.style.cursor = 'pointer';
     bookBtn.style.background = 'rgba(74,222,128,0.14)';
-    bookBtn.textContent = '📲 Book Appointment & Text Now';
+    bookBtn.textContent = 'Click Here To send the Confirmation Message';
   }
   const earlyStatus = document.getElementById('earlySendStatus');
   if (earlyStatus) earlyStatus.style.display = 'none';
