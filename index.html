@@ -780,6 +780,14 @@ select option{background:#0d0020;color:#e2d9f3}
           </div>
         </div>
       </div>
+      <div style="margin-top:18px;padding-top:16px;border-top:1.5px dashed rgba(74,222,128,0.25)">
+        <button type="button" id="bookAndTextNowBtn" onclick="bookAndTextNow()"
+          style="width:100%;padding:14px;background:rgba(74,222,128,0.14);border:2px solid #4ade80;border-radius:10px;color:#4ade80;font-size:14px;font-weight:900;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:0.3px">
+          📲 Book Appointment &amp; Text Now
+        </button>
+        <div style="font-size:11px;color:#6d7e8b;margin-top:6px;line-height:1.4">Books the real appointment in Builder Prime immediately and sends the confirmation + ballpark text right now &mdash; use this <strong style="color:#a78bfa">before</strong> the Build Value &amp; Close step, while the customer is still on the phone. Requires Date, Time, Agent, Set By, Flexible On Timing and Okay To Text to already be answered above. Once booked, those fields lock &mdash; the address and call notes below are attached to this same appointment when you finish with Submit.</div>
+        <div id="earlySendStatus" style="display:none;margin-top:10px;padding:10px 14px;border-radius:8px;font-size:12px;font-weight:700;line-height:1.5"></div>
+      </div>
     </div>
   </div>
   <!-- ADDRESS -->
@@ -990,6 +998,8 @@ let sharedBoost = 0;       // display only - already baked into S.quotes
 let enthAnswer = null, enthBonus = 0;
 let toastTimer = null;
 let competitorApptExists = false;
+let earlyMeetingId = null;   // BP meeting id once "Book Appointment & Text Now" has succeeded
+let earlyRowNumber = null;   // the Bookings-sheet row that early send already wrote
 let selectedAgent = null;
 function pickAgent(name, el) {
   document.querySelectorAll('#group-agent .choice').forEach(c => {
@@ -1368,6 +1378,157 @@ function showValidationToast(errors) {
   list.innerHTML = errors.map(e => `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(239,68,68,0.1);font-size:12px;color:#fca5a5"><span style="font-size:14px">❌</span>${e}</div>`).join('');
   box.style.display = 'flex';
 }
+function chicagoStartEndMs(date, time) {
+  if (!date || !time) return { start: null, end: null };
+  const [h, m] = time.split(':').map(Number);
+  const rounded = Math.round(m / 15) * 15;
+  const finalMin = rounded === 60 ? 0 : rounded;
+  const finalHour = rounded === 60 ? h + 1 : h;
+  const hh = String(finalHour).padStart(2, '0');
+  const mm = String(finalMin).padStart(2, '0');
+  const chicagoStr = `${date}T${hh}:${mm}:00` + chicagoOffsetString(date, finalHour, finalMin);
+  const start = new Date(chicagoStr).getTime();
+  return { start, end: start + 60 * 60 * 1000 };
+}
+// ══ EARLY SEND — "Book Appointment & Text Now" ══
+// Arnold's ask: a setter shouldn't have to wait until the very end of the call (after
+// Address, Notes, Enthusiasm) to book and text - they should be able to do it the moment
+// Date/Time/Agent/Set By/Flex/Okay-To-Text are answered, while the customer is still on
+// the line. This books the REAL appointment right now (a separate webhook from Submit,
+// since it has to wait for a real answer back - Submit's own POST is fire-and-forget and
+// never reads its response). Submit still runs afterward and attaches Address/Notes/
+// Enthusiasm to this SAME appointment instead of creating a second one - see the
+// early_meeting_id/early_row_number fields added to its payload below.
+async function bookAndTextNow() {
+  const errors = [];
+  const name = document.getElementById('customerName').value.trim();
+  if (!name) { errors.push('Customer Name is required'); flashError('customerName', '⚠️ Required!'); }
+  const bpId = document.getElementById('bpLeadId').value.trim();
+  if (!bpId) { errors.push('BP Opportunity ID is required'); flashError('bpLeadId', '⚠️ Required!'); }
+  const src = document.getElementById('leadSource').value;
+  if (!src) errors.push('Lead Source must be selected');
+  const pt = document.getElementById('projectType').value;
+  if (!pt) errors.push('Project Type must be selected');
+  if (A.urgency === null) errors.push('Timeline / Urgency answer is required (Section 1)');
+  if (A.quotes === null)  errors.push('Competition / Quotes answer is required (Section 2)');
+  if (A.dm === null)      errors.push('Decision Maker selection is required (Section 3)');
+  if (A.credit === null)  errors.push('Credit / Financing answer is required (Section 4)');
+  const apptDate = document.getElementById('appointmentDate').value;
+  const apptTime = document.getElementById('appointmentTime').value;
+  if (!apptDate) errors.push('Appointment Date is required');
+  if (!apptTime) errors.push('Appointment Time is required');
+  if (!selectedAgent) errors.push('Sales Agent must be selected (Jack or Dave)');
+  if (!selectedSetBy) errors.push('Set By must be selected (Hazel or Arnold)');
+  if (!selectedFlex) errors.push('Flexible On Timing must be answered (Yes or No)');
+  if (!selectedSms) errors.push('Okay To Text must be answered (Yes or No)');
+  if (availabilityState.status === 'taken') errors.push((selectedAgent || 'That agent') + ' already has an appointment at this date/time - please pick another slot');
+  if (earlyMeetingId) errors.push('Already booked and texted for this lead - continue the call and finish with Submit');
+  if (errors.length > 0) { showValidationToast(errors); return; }
+
+  const btn = document.getElementById('bookAndTextNowBtn');
+  const statusEl = document.getElementById('earlySendStatus');
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+  btn.style.cursor = 'default';
+  btn.textContent = '⏳ Booking & sending text…';
+  statusEl.style.display = 'none';
+
+  const total = Object.values(S).reduce((a,b) => a+b, 0);
+  const priority = total >= 80 ? 'HIGH' : total >= 65 ? 'MEDIUM' : 'LOW';
+  const projectType = pt === 'Other'
+    ? 'Other: ' + (document.getElementById('projectTypeOther').value.trim() || 'Not specified')
+    : pt;
+  const { start: startDT, end: endDT } = chicagoStartEndMs(apptDate, apptTime);
+
+  const payload = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+    bp_lead_id: parseInt(bpId) || null,
+    crm_customer_name: total + ' ' + name,
+    customer_name: name,
+    address: '',
+    set_on: document.getElementById('setOn').value,
+    lead_source: src,
+    project_type: projectType,
+    appointment_date: apptDate,
+    appointment_time: apptTime,
+    start_datetime: startDT,
+    end_datetime: endDT,
+    sales_agent: selectedAgent,
+    flex_on_cancellation: selectedFlex,
+    sms_email_opt_in: selectedSms === 'Yes',
+    consent_text: SMS_CONSENT_TEXT,
+    consent_text_version: SMS_CONSENT_VERSION,
+    consent_captured_at: selectedSms === 'Yes' ? smsConsentAt : null,
+    consent_method: selectedSms === 'Yes'
+      ? ('prior opt-in at original lead source: ' + (src || 'unspecified'))
+      : 'customer declined texts on the call',
+    set_by: selectedSetBy,
+    house_story: houseStory,
+    sole_decision_maker: soleDM,
+    competitor_appt_exists: competitorApptExists,
+    competitor_appt_date: document.getElementById('competitorApptDate').value || null,
+    score: total, score_max: 100, priority,
+    scheduling_recommendation: getRec(total, A).action,
+    enthusiasm_bonus: 0,
+    enthusiasm_answer: null,
+    combined_score: total,
+    answers: { ...A }, scores: { ...S, sharedLead: sharedBoost, quotesRaw: rawQuotesPts },
+    notes: document.getElementById('callNotes') ? document.getElementById('callNotes').value : '',
+    call_timestamp: new Date().toISOString()
+  };
+
+  function fail(msg) {
+    btn.disabled = false;
+    btn.style.opacity = '';
+    btn.style.cursor = 'pointer';
+    btn.textContent = '📲 Book Appointment & Text Now';
+    showValidationToast([msg]);
+  }
+
+  let resp, data;
+  try {
+    resp = await fetch(EARLY_SEND_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    data = await resp.json();
+  } catch (e) {
+    fail('Could not reach the booking server - check your connection and try again. Nothing was booked.');
+    return;
+  }
+
+  if (!data || data.ok !== true || !data.bp_meeting_id) {
+    if (data && data.reason === 'taken') {
+      availabilityState = { status: 'taken', conflicts: [] };
+      renderAvailability(availabilityState);
+      fail('That slot was just taken - pick another time and try again.');
+    } else if (data && data.reason === 'unknown_agent') {
+      fail('Sales Agent was not recognized by the booking server - re-select Jack or Dave and try again.');
+    } else {
+      fail('Booking did not go through - check Builder Prime, or try again. Nothing was texted.');
+    }
+    return;
+  }
+
+  earlyMeetingId = data.bp_meeting_id;
+  earlyRowNumber = data.row_number || null;
+
+  ['appointmentDate','appointmentTime'].forEach(id => document.getElementById(id).disabled = true);
+  document.querySelectorAll('#group-agent .choice, #group-setby .choice, #group-flex .choice, #group-sms .choice')
+    .forEach(c => { c.style.pointerEvents = 'none'; c.style.opacity = '0.6'; });
+
+  btn.disabled = true;
+  btn.style.opacity = '1';
+  btn.style.cursor = 'default';
+  btn.style.background = 'rgba(74,222,128,0.28)';
+  btn.textContent = '✅ Booked & Texted';
+  statusEl.style.display = 'block';
+  statusEl.style.background = 'rgba(74,222,128,0.12)';
+  statusEl.style.border = '1.5px solid rgba(74,222,128,0.35)';
+  statusEl.style.color = '#4ade80';
+  statusEl.textContent = '✅ Appointment booked in Builder Prime and the confirmation text is on its way. Finish the call normally - Submit at the end will attach the address and notes to this same appointment.';
+}
 // ══ SUBMIT ══
 function submitLead() {
   const errors = [];
@@ -1452,7 +1613,9 @@ function submitLead() {
        so never add it to a total downstream. */
     answers: { ...A }, scores: { ...S, sharedLead: sharedBoost, quotesRaw: rawQuotesPts },
     notes: document.getElementById('callNotes').value,
-    call_timestamp: new Date().toISOString()
+    call_timestamp: new Date().toISOString(),
+    early_meeting_id: earlyMeetingId,
+    early_row_number: earlyRowNumber
   };
   showReviewModal(window._pendingPayload, total, priority, rec);
 }
@@ -1629,6 +1792,21 @@ function closeModal() {
   selectedSetBy = null;
   selectedFlex = null;
   smsConsentAt = null;
+  earlyMeetingId = null;
+  earlyRowNumber = null;
+  ['appointmentDate','appointmentTime'].forEach(id => document.getElementById(id).disabled = false);
+  document.querySelectorAll('#group-agent .choice, #group-setby .choice, #group-flex .choice, #group-sms .choice')
+    .forEach(c => { c.style.pointerEvents = ''; c.style.opacity = ''; });
+  const bookBtn = document.getElementById('bookAndTextNowBtn');
+  if (bookBtn) {
+    bookBtn.disabled = false;
+    bookBtn.style.opacity = '';
+    bookBtn.style.cursor = 'pointer';
+    bookBtn.style.background = 'rgba(74,222,128,0.14)';
+    bookBtn.textContent = '📲 Book Appointment & Text Now';
+  }
+  const earlyStatus = document.getElementById('earlySendStatus');
+  if (earlyStatus) earlyStatus.style.display = 'none';
   document.querySelectorAll('#group-sms .choice').forEach(c => { c.className = c.className.replace(/sel-\w+/g,'').trim(); });
   document.querySelectorAll('#group-flex .choice').forEach(c => { c.className = c.className.replace(/sel-\w+/g,'').trim(); });
   document.querySelectorAll('#group-agent .choice').forEach(c => { c.className = c.className.replace(/sel-\w+/g,'').trim(); });
@@ -1641,6 +1819,10 @@ function closeModal() {
 // setter finds out a slot is taken here instead of after the lead is submitted.
 // Make still enforces the real conflict gate server-side; this is the early warning.
 const AVAILABILITY_URL   = 'https://hook.us1.make.com/7gsn1pbwj987s5dysghdnwk6buf69yqt';
+// Separate webhook from the final Submit one - this one books the real appointment and
+// sends the text right away, and (unlike Submit's fire-and-forget POST) the page actually
+// waits for its answer so it can lock the fields and remember the meeting/row it created.
+const EARLY_SEND_URL     = 'https://hook.us1.make.com/ot7rgtx75wpxxl17ime5tqtiqkoeu2ev';
 const AGENT_EMPLOYEE_IDS = { Jack: 16410, Dave: 20307 };
 const SLOT_MINUTES       = 60;      // BP meetings are 1 hour
 const AVAIL_CACHE_MS     = 120000;  // re-fetch at most every 2 minutes
