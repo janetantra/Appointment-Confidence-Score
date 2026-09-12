@@ -324,6 +324,7 @@ select option{background:#0d0020;color:#e2d9f3}
       <div><label class="field-label">Customer Name</label><input type="text" id="customerName" placeholder="John Smith" oninput="updateNameDisplay()"></div>
       <div class="bp-field"><label class="field-label">🔑 BP Opportunity ID <span style="color:#f59e0b;font-size:9px">(from URL)</span></label><input type="number" id="bpLeadId" placeholder="e.g. 4947823"></div>
     </div>
+    <div style="margin-bottom:12px"><label class="field-label">📱 Customer Phone Number</label><input type="tel" id="customerPhone" placeholder="(636) 555-1234"></div>
     <div class="grid-2">
       <div><label class="field-label">Set On</label><input type="date" id="setOn"></div>
       <div><label class="field-label">Lead Source</label>
@@ -1407,6 +1408,10 @@ async function sendConfirmationTextNow() {
   if (!name) { errors.push('Customer Name is required'); flashError('customerName', '⚠️ Required!'); }
   const bpId = document.getElementById('bpLeadId').value.trim();
   if (!bpId) { errors.push('BP Opportunity ID is required'); flashError('bpLeadId', '⚠️ Required!'); }
+  const phone = document.getElementById('customerPhone').value.trim();
+  const phoneDigits = phone.replace(/\D/g, '');
+  if (!phone) { errors.push('Customer Phone Number is required'); flashError('customerPhone', '⚠️ Required!'); }
+  else if (phoneDigits.length < 10) { errors.push('Customer Phone Number must have at least 10 digits'); flashError('customerPhone', '⚠️ Invalid!'); }
   const apptDate = document.getElementById('appointmentDate').value;
   const apptTime = document.getElementById('appointmentTime').value;
   if (!apptDate) errors.push('Appointment Date is required');
@@ -1427,6 +1432,7 @@ async function sendConfirmationTextNow() {
   const payload = {
     bp_lead_id: parseInt(bpId) || null,
     customer_name: name,
+    customer_phone: phone,
     appointment_date: apptDate,
     appointment_time: apptTime,
     sales_agent: selectedAgent
@@ -1545,6 +1551,7 @@ function submitLead() {
     bp_lead_id: parseInt(document.getElementById('bpLeadId').value) || null,
     crm_customer_name: total + ' ' + name,
     customer_name: name,
+    customer_phone: document.getElementById('customerPhone').value.trim(),
     address: document.getElementById('address').value.trim(),
     set_on: document.getElementById('setOn').value,
     lead_source: src,
