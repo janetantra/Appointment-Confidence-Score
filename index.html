@@ -1000,6 +1000,7 @@ let enthAnswer = null, enthBonus = 0;
 let toastTimer = null;
 let competitorApptExists = false;
 let confirmationTextSentAt = null;   // timestamp once the early confirmation text has gone out - does NOT mean the appointment is booked yet
+let earlySendUncertain = false;      // true when a send attempt got no reply - the text MAY already have gone out, so a re-send must be deliberate
 let selectedAgent = null;
 function pickAgent(name, el) {
   document.querySelectorAll('#group-agent .choice').forEach(c => {
@@ -1423,6 +1424,21 @@ async function sendConfirmationTextNow() {
 
   const btn = document.getElementById('bookAndTextNowBtn');
   const statusEl = document.getElementById('earlySendStatus');
+
+  // A previous attempt got no reply from the server. That is NOT the same as failing - the
+  // text may already have gone out and only the reply got lost. Make the setter confirm with
+  // the customer instead of reflex-tapping again, which is what produced the real double-text
+  // on 14 Sep.
+  if (earlySendUncertain) {
+    const goAhead = confirm(
+      'The last attempt never got a reply from the texting server.\n\n' +
+      'The text may ALREADY have been sent to the customer.\n\n' +
+      'Only continue if you have asked them and they did NOT receive it.\n\n' +
+      'Send it again?'
+    );
+    if (!goAhead) return;
+  }
+
   btn.disabled = true;
   btn.style.opacity = '0.6';
   btn.style.cursor = 'default';
@@ -1446,6 +1462,24 @@ async function sendConfirmationTextNow() {
     showValidationToast([msg]);
   }
 
+  // The request went out but we never got a usable answer back. Crucially this does NOT mean
+  // the text failed - on 14 Sep a send completed fine server-side (customer texted) while the
+  // browser showed an error, the setter tapped again, and the customer got it twice. So never
+  // word this as "try again", and never leave the button in a one-tap retry state.
+  function uncertain() {
+    earlySendUncertain = true;
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+    btn.style.background = 'rgba(251,191,36,0.20)';
+    btn.textContent = '⚠️ No reply - check before re-sending';
+    statusEl.style.display = 'block';
+    statusEl.style.background = 'rgba(251,191,36,0.12)';
+    statusEl.style.border = '1.5px solid rgba(251,191,36,0.40)';
+    statusEl.style.color = '#fbbf24';
+    statusEl.textContent = '⚠️ No reply from the texting server - but the text may already have been sent. ASK THE CUSTOMER whether they got it before you tap again. Sending it twice looks worse than sending it late.';
+  }
+
   let resp, data;
   try {
     resp = await fetch(EARLY_SEND_URL, {
@@ -1455,7 +1489,7 @@ async function sendConfirmationTextNow() {
     });
     data = await resp.json();
   } catch (e) {
-    fail('Could not reach the texting server - check your connection and try again.');
+    uncertain();
     return;
   }
 
@@ -1469,6 +1503,7 @@ async function sendConfirmationTextNow() {
   }
 
   confirmationTextSentAt = new Date().toISOString();
+  earlySendUncertain = false;
 
   btn.disabled = true;
   btn.style.opacity = '1';
@@ -1763,6 +1798,7 @@ function closeModal() {
   selectedFlex = null;
   smsConsentAt = null;
   confirmationTextSentAt = null;
+  earlySendUncertain = false;   // fresh lead - never carry the previous call's "no reply" warning over
   const bookBtn = document.getElementById('bookAndTextNowBtn');
   if (bookBtn) {
     bookBtn.disabled = false;
