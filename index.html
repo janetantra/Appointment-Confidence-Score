@@ -85,6 +85,8 @@ select option{background:#0d0020;color:#e2d9f3}
 .sel-gray .choice-label{color:#9ca3af}
 .sel-purple{border-color:#8b5cf6!important;background:rgba(139,92,246,0.1)!important;box-shadow:0 0 18px rgba(139,92,246,0.2)!important}
 .sel-purple .choice-label{color:#c4b5fd}
+.sel-red{border-color:#ef4444!important;background:rgba(239,68,68,0.1)!important;box-shadow:0 0 18px rgba(239,68,68,0.2)!important}
+.sel-red .choice-label{color:#f87171}
 /* ══ DM BIG CHOICES ══ */
 .dm-big{cursor:pointer;border:2px solid rgba(109,40,217,0.2);border-radius:14px;padding:24px;transition:all 0.2s;background:rgba(255,255,255,0.025);text-align:center;user-select:none}
 .dm-big:hover{transform:translateY(-2px)}
@@ -474,90 +476,12 @@ select option{background:#0d0020;color:#e2d9f3}
       <input type="date" id="competitorApptDate" oninput="updateCompetitorDate()">
     </div>
   </div>
-  <!-- Q3: DECISION MAKERS -->
-  <div class="card">
-    <div class="card-header">
-      <div class="card-icon ci-scored">3</div>
-      <div class="card-title">Decision Maker Confirmation</div>
-      <div class="card-pts">MAX 20 PTS · -40 IF ONE-LEGGER RISK</div>
-    </div>
-    <div class="script">
-      <div class="script-tag">🎙 Ask</div>
-      <div class="script-body">
-        <span style="display:block;font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin:0 0 7px">1 &middot; Find out</span>
-        "Besides yourself, will anyone else be involved in making the final decision &mdash; a spouse, partner, or anyone else?"
-      </div>
-    </div>
-    <div class="script">
-      <div class="script-tag">🎙 Rebuttal — if another decision maker is involved but won't be present</div>
-      <div class="script-body">
-        "I completely understand and respect that it's your home and ultimately your decision. However, out of respect for everyone involved, we do ask that all decision makers be present for the appointment."<br><br>
-        "Jack/Dave, our manager, will be going over the project details, options, pricing, and any questions you both may have. Plus, there's an additional discount available when all decision makers are present."<br><br>
-        "With that in mind, what day and time would work best for both of you — mornings, afternoons, or evenings?"
-      </div>
-    </div>
-    <div class="script">
-      <div class="script-tag">🎙 Ask</div>
-      <div class="script-body">
-        "Great. On top of the before-and-after campaign, we also offer additional discounts for seniors, veterans, and individuals with disabilities. Is there anyone in the household who may qualify for one of those?"
-      </div>
-      <div class="script-listen">👂 Listen — note it in Call Notes below so Jack or Dave can bring up the right discount at the appointment.</div>
-    </div>
-    <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(167,139,250,0.5);margin:16px 0 10px">Select Decision Maker Age Group</div>
-    <div class="choices cols-3" id="group-dm">
-      <div class="dm-big dm-yes" onclick="pickDM('Senior',20,this)">
-        <div class="dm-icon">👴</div>
-        <div class="dm-big-label" style="color:#4ade80">Senior</div>
-        <div style="font-size:11px;color:rgba(107,114,128,0.7);margin-bottom:10px">Senior homeowner</div>
-        <span class="badge badge-green" style="font-size:11px;padding:4px 14px">+20 PTS</span>
-      </div>
-      <div class="dm-big dm-yes" onclick="pickDM('50s-60s',20,this)">
-        <div class="dm-icon">👫</div>
-        <div class="dm-big-label" style="color:#4ade80">50s – 60s</div>
-        <div style="font-size:11px;color:rgba(107,114,128,0.7);margin-bottom:10px">Mid-age couple</div>
-        <span class="badge badge-green" style="font-size:11px;padding:4px 14px">+20 PTS</span>
-      </div>
-      <div class="dm-big dm-yes" onclick="pickDM('40s and Below',20,this)">
-        <div class="dm-icon">🧑</div>
-        <div class="dm-big-label" style="color:#4ade80">40s Below</div>
-        <div style="font-size:11px;color:rgba(107,114,128,0.7);margin-bottom:10px">Younger decision maker</div>
-        <span class="badge badge-green" style="font-size:11px;padding:4px 14px">+20 PTS</span>
-      </div>
-    </div>
-    <!-- Jack: age group alone doesn't say whether this person is deciding
-         alone - that's the actual one-legger risk signal, scored below
-         together with house story. -->
-    <div style="margin-top:16px">
-      <label class="field-label">Is this the only decision maker?</label>
-      <div class="choices cols-2" id="group-soledm" style="margin-top:0">
-        <div class="choice" onclick="pickSoleDM('Yes',this)">
-          <div class="choice-label">🙋 Yes</div>
-          <div class="choice-sub">No spouse/partner involved</div>
-        </div>
-        <div class="choice" onclick="pickSoleDM('No',this)">
-          <div class="choice-label">👥 No</div>
-          <div class="choice-sub">Someone else is involved too</div>
-        </div>
-      </div>
-    </div>
-    <div style="margin-top:14px">
-      <label class="field-label">How many stories is the home?</label>
-      <div class="choices cols-2" id="group-housestory" style="margin-top:0">
-        <div class="choice" onclick="pickHouseStory('One Story',this)">
-          <div class="choice-label">🏠 One Story</div>
-        </div>
-        <div class="choice" onclick="pickHouseStory('Two+ Story',this)">
-          <div class="choice-label">🏘️ Two+ Story</div>
-        </div>
-      </div>
-    </div>
-  </div>
   <!-- ══ APPOINTMENT QUALIFICATION ══ -->
   <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Appointment Qualification</div><div class="section-divider-line" style="background:linear-gradient(90deg,rgba(109,40,217,0.25),transparent)"></div></div>
-  <!-- Q4: CREDIT -->
+  <!-- Q3: CREDIT -->
   <div class="qual-panel">
     <div class="card-header" style="margin-bottom:16px">
-      <div class="card-icon ci-scored">4</div>
+      <div class="card-icon ci-scored">3</div>
       <div class="card-title">Financing / Credit</div>
       <div class="card-pts">MAX 20 PTS</div>
     </div>
@@ -667,6 +591,163 @@ select option{background:#0d0020;color:#e2d9f3}
         </div>
       </div>
     </div>
+  <!-- Q4: DECISION MAKERS -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon ci-scored">4</div>
+      <div class="card-title">Decision Maker Confirmation</div>
+      <div class="card-pts">MAX 20 PTS · -40 IF ONE-LEGGER</div>
+    </div>
+    <div class="script">
+      <div class="script-tag">🎙 Ask</div>
+      <div class="script-body">
+        <span style="display:block;font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin:0 0 7px">1 &middot; Find out</span>
+        "Besides yourself, whose opinion matters when you make the final call on something like this &mdash; a spouse, a partner, an adult child, anyone?"
+      </div>
+      <div class="script-listen">👂 Never ask "are you the decision maker" &mdash; people say yes to that automatically. Asking whose OPINION matters is what gets the honest answer, and it is the only version that finds the son or daughter Jack keeps running into.
+      </div>
+    </div>
+    <div class="script">
+      <div class="script-tag">🎙 Ask — the moment they name someone</div>
+      <div class="script-body">
+        <span style="display:block;font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin:0 0 7px">2 &middot; Lock them both in</span>
+        "Perfect &mdash; and will [name] be there with you? The reason I ask is you get the design, the measurements and the final pricing all in that one visit, and the best discount only applies when everyone making the decision is there to see it."<br><br>
+        "So does [day] at [time] work for both of you, or is there a time that works better for the two of you?"
+      </div>
+      <div class="script-listen">👂 Listen — "he doesn't care", "I'll fill her in", "she trusts me" all mean one-legger. Use the rebuttal below before you accept it.</div>
+    </div>
+    <div class="script">
+      <div class="script-tag">🎙 Rebuttal — if another decision maker is involved but won't be present</div>
+      <div class="script-body">
+        "I completely understand and respect that it's your home and ultimately your decision. However, out of respect for everyone involved, we do ask that all decision makers be present for the appointment."<br><br>
+        "Jack/Dave, our manager, will be going over the project details, options, pricing, and any questions you both may have. Plus, there's an additional discount available when all decision makers are present."<br><br>
+        "With that in mind, what day and time would work best for both of you — mornings, afternoons, or evenings?"
+      </div>
+    </div>
+    <div class="script">
+      <div class="script-tag">🎙 Ask</div>
+      <div class="script-body">
+        "Great. On top of the before-and-after campaign, we also offer additional discounts for seniors, veterans, and individuals with disabilities. Is there anyone in the household who may qualify for one of those?"
+      </div>
+      <div class="script-listen">👂 Listen — note it in Call Notes below so Jack or Dave can bring up the right discount at the appointment.</div>
+    </div>
+    <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(167,139,250,0.5);margin:16px 0 10px">Decision Maker Age Group &mdash; recorded for the senior / veteran discount, not scored</div>
+    <div class="choices cols-3" id="group-dm">
+      <div class="dm-big dm-yes" onclick="pickDM('Senior',0,this)">
+        <div class="dm-icon">👴</div>
+        <div class="dm-big-label" style="color:#4ade80">Senior</div>
+        <div style="font-size:11px;color:rgba(107,114,128,0.7);margin-bottom:10px">Senior homeowner</div>
+        <span class="badge" style="font-size:11px;padding:4px 14px;background:rgba(107,114,128,0.18);color:#9ca3af">RECORDED</span>
+      </div>
+      <div class="dm-big dm-yes" onclick="pickDM('50s-60s',0,this)">
+        <div class="dm-icon">👫</div>
+        <div class="dm-big-label" style="color:#4ade80">50s – 60s</div>
+        <div style="font-size:11px;color:rgba(107,114,128,0.7);margin-bottom:10px">Mid-age couple</div>
+        <span class="badge" style="font-size:11px;padding:4px 14px;background:rgba(107,114,128,0.18);color:#9ca3af">RECORDED</span>
+      </div>
+      <div class="dm-big dm-yes" onclick="pickDM('40s and Below',0,this)">
+        <div class="dm-icon">🧑</div>
+        <div class="dm-big-label" style="color:#4ade80">40s Below</div>
+        <div style="font-size:11px;color:rgba(107,114,128,0.7);margin-bottom:10px">Younger decision maker</div>
+        <span class="badge" style="font-size:11px;padding:4px 14px;background:rgba(107,114,128,0.18);color:#9ca3af">RECORDED</span>
+      </div>
+    </div>
+    <!-- Jack: age group alone doesn't say whether this person is deciding
+         alone - that's the actual one-legger risk signal, scored below
+         together with house story. -->
+    <div class="script" style="margin-top:16px">
+      <div class="script-tag">🎙 Ask — on EVERY call, before you book</div>
+      <div class="script-body">
+        <span style="display:block;font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin:0 0 7px">3 &middot; The pin-down</span>
+        "Last thing so I can tell [agent] who to expect &mdash; will it be just you at the appointment, or both of you?"
+      </div>
+      <div class="script-listen">👂 Record exactly what they said, not what you hope. "Just me" is a fine answer to click &mdash; it costs you nothing and it lets Jack book the right slot. Guessing "both of you" is what puts him in a driveway with one person.</div>
+    </div>
+    <!-- Jack, 16 Sep, 30 years of running these appointments: there are three
+         kinds of one-leg, and each fails a DIFFERENT test -
+           1. busy professional whose spouse is not sold on the project  -> BUY-IN
+           2. partner is sold but "we can never get together"            -> ATTENDANCE
+           3. older customer who defers to a son or daughter             -> EXISTENCE
+         He also asked for the same fact to be approached more than one way:
+         "posing the same question twice different ways to get answers... a
+         series of like three questions in order to wean out the one legs."
+         Scored as ONE combined score, not three, because the answers are a
+         chain - if nobody else is involved, buy-in and attendance are moot. -->
+    <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(167,139,250,0.5);margin:16px 0 10px">Decision makers &mdash; all three answers combine into one score, max 20</div>
+    <label class="field-label" style="margin-top:4px">1 &middot; Whose opinion matters besides theirs?</label>
+    <div class="choices cols-3" id="group-dm-who" style="margin-top:0">
+      <div class="choice" onclick="pickDmWho('Nobody Else',this)">
+        <div class="choice-label">🙋 Nobody else</div>
+        <div class="choice-sub">They genuinely decide alone</div>
+      </div>
+      <div class="choice" onclick="pickDmWho('Spouse / Partner',this)">
+        <div class="choice-label">👫 Spouse / partner</div>
+        <div class="choice-sub">Second decision maker</div>
+      </div>
+      <div class="choice" onclick="pickDmWho('Adult Child / Other',this)">
+        <div class="choice-label">👨&zwj;👩&zwj;👦 Adult child / other</div>
+        <div class="choice-sub">Son, daughter, family member</div>
+      </div>
+    </div>
+    <div id="dm-followups" style="display:none">
+      <label class="field-label" style="margin-top:14px">2 &middot; Are they already on board with doing it?</label>
+      <div class="choices cols-3" id="group-dm-buyin" style="margin-top:0">
+        <div class="choice" onclick="pickDmBuyIn('On Board',this)">
+          <div class="choice-label">✅ On board</div>
+          <div class="choice-sub">Both want the project</div>
+        </div>
+        <div class="choice" onclick="pickDmBuyIn('Still Working On Them',this)">
+          <div class="choice-label">🤔 Still working on them</div>
+          <div class="choice-sub">Not sold on doing it yet</div>
+        </div>
+        <div class="choice" onclick="pickDmBuyIn('Not Sure',this)">
+          <div class="choice-label">❔ Not sure</div>
+          <div class="choice-sub">Would not say</div>
+        </div>
+      </div>
+      <label class="field-label" style="margin-top:14px">3 &middot; Will they be at the appointment?</label>
+      <div class="choices cols-3" id="group-dm-attend" style="margin-top:0">
+        <div class="choice" onclick="pickDmAttend('Coming',this)">
+          <div class="choice-label">👍 Yes, coming</div>
+          <div class="choice-sub">Both will be there</div>
+        </div>
+        <div class="choice" onclick="pickDmAttend('Not Coming',this)">
+          <div class="choice-label">🚫 No, not coming</div>
+          <div class="choice-sub">Confirmed one-legger</div>
+        </div>
+        <div class="choice" onclick="pickDmAttend('Not Sure',this)">
+          <div class="choice-label">❔ Not sure</div>
+          <div class="choice-sub">Could not pin it down</div>
+        </div>
+      </div>
+    </div>
+    <!-- Jack, 16 Sep: "hopefully they have others out to gather information
+         before us and decide to rebook with us when all decision-makers can
+         be present... based on we are about to or just sent them ballpark
+         price ranges, which they will find to be very, very highly
+         competitive." The one-leg is not thrown away - it is turned into a
+         rebook, and the ballpark text is the lever. -->
+    <div id="dmRebookPitch" style="display:none;background:rgba(139,92,246,0.12);border:2px solid #8b5cf6;border-radius:12px;padding:15px 17px;margin-top:14px">
+      <div style="font-size:13px;font-weight:900;color:#c4b5fd;margin-bottom:6px">🎙 SAY THIS &mdash; turn it into a rebook</div>
+      <div style="font-size:13.5px;color:rgba(255,255,255,0.88);line-height:1.55">
+        "I can absolutely book that for you. Before I do &mdash; in about a minute you'll get a text from me with our actual price ranges. Have a look at it together tonight, because most people find those numbers a lot more competitive than they expected."<br><br>
+        "If it looks good to both of you, call me back and I'll move you to a time [name] can be there too. That way you get the design, the measurements and the best discount all in one go, instead of having to repeat it all second-hand."
+      </div>
+      <div class="script-listen" style="margin-top:10px">👂 Book it anyway if they want it &mdash; it is a reserve slot now, and a rebook with both of them is worth more than the one-leg. Do not talk them out of the appointment.</div>
+    </div>
+    <div id="dmProbeWarning" style="display:none;background:rgba(245,158,11,0.13);border:2px solid #f59e0b;border-radius:12px;padding:14px 16px;margin-top:14px">
+      <div style="font-size:13px;font-weight:900;color:#fbbf24;margin-bottom:5px">⚠️ CONFIRM THIS ONE A SECOND WAY</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.8);line-height:1.45">"Nobody else is involved" is the one answer we cannot check, and it is the claim one-legs hide behind. Ask it once more before you book &mdash; "so if we get there and the numbers look good, there is nobody you would want to run it past first?" If a name comes out now, go back and change question 1.</div>
+    </div>
+    <!-- Jack, 16 Sep: "HAMMERING DOWN ON THIS QUESTION ELIMINATES THE NEED FOR
+         THE TWO-STORY HOUSE QUESTION/RESEARCH WHEN THE APPT SETTER IS ON THE
+         PHONE." The storey question only ever existed as a stand-in for "is
+         this really a sole decision maker", and the three questions above now
+         ask that directly. Removed from the call flow; house_story still
+         serialises (empty) in the payload so the Make mapper, the sheet column
+         and the CRM note line keep working and it can be switched back on
+         without touching Make. -->
+  </div>
     <!-- APPOINTMENT BOOKING -->
     <div>
       <div class="card-header" style="margin-bottom:16px">
@@ -689,13 +770,12 @@ select option{background:#0d0020;color:#e2d9f3}
         <div style="font-size:12px;font-weight:800;color:#fb923c;margin-bottom:4px">⚠️ BOOK MINIMUM 5 DAYS OUT</div>
         <div style="font-size:12px;color:rgba(255,255,255,0.75);line-height:1.5"><span id="bookingDelayReason"></span> Let the competition go first — book <strong>5 to 7 days out</strong>. Suggested window: <strong id="sharedLeadMinDateText" style="color:#4ade80">—</strong></div>
       </div>
-      <!-- Jack: a two-story house where the caller claims to be the only
-           decision maker is a one-legger in the making. Morning and
-           afternoon slots rarely get both people there - evening is the
-           only slot with a real chance, so this shouts. -->
+      <!-- A confirmed or suspected one-leg. Morning and afternoon slots
+           rarely get both people there - evening is the only slot with a
+           real chance, so this shouts. -->
       <div id="eveningOnlyWarning" style="display:none;background:rgba(239,68,68,0.14);border:3px solid #ef4444;border-radius:12px;padding:18px 20px;margin-bottom:14px">
         <div style="font-size:22px;font-weight:900;letter-spacing:0.5px;color:#ef4444;line-height:1.25;margin-bottom:8px">🚨 EVENING SLOT ONLY</div>
-        <div style="font-size:15px;font-weight:800;color:#fff;line-height:1.45">Two-story home + "only decision maker" = one-legger risk.<br>
+        <div style="font-size:15px;font-weight:800;color:#fff;line-height:1.45">Only one decision maker will be at this appointment.<br>
           <span style="color:#fca5a5">Do NOT book a morning or afternoon slot.</span> Both people are almost never home during the day — book this in the <strong style="color:#4ade80">evening</strong> so everyone who decides is actually there.</div>
       </div>
       <div class="grid-2" style="margin-bottom:12px">
@@ -979,11 +1059,15 @@ function doLogout() {
 }
 checkSession();
 // ══ STATE ══
-const A = { urgency: null, quotes: null, dm: null, credit: null };
+const A = { urgency: null, quotes: null, dm: null, dmWho: null, dmBuyIn: null, dmAttend: null, credit: null };
 /* Positive categories total exactly 100: quotes 40 + urgency 20 + dm 20 +
-   credit 20. dmRisk is a deduction, not a category, so a perfect lead that
-   trips the one-legger rule lands at 60 - LOW priority, which is the whole
-   point of the -40. Shared-lead is NOT a fifth category: it raises the
+   credit 20. S.dm holds the ATTENDANCE score (who will actually be at the
+   appointment); A.dm is the age group, which is recorded but scores nothing,
+   so the three dm* answer keys have no S key of their own and the total stays 100.
+   dmRisk is a
+   deduction, not a category. A true one-legger now scores 0 on attendance AND
+   takes -20, landing a perfect lead at 60 - LOW priority, exactly where the
+   old 20 + -40 put it, without charging the same fact twice. Shared-lead is NOT a fifth category: it raises the
    quotes score instead, because "shared lead" and "has competition" are
    the same fact and scoring both paid it twice and pushed the max to 140. */
 const S = { urgency: 0, quotes: 0, dm: 0, credit: 0, dmRisk: 0 };
@@ -1051,12 +1135,21 @@ function getRec(score, answers) {
   const reasons = [];
   if (S.urgency >= 15) reasons.push({ text: answers.urgency === 'ASAP' ? 'Immediate urgency' : 'Near-term timeline', type: 'good' });
   if (S.quotes >= 30) reasons.push({ text: answers.quotes === 'Got 1 Quote' ? 'Has competitor quote' : 'Competitor appt scheduled', type: 'good' });
-  if (S.dm === 20) reasons.push({ text: 'All decision makers confirmed', type: 'good' });
+  if (S.dm === 20) reasons.push({ text: 'All decision makers on board and coming', type: 'good' });
+  if (S.dm === 12) reasons.push({ text: 'Second decision maker not sold yet', type: 'warn' });
+  if (S.dm === 5)  reasons.push({ text: 'Attendance never pinned down - treat as one-leg', type: 'warn' });
   if (S.credit >= 15) reasons.push({ text: answers.credit === 'Fair' ? 'Fair credit' : 'Strong credit', type: 'good' });
   if (S.urgency === 0) reasons.push({ text: 'Shopping around', type: 'warn' });
   if (S.quotes === 10) reasons.push({ text: 'No other quotes yet', type: 'warn' });
-  if (S.dm === 0) reasons.push({ text: 'Decision makers unconfirmed', type: 'bad' });
+  if (S.dm === 0 && A.dmAttend === 'Not Coming') reasons.push({ text: 'ONE-LEG - reserve / fill-in slot only', type: 'bad' });
   if (S.credit === 5) reasons.push({ text: "Credit not disclosed", type: 'warn' });
+  /* Jack, 16 Sep: the panel has to "guide the appointment center to offer only
+     appointments that are going to be the most profitable space to put said
+     lead". A one-leg falling into the generic sub-65 bucket did not say that
+     out loud, so it gets its own verdict ABOVE the score bands - it fires on
+     the one-leg answer itself, never on the total, so no combination of good
+     answers can dress it up as anything else. */
+  if (S.dmRisk) return { action: '🔻 ONE-LEG — RESERVE SLOT ONLY', sub: 'Never give this a prime slot. Book it alongside a strong lead, and work the rebook.', color: '#f87171', reasons };
   if (score >= 90) return { action: '🚫 NEVER DOUBLE BOOK', sub: 'Schedule in a premium calendar slot — highest close probability.', color: '#4ade80', reasons };
   if (score >= 80) return { action: '⚡ DOUBLE BOOK WITH CAUTION', sub: 'Only double book alongside a Low Priority lead.', color: '#a78bfa', reasons };
   if (score >= 65) return { action: '✅ STANDARD DOUBLE BOOK OK', sub: 'Can be double booked on the standard calendar.', color: '#fbbf24', reasons };
@@ -1133,41 +1226,125 @@ function applyQuotesScore() {
   sharedBoost = floored - rawQuotesPts;
   S.quotes = floored;
 }
+/* Age group is recorded, never scored - it was a flat +20 for all three
+   options from 24 July to 16 Sep, so it carried no signal at all. Kept
+   because Jack uses it to pitch the senior / veteran discount. */
 function pickDM(label, pts, el) {
   document.querySelectorAll('#group-dm .dm-big').forEach(c => c.classList.remove('dm-yes-sel','dm-no-sel'));
-  el.classList.add(pts > 0 ? 'dm-yes-sel' : 'dm-no-sel');
+  el.classList.add('dm-yes-sel');
+  A.dm = label;
+  calc();
+}
+/* ── DECISION MAKER: three questions, ONE score ──────────────────────────
+   Jack's matrix (16 Sep). The answers are a chain, not independent facts, so
+   they are scored as a combination - scoring each question separately would
+   allow nonsense pairs like "nobody else involved" + "other one not coming".
+
+     nobody else involved ................................. 15
+     someone else | on board        | coming ............... 20
+     someone else | still working   | coming ............... 12
+     someone else | any             | NOT coming ...........  0
+     someone else | any             | not sure .............  5
+
+   Jack, 16 Sep, on the economics: a one-leg slot "is going to cost at least
+   1/2 of one new sale... it is more profitable to spend more marketing money
+   and fill the spot with a true non-one leg." That cost lands on every one-leg
+   whether or not the absent partner was supportive, so buy-in stops changing
+   the SLOT decision once attendance fails - it is still recorded, because a
+   supportive-but-absent partner is the easier rebook. */
+function dmScore() {
+  if (A.dmWho === null) return null;
+  if (A.dmWho === 'Nobody Else') return 15;
+  if (A.dmBuyIn === null || A.dmAttend === null) return null;
+  if (A.dmAttend === 'Not Sure') return 5;
+  if (A.dmAttend === 'Coming') return A.dmBuyIn === 'On Board' ? 20 : 12;
+  return 0;   // Not Coming - a one-leg is a one-leg, whoever is missing
+}
+function applyDmScore() {
   const prev = S.dm;
-  A.dm = label; S.dm = pts;
-  document.getElementById('dot-dm').classList.add('done');
-  calc(); showToast(pts, prev, 'Decision Makers');
+  const v = dmScore();
+  S.dm = (v === null) ? 0 : v;
+  /* soleDM is derived, never asked twice - the payload field, the sheet and
+     the CRM note all keep their existing meaning. */
+  soleDM = (A.dmWho === null) ? null : (A.dmWho === 'Nobody Else' ? 'Yes' : 'No');
+  if (v !== null) document.getElementById('dot-dm').classList.add('done');
+  updateDmRisk();
+  if (S.dm !== prev) showToast(S.dm, prev, 'Decision Makers');
 }
-let soleDM = null;
-function pickSoleDM(val, el) {
-  document.querySelectorAll('#group-soledm .choice').forEach(c => {
+function selectOne(groupId, el, cls) {
+  document.querySelectorAll('#' + groupId + ' .choice').forEach(c => {
     c.className = c.className.replace(/sel-\w+/g,'').trim();
   });
-  el.classList.add('sel-purple');
-  soleDM = val;
-  updateDmRisk();
+  el.classList.add(cls);
 }
-let houseStory = null;
-function pickHouseStory(val, el) {
-  document.querySelectorAll('#group-housestory .choice').forEach(c => {
-    c.className = c.className.replace(/sel-\w+/g,'').trim();
-  });
-  el.classList.add('sel-purple');
-  houseStory = val;
-  updateDmRisk();
+function pickDmWho(val, el) {
+  selectOne('group-dm-who', el, val === 'Nobody Else' ? 'sel-blue' : 'sel-purple');
+  A.dmWho = val;
+  /* Buy-in and attendance are meaningless when nobody else decides - hide them
+     and clear them, so a stale answer from a previous lead cannot score. */
+  const show = (val !== 'Nobody Else');
+  document.getElementById('dm-followups').style.display = show ? 'block' : 'none';
+  if (!show) {
+    A.dmBuyIn = null; A.dmAttend = null;
+    ['group-dm-buyin','group-dm-attend'].forEach(g => {
+      document.querySelectorAll('#' + g + ' .choice').forEach(c => {
+        c.className = c.className.replace(/sel-\w+/g,'').trim();
+      });
+    });
+  }
+  applyDmScore();
 }
-// Jack: a two-story house where the caller claims to be the only
-// decision maker is a strong one-legger signal - automatic -40. Derived
-// from two answers, not a single pick, so it's scored here rather than
-// in pick()/pickDM(). Also raises the evening-slot-only warning, since
-// Dave lost a rescheduled sale to a 1 PM one-legger.
+function pickDmBuyIn(val, el) {
+  selectOne('group-dm-buyin', el, val === 'On Board' ? 'sel-green' : val === 'Not Sure' ? 'sel-gray' : 'sel-amber');
+  A.dmBuyIn = val;
+  applyDmScore();
+}
+function pickDmAttend(val, el) {
+  selectOne('group-dm-attend', el, val === 'Coming' ? 'sel-green' : val === 'Not Sure' ? 'sel-gray' : 'sel-red');
+  A.dmAttend = val;
+  applyDmScore();
+}
+let soleDM = null;   // derived in pickDmAttend(), no longer asked directly
+let houseStory = null;   // no longer asked (Jack, 16 Sep) - kept so house_story still serialises
+
+// Jack, 16 Sep: "I put the two-story house rule in there to eliminate
+// two-story house people that don't confirm that there will be two decision
+// makers present." It previously fired only when the caller said they were
+// the SOLE decision maker - so "there is a spouse but she won't be there" in
+// a two-story house took no penalty at all, which is the exact case he was
+// describing. Now it fires on two-story + anything other than "both confirmed".
+/* Jack, 16 Sep: "IF IT IS AN ESTABLISHED POTENTIAL ONE LEG APPOINTMENT, WE
+   WANT TO GIVE IT A DEDUCTION AND SCORE THAT ELIMINATES THE POSSIBILITY OF
+   THAT APPOINTMENT NOT BEING A RESERVE TYPE APPT."
+
+   -40, up from the -20 I argued for. I had priced only the false-positive
+   cost (his own base rate: ~80% answer honestly, one-legs are 1-2% of sales,
+   so a big penalty punishes the 8 to catch the 2). He priced the other side,
+   which I had missed: the SLOT costs half a sale at their close rate, and
+   that cost lands on every one-leg, honest or not. His number is right.
+
+   "Not Sure" takes the same hit - he asked for POTENTIAL one legs, and
+   protecting a slot on an unverified assumption is the failure being fixed.
+
+   The guarantee: best possible one-leg = urgency 20 + quotes 40 + credit 20
+   + dm 5 - 40 = 45, twenty clear of the 65 double-book line. Nothing lifts it
+   out - the enthusiasm bonus is recorded in combined_score but drives no
+   banding decision (priority and getRec both read `total` only).
+
+   The two-story condition is GONE: it was a proxy for "is this really a sole
+   decision maker", which the three questions now ask directly. */
+const ONE_LEG_PENALTY = -40;
 function updateDmRisk() {
   const prev = S.dmRisk;
-  const isRisk = (houseStory === 'Two+ Story' && soleDM === 'Yes');
-  S.dmRisk = isRisk ? -40 : 0;
+  const oneLeg = (A.dmAttend === 'Not Coming' || A.dmAttend === 'Not Sure');
+  const isRisk = oneLeg;
+  S.dmRisk = isRisk ? ONE_LEG_PENALTY : 0;
+  /* The one thing the storey proxy used to cover: a customer who falsely
+     claims nobody else decides now scores 95 unchallenged. Jack's answer is
+     that the questions should catch it, so prompt the setter to confirm it a
+     second way - one more sentence, no research, no extra call time. */
+  document.getElementById('dmProbeWarning').style.display = (A.dmWho === 'Nobody Else') ? 'block' : 'none';
+  document.getElementById('dmRebookPitch').style.display = oneLeg ? 'block' : 'none';
   document.getElementById('eveningOnlyWarning').style.display = isRisk ? 'block' : 'none';
   calc();
   if (S.dmRisk !== prev) showToast(S.dmRisk, prev, 'One-Legger Risk');
@@ -1251,12 +1428,17 @@ function calc() {
   } else {
     document.getElementById('recAction').textContent = 'Answer all 4 scored sections to get recommendation';
     document.getElementById('recAction').style.color = '#6b7280';
-    document.getElementById('recSub').textContent = 'Urgency · Quotes · Decision Makers · Credit';
+    document.getElementById('recSub').textContent = 'Urgency · Quotes · Credit · Decision Makers';
     document.getElementById('reasonList').innerHTML = '';
   }
+  /* 'dm' is the one row whose answer key differs from its score key: S.dm is
+     the combined three-question score, so the row is 'answered' only once
+     dmScore() can actually resolve - not when A.dm (the age group, which no
+     longer scores anything) is set. */
   ['urgency','quotes','dm','credit'].forEach(k => {
     const el = document.getElementById('bd-' + k);
-    if (A[k] === null) { el.textContent = '—'; el.style.color = '#4b5563'; }
+    const answered = (k === 'dm') ? dmScore() !== null : A[k] !== null;
+    if (!answered) { el.textContent = '—'; el.style.color = '#4b5563'; }
     else { el.textContent = S[k] + ' pts'; el.style.color = S[k] > 0 ? '#4ade80' : '#f87171'; }
   });
   /* Shown for transparency, but NOT added to the total - the boost is
@@ -1547,8 +1729,13 @@ function submitLead() {
   if (!pt) { errors.push('Project Type must be selected'); document.getElementById('projectType').style.borderColor = '#ef4444'; setTimeout(() => document.getElementById('projectType').style.borderColor = '', 3000); }
   if (A.urgency === null) errors.push('Timeline / Urgency answer is required (Section 1)');
   if (A.quotes === null)  errors.push('Competition / Quotes answer is required (Section 2)');
-  if (A.dm === null)      errors.push('Decision Maker selection is required (Section 3)');
-  if (A.credit === null)  errors.push('Credit / Financing answer is required (Section 4)');
+  if (A.dm === null)      errors.push('Decision Maker age group is required (Section 4)');
+  if (A.dmWho === null) errors.push('Whose opinion matters is required (Section 4, question 1)');
+  else if (A.dmWho !== 'Nobody Else') {
+    if (A.dmBuyIn === null)  errors.push('Are they on board is required (Section 4, question 2)');
+    if (A.dmAttend === null) errors.push('Will they attend is required (Section 4, question 3)');
+  }
+  if (A.credit === null)  errors.push('Credit / Financing answer is required (Section 3)');
   const apptDate = document.getElementById('appointmentDate').value;
   const apptTime = document.getElementById('appointmentTime').value;
   if (!apptDate) { errors.push('Appointment Date is required'); flashError('appointmentDate', ''); }
@@ -1632,7 +1819,7 @@ function showReviewModal(p, total, priority, rec) {
   document.getElementById('reviewBody').innerHTML = `
     ${p.scores.dmRisk ? `<div style="background:rgba(239,68,68,0.16);border:3px solid #ef4444;border-radius:12px;padding:16px 18px;margin-bottom:14px">
       <div style="font-size:19px;font-weight:900;color:#ef4444;line-height:1.25;margin-bottom:6px">🚨 EVENING SLOT ONLY</div>
-      <div style="font-size:14px;font-weight:800;color:#fff;line-height:1.45">Two-story home + "only decision maker". Booked at <strong style="color:#fca5a5">${fmtTime(p.appointment_time)}</strong> — if that is not an evening slot, go back and change it before submitting.</div>
+      <div style="font-size:14px;font-weight:800;color:#fff;line-height:1.45">Only one decision maker attending. Booked at <strong style="color:#fca5a5">${fmtTime(p.appointment_time)}</strong> — if that is not an evening slot, go back and change it before submitting.</div>
     </div>` : ''}
     <div class="review-score-block">
       <div>
@@ -1657,8 +1844,10 @@ function showReviewModal(p, total, priority, rec) {
       <div class="review-section-title">⚡ Scored Answers</div>
       <div class="review-row"><span class="review-key">Timeline / Urgency</span><span class="review-val">${fmt(p.answers.urgency)} <span style="color:#7c3aed;font-size:10px">(${p.scores.urgency} pts)</span></span></div>
       <div class="review-row"><span class="review-key">Quotes / Competition</span><span class="review-val">${fmt(p.answers.quotes)} <span style="color:#7c3aed;font-size:10px">(${p.scores.quotes} pts)</span></span></div>
-      <div class="review-row"><span class="review-key">Decision Maker</span><span class="review-val">${fmt(p.answers.dm)} <span style="color:#7c3aed;font-size:10px">(${p.scores.dm} pts)</span></span></div>
-      <div class="review-row"><span class="review-key">Sole Decision Maker?</span><span class="review-val">${fmt(p.sole_decision_maker)}</span></div>
+      <div class="review-row"><span class="review-key">Other decision maker</span><span class="review-val">${fmt(p.answers.dmWho)}</span></div>
+      <div class="review-row"><span class="review-key">On board?</span><span class="review-val">${fmt(p.answers.dmBuyIn)}</span></div>
+      <div class="review-row"><span class="review-key">Attending?</span><span class="review-val">${fmt(p.answers.dmAttend)} <span style="color:#7c3aed;font-size:10px">(${p.scores.dm} pts combined)</span></span></div>
+      <div class="review-row"><span class="review-key">DM Age Group</span><span class="review-val">${fmt(p.answers.dm)} <span style="color:#6b7280;font-size:10px">(recorded)</span></span></div>
       <div class="review-row"><span class="review-key">House Story</span><span class="review-val">${fmt(p.house_story)}</span></div>
       ${p.scores.dmRisk ? `<div class="review-row"><span class="review-key">⚠️ One-Legger Risk</span><span class="review-val" style="color:#f87171">${p.scores.dmRisk} pts</span></div>` : ''}
       ${p.scores.sharedLead ? `<div class="review-row"><span class="review-key">Shared Lead</span><span class="review-val" style="color:#4ade80">Quotes raised ${p.scores.quotesRaw} → ${p.scores.quotes}</span></div>` : ''}
@@ -1725,6 +1914,9 @@ function confirmAndSubmit() {
   const setOn    = fmtDate(p.set_on);
   const project  = p.project_type || '—';
   const dm       = p.answers.dm || '—';
+  const dmAttend = p.answers.dmAttend || '—';
+  const dmWho    = p.answers.dmWho || '—';
+  const dmBuyIn  = p.answers.dmBuyIn || '—';
   const quotes   = p.answers.quotes || '—';
   const credit   = p.answers.credit || '—';
   const apptDate = fmtDateLong(p.appointment_date);
@@ -1742,6 +1934,7 @@ function confirmAndSubmit() {
 ${agent} | ${source}
 Set By: ${setBy}
 House Story: ${houseStoryTxt} | Sole DM: ${soleDMTxt}
+Other DM: ${dmWho} | On board: ${dmBuyIn} | Attending: ${dmAttend}
 -set on ${setOn}
 Project: ${project}
 DM: ${dm}
@@ -1790,6 +1983,9 @@ function closeModal() {
   soleDM = null; houseStory = null;
   document.getElementById('sharedLeadWarning').style.display = 'none';
   document.getElementById('eveningOnlyWarning').style.display = 'none';
+  document.getElementById('dmProbeWarning').style.display = 'none';
+  document.getElementById('dmRebookPitch').style.display = 'none';
+  document.getElementById('dm-followups').style.display = 'none';
   document.getElementById('no-quotes-followup').style.display = 'none';
   enthAnswer = null; enthBonus = 0;
   competitorApptExists = false;
