@@ -607,14 +607,36 @@ select option{background:#0d0020;color:#e2d9f3}
       <div class="script-listen">👂 Never ask "are you the decision maker" &mdash; people say yes to that automatically. Asking whose OPINION matters is what gets the honest answer, and it is the only version that finds the son or daughter Jack keeps running into.
       </div>
     </div>
-    <div class="script">
-      <div class="script-tag">🎙 Ask — the moment they name someone</div>
-      <div class="script-body">
-        <span style="display:block;font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin:0 0 7px">2 &middot; Lock them both in</span>
-        "Perfect &mdash; and will [name] be there with you? The reason I ask is you get the design, the measurements and the final pricing all in that one visit, and the best discount only applies when everyone making the decision is there to see it."<br><br>
-        "So does [day] at [time] work for both of you, or is there a time that works better for the two of you?"
+    <!-- Jack, 16 Sep: "all sounds great as long as they're good at pivoting with
+         the call. If they say my son or daughter Bob, I'll need to talk to him
+         about it, then as long as they can pivot with that and say that's great.
+         When is Bob available?... That would be my biggest critique of Arnold.
+         He's very stick-to-the-script, he doesn't pivot."
+         So the pivot follows the Q1 ANSWER instead of being one fixed block. A
+         setter who reads what is on screen now reads the RIGHT thing: the spouse
+         wording never appears when the customer just said "my son". -->
+    <div id="pivot-spouse" style="display:none">
+      <div class="script">
+        <div class="script-tag">🎙 Ask — the moment they name a partner</div>
+        <div class="script-body">
+          <span style="display:block;font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin:0 0 7px">2 &middot; Lock them both in</span>
+          "Perfect &mdash; and will [name] be there with you? The reason I ask is you get the design, the measurements and the final pricing all in that one visit, and the best discount only applies when everyone making the decision is there to see it."<br><br>
+          "So does [day] at [time] work for both of you, or is there a time that works better for the two of you?"
+        </div>
+        <div class="script-listen">👂 Listen — "he doesn't care", "I'll fill her in", "she trusts me" all mean one-legger. Use the rebuttal below before you accept it.</div>
       </div>
-      <div class="script-listen">👂 Listen — "he doesn't care", "I'll fill her in", "she trusts me" all mean one-legger. Use the rebuttal below before you accept it.</div>
+    </div>
+    <div id="pivot-family" style="display:none">
+      <div class="script">
+        <div class="script-tag">🎙 Pivot — they named a son, daughter or family member</div>
+        <div class="script-body">
+          <span style="display:block;font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin:0 0 7px">2 &middot; Welcome them in, do not work around them</span>
+          "That's great &mdash; when is [name] available? We encourage everybody to be there."<br><br>
+          "I know they want to look out for you, and we want them to feel good about the purchase too."<br><br>
+          "So what day works best for the two of you?"
+        </div>
+        <div class="script-listen">👂 This is the pivot. Do not move to the next question yet &mdash; get the name and a day that suits them both first. "I'll talk to him about it" is not a no, it is an invitation to include him.</div>
+      </div>
     </div>
     <div class="script">
       <div class="script-tag">🎙 Rebuttal — if another decision maker is involved but won't be present</div>
@@ -1284,6 +1306,8 @@ function pickDmWho(val, el) {
      and clear them, so a stale answer from a previous lead cannot score. */
   const show = (val !== 'Nobody Else');
   document.getElementById('dm-followups').style.display = show ? 'block' : 'none';
+  document.getElementById('pivot-spouse').style.display = (val === 'Spouse / Partner') ? 'block' : 'none';
+  document.getElementById('pivot-family').style.display = (val === 'Adult Child / Other') ? 'block' : 'none';
   if (!show) {
     A.dmBuyIn = null; A.dmAttend = null;
     ['group-dm-buyin','group-dm-attend'].forEach(g => {
@@ -1986,6 +2010,8 @@ function closeModal() {
   document.getElementById('dmProbeWarning').style.display = 'none';
   document.getElementById('dmRebookPitch').style.display = 'none';
   document.getElementById('dm-followups').style.display = 'none';
+  document.getElementById('pivot-spouse').style.display = 'none';
+  document.getElementById('pivot-family').style.display = 'none';
   document.getElementById('no-quotes-followup').style.display = 'none';
   enthAnswer = null; enthBonus = 0;
   competitorApptExists = false;
