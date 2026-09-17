@@ -628,7 +628,7 @@ select option{background:#0d0020;color:#e2d9f3}
       </div>
       <div class="script-listen">&#128066; Never ask "are you the decision maker" &mdash; people say yes to that automatically. Asking whose OPINION matters is what gets the honest answer, and it is the only version that finds the son or daughter Jack keeps running into.</div>
     </div>
-    <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(167,139,250,0.5);margin:16px 0 10px">Decision makers &mdash; all three answers combine into one score, max 20</div>
+    <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(167,139,250,0.5);margin:16px 0 10px">Decision makers &mdash; both answers combine into one score, max 20</div>
     <label class="field-label" style="margin-top:4px">1 &middot; Whose opinion matters besides theirs?</label>
     <div class="choices cols-3" id="group-dm-who" style="margin-top:0">
       <div class="choice" onclick="pickDmWho('Nobody Else',this)">
@@ -667,22 +667,29 @@ select option{background:#0d0020;color:#e2d9f3}
         <div class="script-listen">👂 This is the pivot. Do not move to the next question yet &mdash; get the name and a day that suits them both first. "I'll talk to him about it" is not a no, it is an invitation to include him.</div>
       </div>
     </div>
-    <div id="dm-followups" style="display:none">
-      <label class="field-label" style="margin-top:14px">2 &middot; Are they already on board with doing it?</label>
-      <div class="choices cols-3" id="group-dm-buyin" style="margin-top:0">
-        <div class="choice" onclick="pickDmBuyIn('On Board',this)">
-          <div class="choice-label">✅ On board</div>
-          <div class="choice-sub">Both want the project</div>
-        </div>
-        <div class="choice" onclick="pickDmBuyIn('Still Working On Them',this)">
-          <div class="choice-label">🤔 Still working on them</div>
-          <div class="choice-sub">Not sold on doing it yet</div>
-        </div>
-        <div class="choice" onclick="pickDmBuyIn('Not Sure',this)">
-          <div class="choice-label">❔ Not sure</div>
-          <div class="choice-sub">Would not say</div>
-        </div>
+    <!-- Jack, 17 Sep 9:01pm: "This statement needs to be made before they ask
+         number three who should we expect that may persuade some people to book
+         the appropriate style of Appt?" Right - the line opens with "in addition
+         to the discount for all decision makers being present", so it only works
+         as a lever if they hear it BEFORE they answer who is coming.
+         Deliberately placed OUTSIDE #dm-followups, not inside above the pin-down:
+         that div is hidden when the customer says nobody else is involved, and a
+         sole decision maker would then never hear about the senior / military
+         discounts, which apply to them just the same. Out here it is still said
+         before question three whenever there is one, and said on every call. -->
+    <div class="script" style="margin-top:16px">
+      <div class="script-tag">&#127897; Ask</div>
+      <div class="script-body">
+        "Great &mdash; in addition to the discount for all decision makers being present, we also offer a variety of discounts including senior, military and many others, usually equaling 20% or more!"
       </div>
+      <div class="script-listen">&#128066; Listen &mdash; note it in Call Notes below so Jack or Dave can bring up the right discount at the appointment.</div>
+    </div>
+    <div id="dm-followups" style="display:none">
+      <!-- Jack, 17 Sep 8:57pm: "Delete this question it's too much and not
+           important." The buy-in question is gone. It only ever changed the
+           score in one case (second DM not sold but still coming), and his
+           model is attendance-driven anyway - the wasted slot costs the same
+           whether or not the absent partner was supportive. -->
       <div class="script" style="margin-top:16px">
         <div class="script-tag">&#127897; Ask &mdash; on EVERY call, before you book</div>
         <div class="script-body">
@@ -718,13 +725,6 @@ select option{background:#0d0020;color:#e2d9f3}
 <div id="dmProbeWarning" style="display:none;background:rgba(245,158,11,0.13);border:2px solid #f59e0b;border-radius:12px;padding:14px 16px;margin-top:14px">
       <div style="font-size:13px;font-weight:900;color:#fbbf24;margin-bottom:5px">⚠️ CONFIRM THIS ONE A SECOND WAY</div>
       <div style="font-size:13px;color:rgba(255,255,255,0.8);line-height:1.45">"Nobody else is involved" is the one answer we cannot check, and it is the claim one-legs hide behind. Ask it once more before you book &mdash; "so if we get there and the numbers look good, there is nobody you would want to run it past first?" If a name comes out now, go back and change question 1.</div>
-    </div>
-    <div class="script" style="margin-top:16px">
-      <div class="script-tag">&#127897; Ask</div>
-      <div class="script-body">
-        "Great &mdash; in addition to the discount for all decision makers being present, we also offer a variety of discounts including senior, military and many others, usually equaling 20% or more!"
-      </div>
-      <div class="script-listen">&#128066; Listen &mdash; note it in Call Notes below so Jack or Dave can bring up the right discount at the appointment.</div>
     </div>
     <!-- Jack, 16 Sep: "HAMMERING DOWN ON THIS QUESTION ELIMINATES THE NEED FOR
          THE TWO-STORY HOUSE QUESTION/RESEARCH WHEN THE APPT SETTER IS ON THE
@@ -1279,9 +1279,13 @@ function dmScore() {
      sole decision maker lands on 65 - the double-book line - instead of
      95. Still ranks above a CONFIRMED one-leg, which caps at 45. */
   if (A.dmWho === 'Nobody Else') return -15;
-  if (A.dmBuyIn === null || A.dmAttend === null) return null;
+  if (A.dmAttend === null) return null;
   if (A.dmAttend === 'Not Sure') return 5;
-  if (A.dmAttend === 'Coming') return A.dmBuyIn === 'On Board' ? 20 : 12;
+  /* Buy-in deleted 17 Sep, so "coming" collapses to a single value. 20 is the
+     only defensible one - any lower would invent a penalty Jack did not ask
+     for. Consequence: a lead whose second decision maker is not sold yet but
+     WILL attend now reaches 100, where it used to cap at 92. */
+  if (A.dmAttend === 'Coming') return 20;
   return 0;   // Not Coming - a one-leg is a one-leg, whoever is missing
 }
 function applyDmScore() {
@@ -1323,8 +1327,8 @@ function pickDmWho(val, el) {
   document.getElementById('pivot-spouse').style.display = (val === 'Spouse / Partner') ? 'block' : 'none';
   document.getElementById('pivot-family').style.display = (val === 'Adult Child / Other') ? 'block' : 'none';
   if (!show) {
-    A.dmBuyIn = null; A.dmAttend = null;
-    ['group-dm-buyin','group-dm-attend'].forEach(g => {
+    A.dmAttend = null;
+    ['group-dm-attend'].forEach(g => {
       document.querySelectorAll('#' + g + ' .choice').forEach(c => {
         c.className = c.className.replace(/sel-\w+/g,'').trim();
       });
@@ -1332,11 +1336,9 @@ function pickDmWho(val, el) {
   }
   applyDmScore();
 }
-function pickDmBuyIn(val, el) {
-  selectOne('group-dm-buyin', el, val === 'On Board' ? 'sel-green' : val === 'Not Sure' ? 'sel-gray' : 'sel-amber');
-  A.dmBuyIn = val;
-  applyDmScore();
-}
+/* pickDmBuyIn() removed 17 Sep with the buy-in question. A.dmBuyIn stays on
+   the state object so answers.dmBuyIn still serialises as null and 4829194's
+   'DM On Board' column and note line keep mapping without a scenario edit. */
 function pickDmAttend(val, el) {
   selectOne('group-dm-attend', el, val === 'Coming' ? 'sel-green' : val === 'Not Sure' ? 'sel-gray' : 'sel-red');
   A.dmAttend = val;
@@ -1769,8 +1771,7 @@ function submitLead() {
   if (A.quotes === null)  errors.push('Competition / Quotes answer is required (Section 2)');
   if (A.dmWho === null) errors.push('Whose opinion matters is required (Section 4, question 1)');
   else if (A.dmWho !== 'Nobody Else') {
-    if (A.dmBuyIn === null)  errors.push('Are they on board is required (Section 4, question 2)');
-    if (A.dmAttend === null) errors.push('Will they attend is required (Section 4, question 3)');
+    if (A.dmAttend === null) errors.push('Will they attend is required (Section 4, question 2)');
   }
   if (A.credit === null)  errors.push('Credit / Financing answer is required (Section 3)');
   const apptDate = document.getElementById('appointmentDate').value;
@@ -1907,7 +1908,6 @@ function showReviewModal(p, total, priority, rec) {
       <div class="review-row"><span class="review-key">Timeline / Urgency</span><span class="review-val">${fmt(p.answers.urgency)} <span style="color:#7c3aed;font-size:10px">(${p.scores.urgency} pts)</span></span></div>
       <div class="review-row"><span class="review-key">Quotes / Competition</span><span class="review-val">${fmt(p.answers.quotes)} <span style="color:#7c3aed;font-size:10px">(${p.scores.quotes} pts)</span></span></div>
       <div class="review-row"><span class="review-key">Other decision maker</span><span class="review-val">${fmt(p.answers.dmWho)}</span></div>
-      <div class="review-row"><span class="review-key">On board?</span><span class="review-val">${fmt(p.answers.dmBuyIn)}</span></div>
       <div class="review-row"><span class="review-key">Attending?</span><span class="review-val">${fmt(p.answers.dmAttend)} <span style="color:#7c3aed;font-size:10px">(${p.scores.dm} pts combined)</span></span></div>
       <div class="review-row"><span class="review-key">House Story</span><span class="review-val">${fmt(p.house_story)}</span></div>
       ${p.scores.dmRisk ? `<div class="review-row"><span class="review-key">⚠️ One-Legger Risk</span><span class="review-val" style="color:#f87171">${p.scores.dmRisk} pts</span></div>` : ''}
@@ -1976,7 +1976,6 @@ function confirmAndSubmit() {
   const project  = p.project_type || '—';
   const dmAttend = p.answers.dmAttend || '—';
   const dmWho    = p.answers.dmWho || '—';
-  const dmBuyIn  = p.answers.dmBuyIn || '—';
   const quotes   = p.answers.quotes || '—';
   const credit   = p.answers.credit || '—';
   const apptDate = fmtDateLong(p.appointment_date);
@@ -1994,7 +1993,7 @@ function confirmAndSubmit() {
 ${agent} | ${source}
 Set By: ${setBy}
 House Story: ${houseStoryTxt} | Sole DM: ${soleDMTxt}
-Other DM: ${dmWho} | On board: ${dmBuyIn} | Attending: ${dmAttend}
+Other DM: ${dmWho} | Attending: ${dmAttend}
 -set on ${setOn}
 Project: ${project}
 Quote/s: ${quotes}${compLine}
