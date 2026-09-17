@@ -644,17 +644,16 @@ select option{background:#0d0020;color:#e2d9f3}
         <div class="choice-sub">Son, daughter, family member</div>
       </div>
     </div>
-<div id="pivot-spouse" style="display:none">
-      <div class="script">
-        <div class="script-tag">🎙 Ask — the moment they name a partner</div>
-        <div class="script-body">
-          <span style="display:block;font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin:0 0 7px">2 &middot; Lock them both in</span>
-          "Perfect &mdash; and will [name] be there with you? The reason I ask is you get the design, the measurements and the final pricing all in that one visit, and the best discount only applies when everyone making the decision is there to see it."<br><br>
-          "So does [day] at [time] work for both of you, or is there a time that works better for the two of you?"
-        </div>
-        <div class="script-listen">👂 Listen — "he doesn't care", "I'll fill her in", "she trusts me" all mean one-legger. Do not argue them out of it &mdash; Jack, 17 Sep: "buyers are liars", so go straight to question 3 and score what they actually say.</div>
-      </div>
-    </div>
+    <!-- Jack, 17 Sep: remove the question numbered 2. The spouse pivot
+         ("Lock them both in") is gone. It asked "will [name] be there with
+         you?" - which is question 3 asked a second time, in the wrong place -
+         and it argued the customer into a better answer, which is exactly what
+         he ruled out today: "we do not want to talk someone into a one leg,
+         they will lie, buyers are liars." The discounts statement now sitting
+         above question 3 carries the "best discount when everyone is present"
+         message on its own. The ADULT CHILD pivot below stays - Marvin's call -
+         because it asks availability rather than attendance, so it does not
+         duplicate question 3, and Jack asked for it specifically on 16 Sep. -->
 <div id="pivot-family" style="display:none">
       <div class="script">
         <div class="script-tag">🎙 Pivot — they named a son, daughter or family member</div>
@@ -1324,7 +1323,6 @@ function pickDmWho(val, el) {
      and clear them, so a stale answer from a previous lead cannot score. */
   const show = (val !== 'Nobody Else');
   document.getElementById('dm-followups').style.display = show ? 'block' : 'none';
-  document.getElementById('pivot-spouse').style.display = (val === 'Spouse / Partner') ? 'block' : 'none';
   document.getElementById('pivot-family').style.display = (val === 'Adult Child / Other') ? 'block' : 'none';
   if (!show) {
     A.dmAttend = null;
@@ -2048,7 +2046,6 @@ function closeModal() {
   document.getElementById('close-landline').style.display = 'none';
   document.getElementById('close-cell').style.display = 'none';
   document.querySelectorAll('#group-phonetype .choice').forEach(c => { c.className = 'choice'; });
-  document.getElementById('pivot-spouse').style.display = 'none';
   document.getElementById('pivot-family').style.display = 'none';
   document.getElementById('no-quotes-followup').style.display = 'none';
   enthAnswer = null; enthBonus = 0;
