@@ -504,10 +504,10 @@ select option{background:#0d0020;color:#e2d9f3}
         <div style="font-size:10px;color:rgba(167,139,250,0.55);margin-bottom:8px">650+</div>
         <span class="badge badge-amber">+15 PTS</span>
       </div>
-      <div class="choice" onclick="pick('credit','Needs a Little Work',10,this,'sel-amber','Credit')">
+      <div class="choice" onclick="pick('credit','Needs a Little Work',-40,this,'sel-red','Credit')">
         <div class="choice-label">Needs a Little Work</div>
         <div style="font-size:10px;color:rgba(167,139,250,0.55);margin-bottom:8px">500&ndash;640</div>
-        <span class="badge badge-amber">+10 PTS</span>
+        <span class="badge" style="background:rgba(239,68,68,0.16);color:#fca5a5;font-weight:900">&minus;40 PTS</span>
       </div>
       <div class="choice" onclick="pick('credit','Cash Project',10,this,'sel-blue','Credit')">
         <div class="choice-label">Cash Project</div>
@@ -1084,6 +1084,17 @@ const A = { urgency: null, quotes: null, dm: null, dmWho: null, dmBuyIn: null, d
    quotes score instead, because "shared lead" and "has competition" are
    the same fact and scoring both paid it twice and pushed the max to 140. */
 const S = { urgency: 0, quotes: 0, dm: 0, credit: 0, dmRisk: 0 };
+/* CREDIT - Jack, 17 Sep 8:46pm: "-40 on needs a little work.... The whole point
+   of asking the question is to weed out the broke people or people with bad
+   credit." This reverses the +10 agreed earlier the same day. It works WITH the
+   relabel rather than against it: "needs a little work" is soft enough that the
+   customer will admit to it (they never see the score), and the score then acts
+   on the truth. A lead that is otherwise perfect - ASAP, quote in hand, both
+   decision makers coming - lands on 40 with weak credit, i.e. STANDBY.
+   KNOWN HOLE, flagged to Marvin and not fixed here because Jack did not ask for
+   it: "Won't Share" still scores +5, so the cheapest move for a customer with
+   bad credit is to refuse the question. Weak credit now costs 45 points more
+   than declining to answer. */
 const SHARED_SOURCES = ['HOME ADVISOR', 'MOD-MODERNIZE', 'QUINSTREET', 'THUMBTACK'];
 /* Jack: a shared lead who hasn't seen a price yet is worth real points -
    they'll almost certainly have quotes before we arrive - but less than
