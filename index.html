@@ -713,14 +713,9 @@ select option{background:#0d0020;color:#e2d9f3}
         </div>
       </div>
     </div>
-<div id="dmRebookPitch" style="display:none;background:rgba(139,92,246,0.12);border:2px solid #8b5cf6;border-radius:12px;padding:15px 17px;margin-top:14px">
-      <div style="font-size:13px;font-weight:900;color:#c4b5fd;margin-bottom:6px">🎙 SAY THIS &mdash; turn it into a rebook</div>
-      <div style="font-size:13.5px;color:rgba(255,255,255,0.88);line-height:1.55">
-        "I can absolutely book that for you. Before I do &mdash; in about a minute you'll get a text from me with our actual price ranges. Have a look at it together tonight, because most people find those numbers a lot more competitive than they expected."<br><br>
-        "If it looks good to both of you, call me back and I'll move you to a time [name] can be there too. That way you get the design, the measurements and the best discount all in one go, instead of having to repeat it all second-hand."
-      </div>
-      <div class="script-listen" style="margin-top:10px">👂 Book it anyway if they want it &mdash; it is a reserve slot now, and a rebook with both of them is worth more than the one-leg. Do not talk them out of the appointment.</div>
-    </div>
+<!-- Rebook pitch box removed 17 Sep (Marvin): the one-leg verdict and the
+     reserve-slot rule already tell the setter what to do. Removed with its
+     two JS toggles; nothing else in the DM card changed. -->
 <div id="dmProbeWarning" style="display:none;background:rgba(245,158,11,0.13);border:2px solid #f59e0b;border-radius:12px;padding:14px 16px;margin-top:14px">
       <div style="font-size:13px;font-weight:900;color:#fbbf24;margin-bottom:5px">⚠️ CONFIRM THIS ONE A SECOND WAY</div>
       <div style="font-size:13px;color:rgba(255,255,255,0.8);line-height:1.45">"Nobody else is involved" is the one answer we cannot check, and it is the claim one-legs hide behind. Ask it once more before you book &mdash; "so if we get there and the numbers look good, there is nobody you would want to run it past first?" If a name comes out now, go back and change question 1.</div>
@@ -1382,7 +1377,6 @@ function updateDmRisk() {
      that the questions should catch it, so prompt the setter to confirm it a
      second way - one more sentence, no research, no extra call time. */
   document.getElementById('dmProbeWarning').style.display = (A.dmWho === 'Nobody Else') ? 'block' : 'none';
-  document.getElementById('dmRebookPitch').style.display = oneLeg ? 'block' : 'none';
   document.getElementById('eveningOnlyWarning').style.display = isRisk ? 'block' : 'none';
   calc();
   if (S.dmRisk !== prev) showToast(S.dmRisk, prev, 'One-Legger Risk');
@@ -2040,7 +2034,6 @@ function closeModal() {
   document.getElementById('sharedLeadWarning').style.display = 'none';
   document.getElementById('eveningOnlyWarning').style.display = 'none';
   document.getElementById('dmProbeWarning').style.display = 'none';
-  document.getElementById('dmRebookPitch').style.display = 'none';
   document.getElementById('dm-followups').style.display = 'none';
   phoneType = null;
   document.getElementById('close-landline').style.display = 'none';
