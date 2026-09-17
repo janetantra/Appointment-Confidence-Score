@@ -653,38 +653,15 @@ select option{background:#0d0020;color:#e2d9f3}
       </div>
       <div class="script-listen">👂 Listen — note it in Call Notes below so Jack or Dave can bring up the right discount at the appointment.</div>
     </div>
-    <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(167,139,250,0.5);margin:16px 0 10px">Decision Maker Age Group &mdash; recorded for the senior / veteran discount, not scored</div>
-    <div class="choices cols-3" id="group-dm">
-      <div class="dm-big dm-yes" onclick="pickDM('Senior',0,this)">
-        <div class="dm-icon">👴</div>
-        <div class="dm-big-label" style="color:#4ade80">Senior</div>
-        <div style="font-size:11px;color:rgba(107,114,128,0.7);margin-bottom:10px">Senior homeowner</div>
-        <span class="badge" style="font-size:11px;padding:4px 14px;background:rgba(107,114,128,0.18);color:#9ca3af">RECORDED</span>
-      </div>
-      <div class="dm-big dm-yes" onclick="pickDM('50s-60s',0,this)">
-        <div class="dm-icon">👫</div>
-        <div class="dm-big-label" style="color:#4ade80">50s – 60s</div>
-        <div style="font-size:11px;color:rgba(107,114,128,0.7);margin-bottom:10px">Mid-age couple</div>
-        <span class="badge" style="font-size:11px;padding:4px 14px;background:rgba(107,114,128,0.18);color:#9ca3af">RECORDED</span>
-      </div>
-      <div class="dm-big dm-yes" onclick="pickDM('40s and Below',0,this)">
-        <div class="dm-icon">🧑</div>
-        <div class="dm-big-label" style="color:#4ade80">40s Below</div>
-        <div style="font-size:11px;color:rgba(107,114,128,0.7);margin-bottom:10px">Younger decision maker</div>
-        <span class="badge" style="font-size:11px;padding:4px 14px;background:rgba(107,114,128,0.18);color:#9ca3af">RECORDED</span>
-      </div>
-    </div>
-    <!-- Jack: age group alone doesn't say whether this person is deciding
-         alone - that's the actual one-legger risk signal, scored below
-         together with house story. -->
-    <div class="script" style="margin-top:16px">
-      <div class="script-tag">🎙 Ask — on EVERY call, before you book</div>
-      <div class="script-body">
-        <span style="display:block;font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin:0 0 7px">3 &middot; The pin-down</span>
-        "Last thing so I can tell [agent] who to expect &mdash; will it be just you at the appointment, or both of you?"
-      </div>
-      <div class="script-listen">👂 Record exactly what they said, not what you hope. "Just me" is a fine answer to click &mdash; it costs you nothing and it lets Jack book the right slot. Guessing "both of you" is what puts him in a driveway with one person.</div>
-    </div>
+    <!-- Removed 17 Sep on Marvin/Jack's instruction: the Decision Maker Age
+         Group buttons (Senior / 50s-60s / 40s Below) and the standalone
+         "3 - The pin-down" script. Age scored 0 for all three options since
+         16 Sep so it carried no signal, and the pin-down script asked the
+         same thing as question 3 below - the same question twice, in two
+         places, is how contradictory answers get in. The seniors / veterans /
+         disabilities discount ask ABOVE is deliberately kept: that is a
+         discount pitch, not scoring. answers.dm still serialises (null) so
+         4829194 module 5 and modules 11/12 keep mapping without a change. -->
     <!-- Jack, 16 Sep, 30 years of running these appointments: there are three
          kinds of one-leg, and each fails a DIFFERENT test -
            1. busy professional whose spouse is not sold on the project  -> BUY-IN
@@ -919,6 +896,8 @@ select option{background:#0d0020;color:#e2d9f3}
       <div class="script-tag">🎙 Say to Close</div>
       <div class="script-body" id="closingScript">
         <strong>"Alright, you're all set! Now for the exciting part — based on what you've told me, here's the general ballpark for a project like yours: Tub-to-Shower is $5,877 to $13,877, a Full Remodel is $11,877 to $24,877, and a Custom Project is $18,877 to $39,877. Of course, that's just a general range — Jack will be able to give you an exact quote once he sees the bathroom, takes measurements, and goes over your options with you."</strong><br><br>
+        <strong>"Before I let you go &mdash; I'd like to ask, are you on a landline right now, or a cellphone?"</strong>
+        <div class="script-listen">&#128066; If they are on a <strong>landline</strong>, the confirmation text has gone to the mobile number on file, not the phone in their hand &mdash; ask them to check that phone before you hang up, or confirm the right mobile number and note it in Call Notes.</div><br>
         <strong>"I just sent you a text with your appointment details and the ballpark pricing. Can you pull that up for me while I have you on the phone and reply '1' to confirm your appointment?"</strong>
         <div class="script-listen">👂 Wait for them to reply on their phone before you hang up — that's the whole point, get the confirmation while they're still with you. Once they reply: <strong style="color:#e2d9f3">"Perfect, I got your confirmation. Thank you!"</strong></div>
       </div>
@@ -1084,8 +1063,8 @@ checkSession();
 const A = { urgency: null, quotes: null, dm: null, dmWho: null, dmBuyIn: null, dmAttend: null, credit: null };
 /* Positive categories total exactly 100: quotes 40 + urgency 20 + dm 20 +
    credit 20. S.dm holds the ATTENDANCE score (who will actually be at the
-   appointment); A.dm is the age group, which is recorded but scores nothing,
-   so the three dm* answer keys have no S key of their own and the total stays 100.
+   appointment); A.dm is a retired age-group field, no longer asked and always
+   null, so the three dm* answer keys have no S key of their own and the total stays 100.
    dmRisk is a
    deduction, not a category. A true one-legger now scores 0 on attendance AND
    takes -20, landing a perfect lead at 60 - LOW priority, exactly where the
@@ -1248,21 +1227,15 @@ function applyQuotesScore() {
   sharedBoost = floored - rawQuotesPts;
   S.quotes = floored;
 }
-/* Age group is recorded, never scored - it was a flat +20 for all three
-   options from 24 July to 16 Sep, so it carried no signal at all. Kept
-   because Jack uses it to pitch the senior / veteran discount. */
-function pickDM(label, pts, el) {
-  document.querySelectorAll('#group-dm .dm-big').forEach(c => c.classList.remove('dm-yes-sel','dm-no-sel'));
-  el.classList.add('dm-yes-sel');
-  A.dm = label;
-  calc();
-}
+/* pickDM() removed 17 Sep with the age-group buttons. A.dm is kept on the
+   state object so answers.dm still serialises as null and nothing
+   downstream in Make or the tracking sheet has to change. */
 /* ── DECISION MAKER: three questions, ONE score ──────────────────────────
    Jack's matrix (16 Sep). The answers are a chain, not independent facts, so
    they are scored as a combination - scoring each question separately would
    allow nonsense pairs like "nobody else involved" + "other one not coming".
 
-     nobody else involved ................................. 15
+     nobody else involved ................................ -15
      someone else | on board        | coming ............... 20
      someone else | still working   | coming ............... 12
      someone else | any             | NOT coming ...........  0
@@ -1276,7 +1249,13 @@ function pickDM(label, pts, el) {
    supportive-but-absent partner is the easier rebook. */
 function dmScore() {
   if (A.dmWho === null) return null;
-  if (A.dmWho === 'Nobody Else') return 15;
+  /* Marvin, 17 Sep: "'nobody else' option should be negative point, not
+     additional 15". It is the one answer we cannot verify and the claim
+     one-legs hide behind, so it now costs points instead of earning them:
+     a perfect lead (urgency 20 + quote in hand 40 + credit 20) claiming
+     sole decision maker lands on 65 - the double-book line - instead of
+     95. Still ranks above a CONFIRMED one-leg, which caps at 45. */
+  if (A.dmWho === 'Nobody Else') return -15;
   if (A.dmBuyIn === null || A.dmAttend === null) return null;
   if (A.dmAttend === 'Not Sure') return 5;
   if (A.dmAttend === 'Coming') return A.dmBuyIn === 'On Board' ? 20 : 12;
@@ -1457,8 +1436,8 @@ function calc() {
   }
   /* 'dm' is the one row whose answer key differs from its score key: S.dm is
      the combined three-question score, so the row is 'answered' only once
-     dmScore() can actually resolve - not when A.dm (the age group, which no
-     longer scores anything) is set. */
+     dmScore() can actually resolve - A.dm is the retired age-group field and
+     is always null. */
   ['urgency','quotes','dm','credit'].forEach(k => {
     const el = document.getElementById('bd-' + k);
     const answered = (k === 'dm') ? dmScore() !== null : A[k] !== null;
@@ -1753,7 +1732,6 @@ function submitLead() {
   if (!pt) { errors.push('Project Type must be selected'); document.getElementById('projectType').style.borderColor = '#ef4444'; setTimeout(() => document.getElementById('projectType').style.borderColor = '', 3000); }
   if (A.urgency === null) errors.push('Timeline / Urgency answer is required (Section 1)');
   if (A.quotes === null)  errors.push('Competition / Quotes answer is required (Section 2)');
-  if (A.dm === null)      errors.push('Decision Maker age group is required (Section 4)');
   if (A.dmWho === null) errors.push('Whose opinion matters is required (Section 4, question 1)');
   else if (A.dmWho !== 'Nobody Else') {
     if (A.dmBuyIn === null)  errors.push('Are they on board is required (Section 4, question 2)');
@@ -1840,7 +1818,31 @@ function showReviewModal(p, total, priority, rec) {
   const fmt = val => val || '<span style="color:rgba(167,139,250,0.3);font-weight:400">—</span>';
   const fmtDate = d => d ? new Date(d + 'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}) : '—';
   const fmtTime = t => { if(!t) return '—'; const [h,m]=t.split(':'); const ampm=+h>=12?'PM':'AM'; return `${+h%12||12}:${m} ${ampm}`; };
+  /* Jack, 17 Sep: "It should have heavy high warnings at the end." The one-leg
+     verdict already shows live in the recommendation panel; this is the last
+     screen before Submit, so it repeats it in a form nobody can scroll past. */
+  const endWarning = p.scores.dmRisk
+    ? `<div style="background:rgba(239,68,68,0.16);border:3px solid #ef4444;border-radius:12px;padding:16px 18px;margin-bottom:16px">
+         <div style="font-size:16px;font-weight:900;color:#fca5a5;letter-spacing:0.5px">&#128315; ONE-LEG APPOINTMENT &mdash; RESERVE SLOT ONLY</div>
+         <div style="font-size:13px;color:rgba(255,255,255,0.85);line-height:1.5;margin-top:7px">
+           Only one decision maker is confirmed for this visit. <strong>Never give this a prime slot.</strong>
+           Book it alongside a strong lead and work the rebook &mdash; a slot spent on a one-leg costs about
+           half a sale. Score is capped at 45 no matter how good the rest of the answers are
+           (${p.scores.dmRisk} pts applied).
+         </div>
+       </div>`
+    : (p.sole_decision_maker === 'Yes'
+      ? `<div style="background:rgba(245,158,11,0.15);border:3px solid #f59e0b;border-radius:12px;padding:16px 18px;margin-bottom:16px">
+           <div style="font-size:16px;font-weight:900;color:#fbbf24;letter-spacing:0.5px">&#9888;&#65039; UNVERIFIED SOLE DECISION MAKER</div>
+           <div style="font-size:13px;color:rgba(255,255,255,0.85);line-height:1.5;margin-top:7px">
+             They told us nobody else is involved. It is the one answer we cannot check and the claim
+             one-legs hide behind, so it is scored <strong>-15</strong>, not a bonus.
+             <strong>Did you confirm it a second way before booking?</strong>
+           </div>
+         </div>`
+      : '');
   document.getElementById('reviewBody').innerHTML = `
+    ${endWarning}
     ${p.scores.dmRisk ? `<div style="background:rgba(239,68,68,0.16);border:3px solid #ef4444;border-radius:12px;padding:16px 18px;margin-bottom:14px">
       <div style="font-size:19px;font-weight:900;color:#ef4444;line-height:1.25;margin-bottom:6px">🚨 EVENING SLOT ONLY</div>
       <div style="font-size:14px;font-weight:800;color:#fff;line-height:1.45">Only one decision maker attending. Booked at <strong style="color:#fca5a5">${fmtTime(p.appointment_time)}</strong> — if that is not an evening slot, go back and change it before submitting.</div>
@@ -1871,7 +1873,6 @@ function showReviewModal(p, total, priority, rec) {
       <div class="review-row"><span class="review-key">Other decision maker</span><span class="review-val">${fmt(p.answers.dmWho)}</span></div>
       <div class="review-row"><span class="review-key">On board?</span><span class="review-val">${fmt(p.answers.dmBuyIn)}</span></div>
       <div class="review-row"><span class="review-key">Attending?</span><span class="review-val">${fmt(p.answers.dmAttend)} <span style="color:#7c3aed;font-size:10px">(${p.scores.dm} pts combined)</span></span></div>
-      <div class="review-row"><span class="review-key">DM Age Group</span><span class="review-val">${fmt(p.answers.dm)} <span style="color:#6b7280;font-size:10px">(recorded)</span></span></div>
       <div class="review-row"><span class="review-key">House Story</span><span class="review-val">${fmt(p.house_story)}</span></div>
       ${p.scores.dmRisk ? `<div class="review-row"><span class="review-key">⚠️ One-Legger Risk</span><span class="review-val" style="color:#f87171">${p.scores.dmRisk} pts</span></div>` : ''}
       ${p.scores.sharedLead ? `<div class="review-row"><span class="review-key">Shared Lead</span><span class="review-val" style="color:#4ade80">Quotes raised ${p.scores.quotesRaw} → ${p.scores.quotes}</span></div>` : ''}
@@ -1937,7 +1938,6 @@ function confirmAndSubmit() {
   const source   = p.lead_source || '';
   const setOn    = fmtDate(p.set_on);
   const project  = p.project_type || '—';
-  const dm       = p.answers.dm || '—';
   const dmAttend = p.answers.dmAttend || '—';
   const dmWho    = p.answers.dmWho || '—';
   const dmBuyIn  = p.answers.dmBuyIn || '—';
@@ -1961,7 +1961,6 @@ House Story: ${houseStoryTxt} | Sole DM: ${soleDMTxt}
 Other DM: ${dmWho} | On board: ${dmBuyIn} | Attending: ${dmAttend}
 -set on ${setOn}
 Project: ${project}
-DM: ${dm}
 Quote/s: ${quotes}${compLine}
 CS: ${credit}
 Score: ${score}/100${notes}
