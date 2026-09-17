@@ -351,7 +351,6 @@ select option{background:#0d0020;color:#e2d9f3}
       <div class="script-body">
         <strong>"Hi [Name], this is Arnold with Bathroom Excellence. How are you doing today?"</strong><br><br>
         "Thanks for picking up. We received your information from the form you filled out online about your bathroom project. I wanna let you know that at the end of the call, I'm going to send you price ranges for the project that we are about to discuss regarding your bathroom."<br><br>
-        "But before we get into everything, I also wanted to let you know that we're currently looking for a bathroom in your area to feature in our before-and-after photo campaign, which comes with a significant discount."<br><br>
         "So, tell me a little bit about what you're looking to have done."
       </div>
     </div>
@@ -489,26 +488,35 @@ select option{background:#0d0020;color:#e2d9f3}
       <div class="script-tag">🎙 Say — Read while checking calendar</div>
       <div class="script-body">
         "Perfect. Let me check Jack's availability for you."<br><br>
-        "While I'm checking, I also want to mention that Jack brings several financing options with him — from programs for excellent credit all the way to options designed for homeowners who are rebuilding their credit."<br><br>
-        <strong>"About where would you say your credit falls today — needs work, fair, good, or excellent?"</strong>
+        "While I'm checking &mdash; 85% of our customers choose to take advantage of Jack's financing offers when he gets to the home, including no money down and small monthly payments starting at $75 a month."<br><br>
+        <strong>"How would you rate your credit &mdash; good, excellent, fair, or does it need a little work? We have options for everything."</strong>
       </div>
       <div class="script-listen">👂 Listen — then select below</div>
     </div>
-    <div class="choices cols-4" id="group-credit">
+    <div class="choices cols-3" id="group-credit">
       <div class="choice" onclick="pick('credit','Good / Excellent',20,this,'sel-green','Credit')">
         <div class="choice-label">Good / Excellent</div>
+        <div style="font-size:10px;color:rgba(167,139,250,0.55);margin-bottom:8px">750+</div>
         <span class="badge badge-green">+20 PTS</span>
       </div>
       <div class="choice" onclick="pick('credit','Fair',15,this,'sel-amber','Credit')">
         <div class="choice-label">Fair</div>
+        <div style="font-size:10px;color:rgba(167,139,250,0.55);margin-bottom:8px">650+</div>
         <span class="badge badge-amber">+15 PTS</span>
+      </div>
+      <div class="choice" onclick="pick('credit','Needs a Little Work',10,this,'sel-amber','Credit')">
+        <div class="choice-label">Needs a Little Work</div>
+        <div style="font-size:10px;color:rgba(167,139,250,0.55);margin-bottom:8px">500&ndash;640</div>
+        <span class="badge badge-amber">+10 PTS</span>
       </div>
       <div class="choice" onclick="pick('credit','Cash Project',10,this,'sel-blue','Credit')">
         <div class="choice-label">Cash Project</div>
+        <div style="font-size:10px;color:rgba(167,139,250,0.55);margin-bottom:8px">Not financing</div>
         <span class="badge badge-blue">+10 PTS</span>
       </div>
       <div class="choice" onclick="pick('credit','Won\'t Share',5,this,'sel-gray','Credit')">
         <div class="choice-label">Won't Share</div>
+        <div style="font-size:10px;color:rgba(167,139,250,0.55);margin-bottom:8px">Declined to say</div>
         <span class="badge badge-gray">+5 PTS</span>
       </div>
     </div>
@@ -598,80 +606,28 @@ select option{background:#0d0020;color:#e2d9f3}
       <div class="card-title">Decision Maker Confirmation</div>
       <div class="card-pts">MAX 20 PTS · -40 IF ONE-LEGGER</div>
     </div>
+    <!-- Jack, 17 Sep. Four instructions, all in this block:
+           - "Change the word call to decision" (question 1).
+           - "Eliminate the rebuttal, the questions are staged to find one legs.
+             We do not want to talk someone... into a one leg they will lie,
+             buyers are liars. The next question tricks them into giving an
+             honest answer."  -> the rebuttal script is GONE. We no longer argue
+             a one-leg out of being a one-leg; we detect it and score it.
+           - "There needs to be an option for their response here so that the
+             question below accurately scores" -> every question's buttons now
+             sit DIRECTLY under its own script. Nothing separates an ask from
+             its answer any more.
+           - "THEN THIS QUESTION NEEDS TO BE ASKED, AND THEN YOU GIVE THE SCORE
+             FOR ONE LEG" -> the pin-down script is restored, this time inline
+             as question 3's own script instead of floating above the block. -->
     <div class="script">
-      <div class="script-tag">🎙 Ask</div>
+      <div class="script-tag">&#127897; Ask</div>
       <div class="script-body">
         <span style="display:block;font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin:0 0 7px">1 &middot; Find out</span>
-        "Besides yourself, whose opinion matters when you make the final call on something like this &mdash; a spouse, a partner, an adult child, anyone?"
+        "Besides yourself, whose opinion matters when you make the final decision on something like this &mdash; a spouse, a partner, an adult child, anyone?"
       </div>
-      <div class="script-listen">👂 Never ask "are you the decision maker" &mdash; people say yes to that automatically. Asking whose OPINION matters is what gets the honest answer, and it is the only version that finds the son or daughter Jack keeps running into.
-      </div>
+      <div class="script-listen">&#128066; Never ask "are you the decision maker" &mdash; people say yes to that automatically. Asking whose OPINION matters is what gets the honest answer, and it is the only version that finds the son or daughter Jack keeps running into.</div>
     </div>
-    <!-- Jack, 16 Sep: "all sounds great as long as they're good at pivoting with
-         the call. If they say my son or daughter Bob, I'll need to talk to him
-         about it, then as long as they can pivot with that and say that's great.
-         When is Bob available?... That would be my biggest critique of Arnold.
-         He's very stick-to-the-script, he doesn't pivot."
-         So the pivot follows the Q1 ANSWER instead of being one fixed block. A
-         setter who reads what is on screen now reads the RIGHT thing: the spouse
-         wording never appears when the customer just said "my son". -->
-    <div id="pivot-spouse" style="display:none">
-      <div class="script">
-        <div class="script-tag">🎙 Ask — the moment they name a partner</div>
-        <div class="script-body">
-          <span style="display:block;font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin:0 0 7px">2 &middot; Lock them both in</span>
-          "Perfect &mdash; and will [name] be there with you? The reason I ask is you get the design, the measurements and the final pricing all in that one visit, and the best discount only applies when everyone making the decision is there to see it."<br><br>
-          "So does [day] at [time] work for both of you, or is there a time that works better for the two of you?"
-        </div>
-        <div class="script-listen">👂 Listen — "he doesn't care", "I'll fill her in", "she trusts me" all mean one-legger. Use the rebuttal below before you accept it.</div>
-      </div>
-    </div>
-    <div id="pivot-family" style="display:none">
-      <div class="script">
-        <div class="script-tag">🎙 Pivot — they named a son, daughter or family member</div>
-        <div class="script-body">
-          <span style="display:block;font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin:0 0 7px">2 &middot; Welcome them in, do not work around them</span>
-          "That's great &mdash; when is [name] available? We encourage everybody to be there."<br><br>
-          "I know they want to look out for you, and we want them to feel good about the purchase too."<br><br>
-          "So what day works best for the two of you?"
-        </div>
-        <div class="script-listen">👂 This is the pivot. Do not move to the next question yet &mdash; get the name and a day that suits them both first. "I'll talk to him about it" is not a no, it is an invitation to include him.</div>
-      </div>
-    </div>
-    <div class="script">
-      <div class="script-tag">🎙 Rebuttal — if another decision maker is involved but won't be present</div>
-      <div class="script-body">
-        "I completely understand and respect that it's your home and ultimately your decision. However, out of respect for everyone involved, we do ask that all decision makers be present for the appointment."<br><br>
-        "Jack/Dave, our manager, will be going over the project details, options, pricing, and any questions you both may have. Plus, there's an additional discount available when all decision makers are present."<br><br>
-        "With that in mind, what day and time would work best for both of you — mornings, afternoons, or evenings?"
-      </div>
-    </div>
-    <div class="script">
-      <div class="script-tag">🎙 Ask</div>
-      <div class="script-body">
-        "Great. On top of the before-and-after campaign, we also offer additional discounts for seniors, veterans, and individuals with disabilities. Is there anyone in the household who may qualify for one of those?"
-      </div>
-      <div class="script-listen">👂 Listen — note it in Call Notes below so Jack or Dave can bring up the right discount at the appointment.</div>
-    </div>
-    <!-- Removed 17 Sep on Marvin/Jack's instruction: the Decision Maker Age
-         Group buttons (Senior / 50s-60s / 40s Below) and the standalone
-         "3 - The pin-down" script. Age scored 0 for all three options since
-         16 Sep so it carried no signal, and the pin-down script asked the
-         same thing as question 3 below - the same question twice, in two
-         places, is how contradictory answers get in. The seniors / veterans /
-         disabilities discount ask ABOVE is deliberately kept: that is a
-         discount pitch, not scoring. answers.dm still serialises (null) so
-         4829194 module 5 and modules 11/12 keep mapping without a change. -->
-    <!-- Jack, 16 Sep, 30 years of running these appointments: there are three
-         kinds of one-leg, and each fails a DIFFERENT test -
-           1. busy professional whose spouse is not sold on the project  -> BUY-IN
-           2. partner is sold but "we can never get together"            -> ATTENDANCE
-           3. older customer who defers to a son or daughter             -> EXISTENCE
-         He also asked for the same fact to be approached more than one way:
-         "posing the same question twice different ways to get answers... a
-         series of like three questions in order to wean out the one legs."
-         Scored as ONE combined score, not three, because the answers are a
-         chain - if nobody else is involved, buy-in and attendance are moot. -->
     <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(167,139,250,0.5);margin:16px 0 10px">Decision makers &mdash; all three answers combine into one score, max 20</div>
     <label class="field-label" style="margin-top:4px">1 &middot; Whose opinion matters besides theirs?</label>
     <div class="choices cols-3" id="group-dm-who" style="margin-top:0">
@@ -686,6 +642,29 @@ select option{background:#0d0020;color:#e2d9f3}
       <div class="choice" onclick="pickDmWho('Adult Child / Other',this)">
         <div class="choice-label">👨&zwj;👩&zwj;👦 Adult child / other</div>
         <div class="choice-sub">Son, daughter, family member</div>
+      </div>
+    </div>
+<div id="pivot-spouse" style="display:none">
+      <div class="script">
+        <div class="script-tag">🎙 Ask — the moment they name a partner</div>
+        <div class="script-body">
+          <span style="display:block;font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin:0 0 7px">2 &middot; Lock them both in</span>
+          "Perfect &mdash; and will [name] be there with you? The reason I ask is you get the design, the measurements and the final pricing all in that one visit, and the best discount only applies when everyone making the decision is there to see it."<br><br>
+          "So does [day] at [time] work for both of you, or is there a time that works better for the two of you?"
+        </div>
+        <div class="script-listen">👂 Listen — "he doesn't care", "I'll fill her in", "she trusts me" all mean one-legger. Do not argue them out of it &mdash; Jack, 17 Sep: "buyers are liars", so go straight to question 3 and score what they actually say.</div>
+      </div>
+    </div>
+<div id="pivot-family" style="display:none">
+      <div class="script">
+        <div class="script-tag">🎙 Pivot — they named a son, daughter or family member</div>
+        <div class="script-body">
+          <span style="display:block;font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin:0 0 7px">2 &middot; Welcome them in, do not work around them</span>
+          "That's great &mdash; when is [name] available? We encourage everybody to be there."<br><br>
+          "I know they want to look out for you, and we want them to feel good about the purchase too."<br><br>
+          "So what day works best for the two of you?"
+        </div>
+        <div class="script-listen">👂 This is the pivot. Do not move to the next question yet &mdash; get the name and a day that suits them both first. "I'll talk to him about it" is not a no, it is an invitation to include him.</div>
       </div>
     </div>
     <div id="dm-followups" style="display:none">
@@ -704,6 +683,14 @@ select option{background:#0d0020;color:#e2d9f3}
           <div class="choice-sub">Would not say</div>
         </div>
       </div>
+      <div class="script" style="margin-top:16px">
+        <div class="script-tag">&#127897; Ask &mdash; on EVERY call, before you book</div>
+        <div class="script-body">
+          <span style="display:block;font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin:0 0 7px">3 &middot; The pin-down</span>
+          "Last thing so I know who to expect &mdash; will it be just you, or both of you?"
+        </div>
+        <div class="script-listen">&#128066; Jack: "The next question tricks them into giving an honest answer." Record exactly what they said, not what you hope, then score it below. Guessing "both of you" is what puts Jack in a driveway with one person.</div>
+      </div>
       <label class="field-label" style="margin-top:14px">3 &middot; Will they be at the appointment?</label>
       <div class="choices cols-3" id="group-dm-attend" style="margin-top:0">
         <div class="choice" onclick="pickDmAttend('Coming',this)">
@@ -720,13 +707,7 @@ select option{background:#0d0020;color:#e2d9f3}
         </div>
       </div>
     </div>
-    <!-- Jack, 16 Sep: "hopefully they have others out to gather information
-         before us and decide to rebook with us when all decision-makers can
-         be present... based on we are about to or just sent them ballpark
-         price ranges, which they will find to be very, very highly
-         competitive." The one-leg is not thrown away - it is turned into a
-         rebook, and the ballpark text is the lever. -->
-    <div id="dmRebookPitch" style="display:none;background:rgba(139,92,246,0.12);border:2px solid #8b5cf6;border-radius:12px;padding:15px 17px;margin-top:14px">
+<div id="dmRebookPitch" style="display:none;background:rgba(139,92,246,0.12);border:2px solid #8b5cf6;border-radius:12px;padding:15px 17px;margin-top:14px">
       <div style="font-size:13px;font-weight:900;color:#c4b5fd;margin-bottom:6px">🎙 SAY THIS &mdash; turn it into a rebook</div>
       <div style="font-size:13.5px;color:rgba(255,255,255,0.88);line-height:1.55">
         "I can absolutely book that for you. Before I do &mdash; in about a minute you'll get a text from me with our actual price ranges. Have a look at it together tonight, because most people find those numbers a lot more competitive than they expected."<br><br>
@@ -734,9 +715,16 @@ select option{background:#0d0020;color:#e2d9f3}
       </div>
       <div class="script-listen" style="margin-top:10px">👂 Book it anyway if they want it &mdash; it is a reserve slot now, and a rebook with both of them is worth more than the one-leg. Do not talk them out of the appointment.</div>
     </div>
-    <div id="dmProbeWarning" style="display:none;background:rgba(245,158,11,0.13);border:2px solid #f59e0b;border-radius:12px;padding:14px 16px;margin-top:14px">
+<div id="dmProbeWarning" style="display:none;background:rgba(245,158,11,0.13);border:2px solid #f59e0b;border-radius:12px;padding:14px 16px;margin-top:14px">
       <div style="font-size:13px;font-weight:900;color:#fbbf24;margin-bottom:5px">⚠️ CONFIRM THIS ONE A SECOND WAY</div>
       <div style="font-size:13px;color:rgba(255,255,255,0.8);line-height:1.45">"Nobody else is involved" is the one answer we cannot check, and it is the claim one-legs hide behind. Ask it once more before you book &mdash; "so if we get there and the numbers look good, there is nobody you would want to run it past first?" If a name comes out now, go back and change question 1.</div>
+    </div>
+    <div class="script" style="margin-top:16px">
+      <div class="script-tag">&#127897; Ask</div>
+      <div class="script-body">
+        "Great &mdash; in addition to the discount for all decision makers being present, we also offer a variety of discounts including senior, military and many others, usually equaling 20% or more!"
+      </div>
+      <div class="script-listen">&#128066; Listen &mdash; note it in Call Notes below so Jack or Dave can bring up the right discount at the appointment.</div>
     </div>
     <!-- Jack, 16 Sep: "HAMMERING DOWN ON THIS QUESTION ELIMINATES THE NEED FOR
          THE TWO-STORY HOUSE QUESTION/RESEARCH WHEN THE APPT SETTER IS ON THE
@@ -895,11 +883,35 @@ select option{background:#0d0020;color:#e2d9f3}
     <div class="script">
       <div class="script-tag">🎙 Say to Close</div>
       <div class="script-body" id="closingScript">
-        <strong>"Alright, you're all set! Now for the exciting part — based on what you've told me, here's the general ballpark for a project like yours: Tub-to-Shower is $5,877 to $13,877, a Full Remodel is $11,877 to $24,877, and a Custom Project is $18,877 to $39,877. Of course, that's just a general range — Jack will be able to give you an exact quote once he sees the bathroom, takes measurements, and goes over your options with you."</strong><br><br>
-        <strong>"Before I let you go &mdash; I'd like to ask, are you on a landline right now, or a cellphone?"</strong>
-        <div class="script-listen">&#128066; If they are on a <strong>landline</strong>, the confirmation text has gone to the mobile number on file, not the phone in their hand &mdash; ask them to check that phone before you hang up, or confirm the right mobile number and note it in Call Notes.</div><br>
-        <strong>"I just sent you a text with your appointment details and the ballpark pricing. Can you pull that up for me while I have you on the phone and reply '1' to confirm your appointment?"</strong>
-        <div class="script-listen">👂 Wait for them to reply on their phone before you hang up — that's the whole point, get the confirmation while they're still with you. Once they reply: <strong style="color:#e2d9f3">"Perfect, I got your confirmation. Thank you!"</strong></div>
+        <strong>"Alrighty, you're all set! Before I go &mdash; is this a landline, or a cell phone?"</strong>
+        <div class="script-listen">&#128066; Jack, 17 Sep: this has to come BEFORE you read any totals. Click their answer &mdash; the right script appears underneath.</div>
+      </div>
+      <div class="choices cols-2" id="group-phonetype" style="margin-top:12px">
+        <div class="choice" onclick="pickPhoneType('Landline',this)">
+          <div class="choice-label">&#128222; Landline</div>
+          <div class="choice-sub">Read the ranges out loud</div>
+        </div>
+        <div class="choice" onclick="pickPhoneType('Cell Phone',this)">
+          <div class="choice-label">&#128241; Cell phone</div>
+          <div class="choice-sub">Go straight to the text</div>
+        </div>
+      </div>
+      <div class="script" id="close-landline" style="display:none;margin-top:12px">
+        <div class="script-tag">&#127897; Landline &mdash; read the ranges out loud</div>
+        <div class="script-body">
+          <strong>"Now for the exciting part &mdash; based on what you've told me, a project like yours generally runs somewhere between about $6,000 and $14,000."</strong><br><br>
+          <span style="font-size:12px;color:rgba(167,139,250,0.75)">Full remodel &rarr; <strong>about $12,000 to $25,000</strong> &nbsp;&middot;&nbsp; Custom project &rarr; <strong>about $19,000 to $40,000</strong></span><br><br>
+          <strong>"Of course, that's just a general ballpark &mdash; Jack will be able to give you an exact quote once he sees the bathroom, takes measurements, and goes over your options with you."</strong>
+        </div>
+        <div class="script-listen">&#128066; Say ONLY the range that matches the project they just described &mdash; do not read all three. Rounded on purpose: "five thousand eight hundred seventy-seven to thirteen thousand eight hundred seventy-seven" is too much to hold in your head on a call. The exact $5,877&ndash;$13,877 figures stay in the text message, which is why the cell-phone branch does not read numbers aloud at all.</div>
+        <div class="script-listen">&#128066; They cannot pull up the text on the phone they are holding. The confirmation text has gone to the mobile number on file &mdash; ask them to check that phone before you hang up, or get the right mobile number and put it in Call Notes.</div>
+      </div>
+      <div class="script" id="close-cell" style="display:none;margin-top:12px">
+        <div class="script-tag">&#127897; Cell phone &mdash; go straight to the text</div>
+        <div class="script-body">
+          <strong>"I just sent you a text with your appointment details and the ballpark pricing. Can you pull that up for me while I have you on the phone and reply '1' to confirm your appointment?"</strong>
+        </div>
+        <div class="script-listen">&#128066; Wait for them to reply before you hang up &mdash; that is the whole point, get the confirmation while they are still with you. Once they reply: <strong style="color:#e2d9f3">"Perfect, I got your confirmation. Thank you!"</strong></div>
       </div>
       <!-- The old two-text-messages line lived behind "only if they said yes". That gate has
            to survive the move into the close, or a customer who declined texts gets promised
@@ -1277,6 +1289,18 @@ function selectOne(groupId, el, cls) {
     c.className = c.className.replace(/sel-\w+/g,'').trim();
   });
   el.classList.add(cls);
+}
+/* Jack, 17 Sep: "is this a landline needs to go above the script of reading off
+   totals... If the answer is landline, give the script; if the answer is cell
+   phone move to I just texted you." Not scored - it only routes the close, and
+   it is recorded so we can see how often a confirmation text had no chance of
+   being read. */
+let phoneType = null;
+function pickPhoneType(val, el) {
+  selectOne('group-phonetype', el, val === 'Landline' ? 'sel-amber' : 'sel-green');
+  phoneType = val;
+  document.getElementById('close-landline').style.display = (val === 'Landline') ? 'block' : 'none';
+  document.getElementById('close-cell').style.display = (val === 'Cell Phone') ? 'block' : 'none';
 }
 function pickDmWho(val, el) {
   selectOne('group-dm-who', el, val === 'Nobody Else' ? 'sel-blue' : 'sel-purple');
@@ -1794,6 +1818,7 @@ function submitLead() {
       ? ('prior opt-in at original lead source: ' + (src || 'unspecified'))
       : 'customer declined texts on the call',
     set_by: selectedSetBy,
+    phone_type: phoneType,
     house_story: houseStory,
     sole_decision_maker: soleDM,
     competitor_appt_exists: competitorApptExists,
@@ -2009,6 +2034,10 @@ function closeModal() {
   document.getElementById('dmProbeWarning').style.display = 'none';
   document.getElementById('dmRebookPitch').style.display = 'none';
   document.getElementById('dm-followups').style.display = 'none';
+  phoneType = null;
+  document.getElementById('close-landline').style.display = 'none';
+  document.getElementById('close-cell').style.display = 'none';
+  document.querySelectorAll('#group-phonetype .choice').forEach(c => { c.className = 'choice'; });
   document.getElementById('pivot-spouse').style.display = 'none';
   document.getElementById('pivot-family').style.display = 'none';
   document.getElementById('no-quotes-followup').style.display = 'none';
