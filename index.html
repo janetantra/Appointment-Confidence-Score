@@ -1090,14 +1090,17 @@ const S = { urgency: 0, quotes: 0, dm: 0, credit: 0, dmRisk: 0 };
    bad credit is to refuse the question. Weak credit now costs 45 points more
    than declining to answer. */
 const SHARED_SOURCES = ['HOME ADVISOR', 'MOD-MODERNIZE', 'QUINSTREET', 'THUMBTACK'];
-/* Jack: a shared lead who hasn't seen a price yet is worth real points -
-   they'll almost certainly have quotes before we arrive - but less than
-   someone who already holds one, since an unseen price can still cancel
-   the appointment. Sits below "appt before us" (30), well above a genuine
-   no-competition lead (10). */
-const SHARED_QUOTES_FLOOR = 25;
-let rawQuotesPts = null;   // the answer's own points, before any floor
-let sharedBoost = 0;       // display only - already baked into S.quotes
+/* SHARED-LEAD QUOTES FLOOR REMOVED 17 Sep. Jack, 14 Sep: "eliminate giving
+   special treatment at all just because it's a shared lead." Arnold's point
+   was that the boost floored these leads into the never-double-book band,
+   which is exactly the calendar space double-booking exists to protect.
+   Quotes now scores the customer's own answer and nothing else.
+   Being a shared lead is still a SCHEDULING rule - see updateBookingDelay(),
+   which pushes these 5-7 days out so the competition goes first. That stays.
+   sharedBoost is kept, pinned at 0, so scores.sharedLead still serialises and
+   the sheet's "Shared Lead Pts" column keeps mapping - no Make change. */
+let rawQuotesPts = null;   // the answer's own points
+let sharedBoost = 0;       // always 0 since 17 Sep - kept for the payload shape
 let enthAnswer = null, enthBonus = 0;
 let toastTimer = null;
 let competitorApptExists = false;
@@ -1239,10 +1242,8 @@ function isSharedLead() {
 /* Floor the quotes score for shared leads instead of adding a separate
    bonus - same signal, counted once, keeps the ceiling at 100. */
 function applyQuotesScore() {
-  if (rawQuotesPts === null) { S.quotes = 0; sharedBoost = 0; return; }
-  const floored = isSharedLead() ? Math.max(rawQuotesPts, SHARED_QUOTES_FLOOR) : rawQuotesPts;
-  sharedBoost = floored - rawQuotesPts;
-  S.quotes = floored;
+  sharedBoost = 0;
+  S.quotes = (rawQuotesPts === null) ? 0 : rawQuotesPts;
 }
 /* pickDM() removed 17 Sep with the age-group buttons. A.dm is kept on the
    state object so answers.dm still serialises as null and nothing
@@ -1473,11 +1474,11 @@ function calc() {
     if (!answered) { el.textContent = '—'; el.style.color = '#4b5563'; }
     else { el.textContent = S[k] + ' pts'; el.style.color = S[k] > 0 ? '#4ade80' : '#f87171'; }
   });
-  /* Shown for transparency, but NOT added to the total - the boost is
-     already inside S.quotes above, and adding it here would double it. */
+  /* No longer worth points (floor removed 17 Sep) - reports the scheduling
+     consequence instead, so the row still tells the setter something true. */
   const bdShared = document.getElementById('bd-sharedLead');
-  if (!sharedBoost) { bdShared.textContent = '—'; bdShared.style.color = '#4b5563'; }
-  else { bdShared.textContent = `included (+${sharedBoost} to Quotes)`; bdShared.style.color = '#4ade80'; }
+  if (isSharedLead()) { bdShared.textContent = 'not scored \u2014 book 5-7 days out'; bdShared.style.color = '#fb923c'; }
+  else { bdShared.textContent = '—'; bdShared.style.color = '#4b5563'; }
   const bdRisk = document.getElementById('bd-dmRisk');
   if (!S.dmRisk) { bdRisk.textContent = '—'; bdRisk.style.color = '#4b5563'; }
   else { bdRisk.textContent = S.dmRisk + ' pts'; bdRisk.style.color = '#f87171'; }
@@ -1903,7 +1904,7 @@ function showReviewModal(p, total, priority, rec) {
       <div class="review-row"><span class="review-key">Attending?</span><span class="review-val">${fmt(p.answers.dmAttend)} <span style="color:#7c3aed;font-size:10px">(${p.scores.dm} pts combined)</span></span></div>
       <div class="review-row"><span class="review-key">House Story</span><span class="review-val">${fmt(p.house_story)}</span></div>
       ${p.scores.dmRisk ? `<div class="review-row"><span class="review-key">⚠️ One-Legger Risk</span><span class="review-val" style="color:#f87171">${p.scores.dmRisk} pts</span></div>` : ''}
-      ${p.scores.sharedLead ? `<div class="review-row"><span class="review-key">Shared Lead</span><span class="review-val" style="color:#4ade80">Quotes raised ${p.scores.quotesRaw} → ${p.scores.quotes}</span></div>` : ''}
+      ${SHARED_SOURCES.indexOf(p.lead_source) > -1 ? `<div class="review-row"><span class="review-key">Shared Lead</span><span class="review-val" style="color:#fb923c">Shared source — no score change, book 5-7 days out</span></div>` : ''}
       <div class="review-row"><span class="review-key">Credit / Financing</span><span class="review-val">${fmt(p.answers.credit)} <span style="color:#7c3aed;font-size:10px">(${p.scores.credit} pts)</span></span></div>
     </div>
     <div class="review-section">
@@ -1970,6 +1971,11 @@ function confirmAndSubmit() {
   const dmWho    = p.answers.dmWho || '—';
   const quotes   = p.answers.quotes || '—';
   const credit   = p.answers.credit || '—';
+  const timeline = p.answers.urgency || '—';
+  /* The $ is Jack's existing calendar shorthand for "flexible - can be moved to an
+     earlier slot if a gap opens". Same symbol the meeting title carries, so the CRM
+     note and the calendar read the same way. */
+  const flexMark = p.flex_on_cancellation === 'Yes' ? ' $' : '';
   const apptDate = fmtDateLong(p.appointment_date);
   const apptTime = fmtTime(p.appointment_time);
   const apptSetDate = fmtDateLong(p.set_on);
@@ -1988,10 +1994,11 @@ House Story: ${houseStoryTxt} | Sole DM: ${soleDMTxt}
 Other DM: ${dmWho} | Attending: ${dmAttend}
 -set on ${setOn}
 Project: ${project}
+Timeline: ${timeline}
 Quote/s: ${quotes}${compLine}
 CS: ${credit}
 Score: ${score}/100${notes}
-Appt: ${apptDate} at ${apptTime} with ${p.sales_agent || agent}`;
+Appt: ${apptDate} at ${apptTime} with ${p.sales_agent || agent}${flexMark}`;
   document.getElementById('crmNote').textContent = crmNote;
   document.getElementById('modalSummary').textContent = `${p.crm_customer_name} · ${p.priority} · ${score}/100`;
   document.getElementById('modal').style.display = 'flex';
