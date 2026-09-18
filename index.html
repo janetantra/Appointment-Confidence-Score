@@ -2281,7 +2281,14 @@ const SLOT_POLICY = {
   days:         [1, 2, 3, 4, 5, 6],// 0 = Sunday, excluded
   horizonDays:  14,                // Arnold: "maybe put like two weeks out availability"
   minLeadHours: 2,                 // never offer a slot starting inside the next 2 hours
-  blackouts:    [],                // e.g. { date: '2026-09-24', agent: 'Jack' } - agent optional = everyone
+  /* Days nobody can be booked. Marvin edits this when Jack or Dave tells him
+     they are out, then re-uploads the page. Three shapes, all valid:
+         { date: '2026-09-24' }                          everyone, one day
+         { date: '2026-09-24', agent: 'Jack' }           Jack only, one day
+         { from: '2026-10-06', to: '2026-10-10', agent: 'Dave' }   a range
+     Dates are plain Chicago calendar days, 'YYYY-MM-DD'. A range includes both
+     ends. Leave `agent` off and it blocks both of them. */
+  blackouts:    [],
   /* Highest band first. `allow` is the whole rule:
        empty      - nobody in it
        pairWeak   - occupied by a sub-65 lead, go on top as the stronger one
@@ -2385,8 +2392,13 @@ function buildSlots(agentName, leadScore, isOneLeg, noQuote, data) {
     for (let i = firstOffset; i <= lastOffset; i++) {
       const dateStr = addDaysStr(today, i);
       if (SLOT_POLICY.days.indexOf(dowOf(dateStr)) === -1) continue;
-      if (SLOT_POLICY.blackouts.some(b =>
-        b && b.date === dateStr && (!b.agent || b.agent === agentName))) continue;
+      if (SLOT_POLICY.blackouts.some(b => {
+        if (!b) return false;
+        if (b.agent && b.agent !== agentName) return false;
+        if (b.date) return b.date === dateStr;
+        if (b.from && b.to) return dateStr >= b.from && dateStr <= b.to;   // string compare is safe on YYYY-MM-DD
+        return false;
+      })) continue;
 
       for (const h of hours) {
         const start = chicagoToEpoch(dateStr, h, 0);
