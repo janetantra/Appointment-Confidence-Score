@@ -759,6 +759,14 @@ select option{background:#0d0020;color:#e2d9f3}
         <div style="font-size:15px;font-weight:800;color:#fff;line-height:1.45">Only one decision maker will be at this appointment.<br>
           <span style="color:#fca5a5">Do NOT book a morning or afternoon slot.</span> Both people are almost never home during the day — book this in the <strong style="color:#4ade80">evening</strong> so everyone who decides is actually there.</div>
       </div>
+      <!-- Score-filtered slot picker (Jack, 18 Sep). Rendered by renderSlots();
+           clicking a row writes straight into the two inputs directly below,
+           so there is no separate booking path to keep in sync. -->
+      <div id="slotPicker" style="display:none;background:rgba(124,58,237,0.07);border:1.5px solid rgba(124,58,237,0.3);border-radius:12px;padding:14px 16px;margin-bottom:14px">
+        <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#7c3aed;margin-bottom:6px">Available for this lead</div>
+        <div id="slotPickerHead" style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.8);margin-bottom:10px"></div>
+        <div id="slotPickerBody"></div>
+      </div>
       <div class="grid-2" style="margin-bottom:12px">
         <div><label class="field-label">Appointment Date</label><input type="date" id="appointmentDate" oninput="updateApptDisplay()"></div>
         <div><label class="field-label">Appointment Time</label><input type="time" id="appointmentTime" step="900" oninput="updateApptDisplay()"></div>
@@ -1115,6 +1123,7 @@ function pickAgent(name, el) {
   selectedAgent = name;
   refreshAvailability();
   resetConfirmationTextIfSent();
+  renderSlots();
 }
 /* 3 Sep: the setter no longer asks for texting permission - Jack and Marvin's position is
    that these homeowners already opted in at the original lead source when they submitted
@@ -1411,6 +1420,7 @@ function updateBookingDelay() {
   }
   document.getElementById('no-quotes-followup').style.display = noQuotes ? 'block' : 'none';
   if (noQuotes) document.getElementById('noQuotesDateText').textContent = fmt(minDate);
+  renderSlots();
 }
 function pickBonus(label, pts, el, cls) {
   document.querySelectorAll('#group-engagement .choice').forEach(c => {
@@ -1493,6 +1503,7 @@ function calc() {
   });
   updateNameDisplay();
   updateBonusDisplay();
+  renderSlots();
 }
 function updateBonusDisplay() {
   const base = Object.values(S).reduce((a,b) => a+b, 0);
@@ -2028,6 +2039,7 @@ function closeModal() {
   ['leadSource','projectType','appointmentDate','appointmentTime'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('apptDateTimeDisplay').style.display = 'none';
   document.getElementById('availabilityNotice').style.display = 'none';
+  document.getElementById('slotPicker').style.display = 'none';
   availabilityState = { status: 'unknown', conflicts: [] };
   document.getElementById('projectTypeOther').value = '';
   document.getElementById('setOn').value = new Date().toISOString().split('T')[0];
@@ -2236,6 +2248,393 @@ function refreshAvailability() {
         document.getElementById('appointmentTime').value !== time) return;
     availabilityState = checkSlot(selectedAgent, date, time, data);
     renderAvailability(availabilityState);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   SCORE-FILTERED SLOT PICKER  —  Jack, 18 Sep 2026
+   ──────────────────────────────────────────────────────────────────────────────
+   Why this exists, in Jack's words: "they'll be looking at the score sheet,
+   looking at the calendar, scrolling up and down... it's too much for them
+   sometimes to think on the fly on the phone." The scoring system already knows
+   where a lead belongs; the setter shouldn't have to hold that in their head.
+   So the tool offers ONLY the slots this lead is allowed to have, and they pick.
+
+   EVERY RULE LIVES IN SLOT_POLICY BELOW. Jack changes his mind often and the
+   whole point of this shape is that his next instruction edits a table, not
+   logic buried in if-statements. Do not scatter these rules elsewhere.
+
+   The hours are his: "the earliest available appointment is always going to be
+   09:00, and the latest is 06:00... nine and tens, and ones and twos, and fives
+   and sixes - for double booking purposes." There is deliberately no 11, 12, 3
+   or 4.
+
+   This writes into the SAME #appointmentDate / #appointmentTime inputs a setter
+   could type by hand. There is no new booking path: sendConfirmationTextNow()
+   and submitLead() are untouched, so the early-send dedupe, the payload shape
+   and both Make scenarios are unaffected. The date and time fields stay
+   editable - this list is an accelerator, never a gate.
+   ══════════════════════════════════════════════════════════════════════════════ */
+const SLOT_POLICY = {
+  hours:        [9, 10, 13, 14, 17, 18],
+  /* Jack, 18 Sep: "nine and tens, and ones and twos, and fives and sixes - for double
+     booking purposes." Each pair is ONE double-booking unit, and that is the rule v1 got
+     wrong: it judged each hour on its own, so a free 9:00 read as a clean slot even with an
+     85 sitting at 10:00. Arnold caught it on Sept 21 (William Huls, 85, confirmed, 10:00 AM)
+     the day after it shipped. A pair holds at most ONE strongFloor+ lead; its partner slot
+     may then only take a lower-scoring lead. */
+  pairs:        [[9, 10], [13, 14], [17, 18]],
+  strongFloor:  80,
+  eveningHours: [17, 18],          // a one-leg only ever goes here (see #eveningOnlyWarning)
+  days:         [1, 2, 3, 4, 5],   // Mon-Fri. 0 = Sunday, 6 = Saturday - Arnold: "we dont do weekend"
+  horizonDays:  14,                // Arnold: "maybe put like two weeks out availability"
+  minLeadHours: 2,                 // never offer a slot starting inside the next 2 hours
+  /* Days nobody can be booked. Marvin edits this when Jack or Dave tells him
+     they are out, then re-uploads the page. Three shapes, all valid:
+         { date: '2026-09-24' }                          everyone, one day
+         { date: '2026-09-24', agent: 'Jack' }           Jack only, one day
+         { from: '2026-10-06', to: '2026-10-10', agent: 'Dave' }   a range
+     Dates are plain Chicago calendar days, 'YYYY-MM-DD'. A range includes both
+     ends. Leave `agent` off and it blocks both of them. */
+  blackouts:    [],
+  /* Highest band first. `allow` is the whole rule:
+       empty      - nobody in it
+       pairWeak   - occupied by a sub-65 lead, go on top as the stronger one
+       pairStrong - occupied by a 65+ lead, go on top as the BACKUP
+     Note the bottom band has no 'empty'. That is the rule that matters:
+     "the only place you put a lead basically under 65 points is with another
+     good lead as a backup." A weak lead is never offered a clean slot. */
+  bands: [
+    { min: 90,   label: 'PRIME',  note: 'Clean slot only - never share this one.',            allow: ['empty'] },
+    { min: 80,   label: 'STRONG', note: 'Clean slot, or on top of a weak lead.',              allow: ['empty', 'pairWeak'] },
+    { min: 65,   label: 'MEDIUM', note: 'Clean slot, or paired as the backup on a good one.', allow: ['empty', 'pairStrong'] },
+    { min: -999, label: 'BACKUP', note: 'Backup only - must sit with a stronger lead.',       allow: ['pairStrong'] }
+  ],
+  /* "You never overbook confirmed and high quality scores, or confirmed
+     middle-of-the-road medium priorities." Needs `cf` on each busy block, which
+     4875268 does not send yet - until it does, cf is always false and this is
+     simply never triggered. That errs permissive: it may offer a pairing Jack
+     would refuse, but it never blocks a legitimate booking. */
+  pairCeiling: 65,
+  maxShown: 18
+};
+
+function chicagoDateStr(ms) {
+  // en-CA gives YYYY-MM-DD, which is what every date input and comparison here wants.
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(ms));
+}
+function addDaysStr(dateStr, n) {
+  // Pure UTC arithmetic on a plain calendar date - never touches local time, so a DST
+  // boundary cannot shift the day.
+  const p = dateStr.split('-').map(Number);
+  const d = new Date(Date.UTC(p[0], p[1] - 1, p[2] + n));
+  return d.toISOString().slice(0, 10);
+}
+function dowOf(dateStr) {
+  const p = dateStr.split('-').map(Number);
+  return new Date(Date.UTC(p[0], p[1] - 1, p[2])).getUTCDay();
+}
+function prettyDate(dateStr) {
+  const p = dateStr.split('-').map(Number);
+  return new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(Date.UTC(p[0], p[1] - 1, p[2])));
+}
+function prettyHour(h) {
+  const ap = h >= 12 ? 'PM' : 'AM';
+  const hh = h % 12 === 0 ? 12 : h % 12;
+  return hh + ':00 ' + ap;
+}
+function shortHour(h) { return h % 12 === 0 ? 12 : h % 12; }
+
+function bandFor(score) {
+  for (const b of SLOT_POLICY.bands) if (score >= b.min) return b;
+  return SLOT_POLICY.bands[SLOT_POLICY.bands.length - 1];
+}
+
+function pairOf(hour) {
+  for (const p of SLOT_POLICY.pairs) if (p.indexOf(hour) > -1) return p;
+  return null;
+}
+function pairPartner(hour) {
+  const p = pairOf(hour);
+  if (!p) return null;
+  return p[0] === hour ? p[1] : p[0];
+}
+function pairLabel(hour) {
+  const p = pairOf(hour);
+  return p ? shortHour(p[0]) + '-' + shortHour(p[1]) : String(shortHour(hour));
+}
+
+function occupancyFor(empId, start, end, data, nowMs) {
+  // Take the clock from the caller. occupancyFor used to read Date.now() while
+  // buildSlots dated everything from data.now - two clocks for one decision.
+  // Identical in production, wrong in principle, and it hid a hold-expiry bug
+  // under test. One clock, passed in.
+  const now = Number(nowMs) || Date.now();
+  const hits = (data.busy || []).filter(b =>
+    b && b.c !== 1 && String(b.e) === String(empId) && b.s < end && b.n > start);
+  const held = (data.marks || []).filter(mk => {
+    if (!mk || !mk.s) return false;
+    if (mk.x && mk.x < now) return false;
+    const mkId = employeeIdFor(mk.a);
+    if (mkId && String(mkId) !== String(empId)) return false;
+    return mk.s < end && (mk.s + SLOT_MINUTES * 60000) > start;
+  });
+  const occ = hits.map(h => ({ sc: Number(h.sc) || 0, cf: h.cf === 1, hold: false }))
+    .concat(held.map(h => ({ sc: Number(h.sc) || 0, cf: false, hold: true })));
+  if (!occ.length) return { kind: 'empty', occ: [], top: null };
+  const top = occ.reduce((a, b) => (b.sc > a.sc ? b : a));
+  if (top.cf && top.sc >= SLOT_POLICY.pairCeiling) return { kind: 'blocked', occ: occ, top: top };
+  return { kind: top.sc >= 65 ? 'pairStrong' : 'pairWeak', occ: occ, top: top };
+}
+
+/* The hour AND its double-booking partner, judged together. This is what v1 lacked. */
+function pairOccupancy(empId, dateStr, hour, data, nowMs) {
+  const span = SLOT_MINUTES * 60000;
+  const ownStart = chicagoToEpoch(dateStr, hour, 0);
+  const own = occupancyFor(empId, ownStart, ownStart + span, data, nowMs);
+  const ph = pairPartner(hour);
+  let partner = null;
+  if (ph !== null) {
+    const ps = chicagoToEpoch(dateStr, ph, 0);
+    partner = occupancyFor(empId, ps, ps + span, data, nowMs);
+  }
+  return { own: own, partner: partner, partnerHour: ph };
+}
+
+/* Every slot now carries a verdict instead of being dropped. v1 filtered disallowed slots
+   out of the list entirely, under a heading reading "Available for this lead" - so Arnold
+   saw only occupied times while a free slot he could see in Builder Prime was missing, and
+   stopped trusting it within hours. Show the whole calendar; grey what the score discourages
+   and say why. Guidance, not a wall. */
+function slotVerdict(band, leadScore, po, isOneLeg, hour, ignoreEvening) {
+  const own = po.own;
+
+  if (own.kind === 'blocked') {
+    return { allowed: false, reason: 'confirmed ' + own.top.sc + ' - never overbook' };
+  }
+
+  // THE PAIR RULE. An empty hour is not clean if its partner already holds a strong lead.
+  if (own.kind === 'empty' && po.partner && po.partner.top &&
+      po.partner.top.sc >= SLOT_POLICY.strongFloor &&
+      leadScore >= SLOT_POLICY.strongFloor) {
+    return { allowed: false, reason: po.partner.top.sc + ' already in the ' + pairLabel(hour) + ' pair' };
+  }
+
+  if (isOneLeg && !ignoreEvening && SLOT_POLICY.eveningHours.indexOf(hour) === -1) {
+    return { allowed: false, reason: 'one-leg - evening only' };
+  }
+
+  if (band.allow.indexOf(own.kind) === -1) {
+    if (own.kind === 'empty')      return { allowed: false, reason: 'clean slot - too good for a ' + leadScore };
+    if (own.kind === 'pairWeak')   return { allowed: false, reason: 'holds a ' + own.top.sc + ' - needs a 65+ to sit on' };
+    if (own.kind === 'pairStrong') return { allowed: false, reason: 'holds a ' + own.top.sc + ' - this lead needs a clean slot' };
+    return { allowed: false, reason: 'not a fit for this score' };
+  }
+
+  return { allowed: true, reason: '' };
+}
+
+function blackedOut(dateStr, agentName) {
+  return SLOT_POLICY.blackouts.some(b => {
+    if (!b) return false;
+    if (b.agent && b.agent !== agentName) return false;
+    if (b.date) return b.date === dateStr;
+    if (b.from && b.to) return dateStr >= b.from && dateStr <= b.to;   // string compare is safe on YYYY-MM-DD
+    return false;
+  });
+}
+
+function buildSlots(agentName, leadScore, isOneLeg, noQuote, data, graded) {
+  const empId = employeeIdFor(agentName);
+  if (!empId || !data) return [];
+  const band  = graded ? bandFor(leadScore) : null;
+  const nowMs = Number(data.now) || Date.now();
+  const today = chicagoDateStr(nowMs);
+  const floor = nowMs + SLOT_POLICY.minLeadHours * 3600000;
+
+  // No quote in hand goes out 5 to 7 days, whatever the score. Same numbers as
+  // updateBookingDelay()'s banner, so the banner and this list cannot disagree.
+  const firstOffset = noQuote ? 5 : 0;
+  const lastOffset  = noQuote ? 7 : SLOT_POLICY.horizonDays;
+
+  function collect(fromOff, toOff, outside, ignoreEvening) {
+    const out = [];
+    for (let i = fromOff; i <= toOff; i++) {
+      const dateStr = addDaysStr(today, i);
+      if (SLOT_POLICY.days.indexOf(dowOf(dateStr)) === -1) continue;
+      if (blackedOut(dateStr, agentName)) continue;
+      for (const h of SLOT_POLICY.hours) {
+        const start = chicagoToEpoch(dateStr, h, 0);
+        if (start < floor) continue;
+        const po = pairOccupancy(empId, dateStr, h, data, nowMs);
+        const v  = graded
+          ? slotVerdict(band, leadScore, po, isOneLeg, h, ignoreEvening)
+          : { allowed: true, reason: '' };
+        out.push({
+          agent: agentName, dateStr: dateStr, hour: h, start: start, kind: po.own.kind,
+          withScore: po.own.top ? po.own.top.sc : null,
+          isHold:    po.own.top ? !!po.own.top.hold : false,
+          pairScore: (po.partner && po.partner.top) ? po.partner.top.sc : null,
+          allowed: v.allowed, reason: v.reason, outsideWindow: !!outside
+        });
+      }
+    }
+    return out;
+  }
+  const anyAllowed = list => list.some(s => s.allowed);
+
+  let slots = collect(firstOffset, lastOffset, false, false);
+  let widened = false, extended = false;
+
+  /* Two of Jack's rules collide on a one-leg. A one-leg caps at 45, so it lands in BACKUP
+     and must sit on top of a 65+ lead; the evening-only rule then restricts that to 5pm and
+     6pm. Evenings are 2 of the 6 slots, so there is frequently no evening slot with a strong
+     lead already in it - and the setter would get nothing clickable exactly when they most
+     need steering. Evening first, always; widen only if that leaves nothing, and say so. */
+  if (graded && isOneLeg && !anyAllowed(slots)) {
+    const wide = collect(firstOffset, lastOffset, false, true);
+    if (anyAllowed(wide)) { slots = wide; widened = true; }
+  }
+
+  /* Saturday is gone, so a 5-7 day window can now be as little as two working days, and
+     Arnold's own case had both of them already carrying strong leads. Returning "nothing
+     fits" is what makes a setter stop using the tool - extend forward and label it instead. */
+  if (noQuote && !anyAllowed(slots)) {
+    const extra = collect(lastOffset + 1, SLOT_POLICY.horizonDays, true, widened);
+    if (anyAllowed(extra)) { slots = slots.concat(extra); extended = true; }
+  }
+
+  slots.sort((a, b) => (a.start - b.start) || (a.agent < b.agent ? -1 : 1));
+  slots.widened  = widened;
+  slots.extended = extended;
+  return slots;
+}
+
+function pickSlot(dateStr, hour, agent) {
+  const d = document.getElementById('appointmentDate');
+  const t = document.getElementById('appointmentTime');
+  if (!d || !t) return;
+  // Both-agent mode: the row carries the agent, so one click sets agent AND time.
+  if (agent && agent !== selectedAgent) {
+    const el = document.getElementById('agent-' + agent.toLowerCase());
+    if (el) pickAgent(agent, el);
+  }
+  d.value = dateStr;
+  t.value = String(hour).padStart(2, '0') + ':00';
+  // Same two functions the manual inputs call - no separate booking path.
+  if (typeof updateApptDisplay === 'function') updateApptDisplay();
+  if (typeof resetConfirmationTextIfSent === 'function') resetConfirmationTextIfSent();
+  refreshAvailability();
+  renderSlots();
+}
+
+function renderSlots() {
+  const panel = document.getElementById('slotPicker');
+  if (!panel) return;
+  const body = document.getElementById('slotPickerBody');
+  const head = document.getElementById('slotPickerHead');
+
+  /* v1 hid the whole panel until an agent was chosen - and the agent buttons sit BELOW the
+     date and time inputs, so in practice it only appeared after the setter had already typed
+     a date and time. Arnold: "defeat the purpose of suggestions, I need to actually see the
+     availability before I can select one." The panel is always up now. */
+  panel.style.display = 'block';
+
+  const graded = A.urgency !== null && A.quotes !== null && A.credit !== null &&
+                 (typeof dmScore === 'function' ? dmScore() !== null : true);
+  const total    = Object.values(S).reduce((a, b) => a + b, 0);
+  const band     = graded ? bandFor(total) : null;
+  const isOneLeg = !!S.dmRisk;
+  const noQuote  = (A.quotes === 'None');
+  const agents   = selectedAgent ? [selectedAgent] : ['Jack', 'Dave'];
+
+  head.innerHTML =
+    '<span style="color:#7c3aed">' + (selectedAgent || 'Jack &amp; Dave') + '</span>' +
+    (graded
+      ? ' &middot; score <strong style="color:#fff">' + total + '</strong> &middot; ' +
+        '<span style="color:#fb923c">' + band.label + '</span>'
+      : ' &middot; <span style="color:#fb923c">not scored yet</span>') +
+    '<div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.6);margin-top:3px">' +
+      (graded
+        ? band.note + (isOneLeg ? ' Evening only - one-leg.' : '') +
+          (noQuote ? ' Held 5-7 days out - no quote in hand.' : '')
+        : 'Showing open slots. Finish the four questions and they get graded for this lead.') +
+    '</div>';
+
+  body.innerHTML = '<div style="font-size:12px;color:rgba(255,255,255,0.45)">Checking the calendar...</div>';
+
+  loadAvailability(false).then(data => {
+    // The setter may have moved on while this was in flight.
+    if (!document.getElementById('slotPicker')) return;
+    if (!data) {
+      body.innerHTML = '<div style="font-size:12px;color:#fdba74">Calendar unavailable - pick a date and time manually below.</div>';
+      return;
+    }
+
+    let slots = [], widened = false, extended = false;
+    agents.forEach(a => {
+      const s = buildSlots(a, total, isOneLeg, noQuote, data, graded);
+      if (s.widened)  widened  = true;
+      if (s.extended) extended = true;
+      slots = slots.concat(s);
+    });
+    slots.sort((a, b) => (a.start - b.start) || (a.agent < b.agent ? -1 : 1));
+
+    if (!slots.length) {
+      body.innerHTML = '<div style="font-size:12px;color:#fdba74">Nothing open in the next ' +
+        SLOT_POLICY.horizonDays + ' days for ' + agents.join(' or ') + '. Book manually below.</div>';
+      return;
+    }
+
+    let notes = '';
+    if (widened) notes +=
+      '<div style="font-size:11px;font-weight:700;color:#fca5a5;margin-bottom:6px">' +
+      'No EVENING slot works for this one-leg. Daytime shown - expect only one person there.</div>';
+    if (extended) notes +=
+      '<div style="font-size:11px;font-weight:700;color:#fca5a5;margin-bottom:6px">' +
+      'Nothing fits inside the 5-7 day window, so later dates are shown and marked.</div>';
+    if (graded && !slots.some(s => s.allowed)) notes +=
+      '<div style="font-size:11px;font-weight:700;color:#fca5a5;margin-bottom:6px">' +
+      'Nothing here suits a ' + total + '. Everything is greyed with the reason - try the other agent, or book manually and say why in the notes.</div>';
+
+    const shown = slots.slice(0, SLOT_POLICY.maxShown);
+    const curD  = document.getElementById('appointmentDate').value;
+    const curT  = document.getElementById('appointmentTime').value;
+
+    body.innerHTML = notes + shown.map(s => {
+      const sel = (s.dateStr === curD && String(s.hour).padStart(2, '0') + ':00' === curT &&
+                   (!selectedAgent || s.agent === selectedAgent));
+      let tag;
+      if (!s.allowed) {
+        tag = '<span style="color:rgba(255,255,255,0.45)">' + s.reason + '</span>';
+      } else if (s.kind === 'pairStrong') {
+        tag = '<span style="color:#a78bfa">backup alongside a ' + s.withScore + (s.isHold ? ' (online hold)' : '') + '</span>';
+      } else if (s.kind === 'pairWeak') {
+        tag = '<span style="color:#fb923c">on top of a ' + s.withScore + (s.isHold ? ' (online hold)' : '') + '</span>';
+      } else {
+        tag = '<span style="color:#4ade80">clean slot</span>' +
+              (s.pairScore !== null ? '<span style="color:rgba(255,255,255,0.4)"> &middot; ' + s.pairScore + ' at ' + prettyHour(pairPartner(s.hour)) + '</span>' : '');
+      }
+      const click = s.allowed
+        ? ' onclick="pickSlot(\'' + s.dateStr + '\',' + s.hour + ',\'' + s.agent + '\')"'
+        : '';
+      return '<div' + click + ' style="display:flex;align-items:center;justify-content:space-between;gap:10px;' +
+        (s.allowed ? 'cursor:pointer;opacity:1;' : 'cursor:not-allowed;opacity:0.45;') +
+        'padding:9px 12px;margin-bottom:6px;border-radius:9px;' +
+        'background:' + (sel ? 'rgba(124,58,237,0.22)' : 'rgba(255,255,255,0.04)') + ';' +
+        'border:1.5px solid ' + (sel ? '#7c3aed' : 'rgba(255,255,255,0.08)') + '">' +
+        '<div style="font-size:13px;font-weight:700;color:#fff;font-family:\'JetBrains Mono\',monospace">' +
+          prettyDate(s.dateStr) + '&nbsp;&nbsp;' + prettyHour(s.hour) +
+          (selectedAgent ? '' : '<span style="color:#7c3aed"> &middot; ' + s.agent + '</span>') +
+          (s.outsideWindow ? '<span style="color:#fca5a5;font-size:10px"> &middot; outside 5-7d</span>' : '') +
+        '</div>' +
+        '<div style="font-size:11px;font-weight:700;text-align:right">' + tag + '</div>' +
+        '</div>';
+    }).join('') +
+    (slots.length > shown.length
+      ? '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">+ ' +
+        (slots.length - shown.length) + ' more further out - book manually if none of these work.</div>'
+      : '');
   });
 }
 
