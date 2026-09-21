@@ -766,6 +766,19 @@ select option{background:#0d0020;color:#e2d9f3}
         <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#7c3aed;margin-bottom:6px">Available for this lead</div>
         <div id="slotPickerHead" style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.8);margin-bottom:10px"></div>
         <div id="slotPickerBody"></div>
+        <!-- Tapping a struck-through time writes the reason here. NOT showToast() -
+             that one is the SCORE toast and takes (pts, prevPts, catName). -->
+        <div id="slotWhy" style="display:none;font-size:11px;font-weight:700;color:#fbbf24;margin-top:8px;padding:7px 10px;background:rgba(251,191,36,0.10);border:1px solid rgba(251,191,36,0.30);border-radius:8px"></div>
+        <!-- DISCOVERABILITY. The picker is a shortcut, never a restriction: the Date and
+             Time inputs below accept ANY date and ANY time, and nothing in this form
+             validates against the six standard hours - checked 21 Sep, there is no such
+             check in sendConfirmationTextNow(), submitLead() or confirmAndSubmit(). The
+             only thing that can stop a booking is a real clash on that agent's calendar.
+             Arnold asked for "custom booking" on 21 Sep; it already worked, he just had no
+             way to know. If this line is ever removed, expect the question again. -->
+        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.45);margin-top:9px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.07)">
+          Need a different time? These are only shortcuts &mdash; type any date or time straight into the fields below and it will book, as long as the agent is free.
+        </div>
       </div>
       <div class="grid-2" style="margin-bottom:12px">
         <div><label class="field-label">Appointment Date</label><input type="date" id="appointmentDate" oninput="updateApptDisplay()"></div>
@@ -2316,7 +2329,14 @@ const SLOT_POLICY = {
      simply never triggered. That errs permissive: it may offer a pairing Jack
      would refuse, but it never blocks a legitimate booking. */
   pairCeiling: 65,
-  maxShown: 18
+  /* Arnold, 21 Sep: "only one available slot was suggested... I'd like to see available
+     dates for about a week out." The cause was a single `slice(0, maxShown)` taken AFTER
+     mixing bookable and greyed rows and sorting by time: 18 rows is 3 weekdays with one
+     agent, 1.5 with both, so the free slots later in the week were computed and then cut
+     off the bottom. Budget the two separately now. A BOOKABLE SLOT IS NEVER DROPPED TO
+     MAKE ROOM FOR A GREYED ONE. */
+  maxDays: 10,          // days carrying at least one bookable slot
+  maxGreyPerDay: 3      // free-but-discouraged rows per day, so they cannot crowd out real ones
 };
 
 function chicagoDateStr(ms) {
@@ -2528,6 +2548,66 @@ function pickSlot(dateStr, hour, agent) {
   renderSlots();
 }
 
+/* WHAT GETS SHOWN, as a pure function of the slot list - deliberately NOT buried in the
+   render. This is the logic Arnold's complaint was actually about, so it has to be testable
+   without a DOM. See slotv2_test.js.
+
+   Two rules, and they are the whole of it:
+     1. Drop a row only when it is BOTH unbookable AND its hour is occupied. A row that is
+        unbookable but EMPTY stays, greyed, with its reason - hiding those is what got v1
+        rolled back on 19 Sep.
+     2. Budget bookable and greyed separately. Days are taken in date order until maxDays of
+        them carry something bookable; within a day every bookable slot survives and greyed
+        ones are capped. A BOOKABLE SLOT IS NEVER DROPPED FOR A GREYED ONE - the old
+        slice(0, 18) over the mixed list is precisely what hid the later-week openings. */
+function planSlotDays(slots, maxDays, maxGreyPerDay) {
+  const lim  = maxDays       === undefined ? SLOT_POLICY.maxDays       : maxDays;
+  const grey = maxGreyPerDay === undefined ? SLOT_POLICY.maxGreyPerDay : maxGreyPerDay;
+
+  const keep = slots.filter(s => s.allowed || s.kind === 'empty');
+
+  const byDay = [], dayIx = {};
+  keep.forEach(s => {
+    if (!(s.dateStr in dayIx)) { dayIx[s.dateStr] = byDay.length; byDay.push({ dateStr: s.dateStr, rows: [] }); }
+    byDay[dayIx[s.dateStr]].rows.push(s);
+  });
+
+  let bookableDays = 0, cut = false;
+  const days = [];
+  for (const d of byDay) {
+    const hasBookable = d.rows.some(r => r.allowed);
+    if (hasBookable && bookableDays >= lim) { cut = true; break; }
+    if (hasBookable) bookableDays++;
+    const ok  = d.rows.filter(r => r.allowed);
+    const dim = d.rows.filter(r => !r.allowed).slice(0, grey);
+    days.push({ dateStr: d.dateStr, rows: ok.concat(dim), bookable: ok.length, greyed: dim.length });
+  }
+  return { days: days, cut: cut, bookableDays: bookableDays };
+}
+
+/* Small local helpers for the slot chips. index.html has no esc() - an earlier draft of this
+   block called one and would have thrown ReferenceError on the first render, taking the whole
+   panel down. Keep them here rather than adding a global that could collide. */
+function htmlAttr(v) {
+  return String(v == null ? '' : v)
+    .replace(/&/g, '&amp;').replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function jsAttr(v) {
+  // Going inside a single-quoted JS string that itself sits inside a double-quoted HTML
+  // attribute, so backslashes, single quotes and the HTML delimiters all have to survive.
+  return String(v == null ? '' : v)
+    .replace(/\\/g, '\\\\').replace(/'/g, "\\'")
+    .replace(/&/g, '&amp;').replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function slotWhy(msg) {
+  const el = document.getElementById('slotWhy');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
 function renderSlots() {
   const panel = document.getElementById('slotPicker');
   if (!panel) return;
@@ -2562,6 +2642,8 @@ function renderSlots() {
     '</div>';
 
   body.innerHTML = '<div style="font-size:12px;color:rgba(255,255,255,0.45)">Checking the calendar...</div>';
+  const whyEl = document.getElementById('slotWhy');
+  if (whyEl) { whyEl.style.display = 'none'; whyEl.textContent = ''; }
 
   loadAvailability(false).then(data => {
     // The setter may have moved on while this was in flight.
@@ -2597,44 +2679,86 @@ function renderSlots() {
       '<div style="font-size:11px;font-weight:700;color:#fca5a5;margin-bottom:6px">' +
       'Nothing here suits a ' + total + '. Everything is greyed with the reason - try the other agent, or book manually and say why in the notes.</div>';
 
-    const shown = slots.slice(0, SLOT_POLICY.maxShown);
-    const curD  = document.getElementById('appointmentDate').value;
-    const curT  = document.getElementById('appointmentTime').value;
+    /* DROP GENUINELY-TAKEN ROWS, KEEP FREE-BUT-DISCOURAGED ONES. Arnold asked for the
+       unavailable rows to go. Two kinds are greyed and they are NOT the same thing:
+         !allowed && kind !== 'empty'  - somebody is in that hour. Gone; nobody needs it.
+         !allowed && kind === 'empty'  - the hour is EMPTY in Builder Prime, the score rules
+                                         just discourage it. STAYS, greyed, with the reason.
+       Hiding the second kind is exactly what got v1 rolled back on 19 Sep: Arnold saw a free
+       10:00 on the calendar and not in the tool, and stopped trusting it. Filtering happens
+       HERE and not inside buildSlots() on purpose - anyAllowed() and the one-leg/no-quote
+       widen-and-extend fallbacks reason over the unfiltered list. */
+    const plan = planSlotDays(slots);
+    const days = plan.days;
 
-    body.innerHTML = notes + shown.map(s => {
+    const curD = document.getElementById('appointmentDate').value;
+    const curT = document.getElementById('appointmentTime').value;
+
+    function chip(s) {
       const sel = (s.dateStr === curD && String(s.hour).padStart(2, '0') + ':00' === curT &&
                    (!selectedAgent || s.agent === selectedAgent));
-      let tag;
+      let extra = '', col = '#4ade80', bg = 'rgba(74,222,128,0.10)', bd = 'rgba(74,222,128,0.35)';
       if (!s.allowed) {
-        tag = '<span style="color:rgba(255,255,255,0.45)">' + s.reason + '</span>';
+        col = 'rgba(255,255,255,0.40)'; bg = 'rgba(255,255,255,0.03)'; bd = 'rgba(255,255,255,0.10)';
       } else if (s.kind === 'pairStrong') {
-        tag = '<span style="color:#a78bfa">backup alongside a ' + s.withScore + (s.isHold ? ' (online hold)' : '') + '</span>';
+        col = '#a78bfa'; bg = 'rgba(167,139,250,0.12)'; bd = 'rgba(167,139,250,0.40)';
+        extra = '<span style="opacity:0.75;font-size:10px"> +' + s.withScore + (s.isHold ? 'h' : '') + '</span>';
       } else if (s.kind === 'pairWeak') {
-        tag = '<span style="color:#fb923c">on top of a ' + s.withScore + (s.isHold ? ' (online hold)' : '') + '</span>';
-      } else {
-        tag = '<span style="color:#4ade80">clean slot</span>' +
-              (s.pairScore !== null ? '<span style="color:rgba(255,255,255,0.4)"> &middot; ' + s.pairScore + ' at ' + prettyHour(pairPartner(s.hour)) + '</span>' : '');
+        col = '#fb923c'; bg = 'rgba(251,146,60,0.12)'; bd = 'rgba(251,146,60,0.40)';
+        extra = '<span style="opacity:0.75;font-size:10px"> +' + s.withScore + (s.isHold ? 'h' : '') + '</span>';
       }
+      if (s.outsideWindow) extra += '<span style="color:#fca5a5;font-size:9px"> !</span>';
+      /* A greyed chip is still tappable - it toasts WHY instead of booking. The setters work
+         on a tablet, where a title tooltip never appears, and the reason is how the rule gets
+         learned. */
       const click = s.allowed
-        ? ' onclick="pickSlot(\'' + s.dateStr + '\',' + s.hour + ',\'' + s.agent + '\')"'
-        : '';
-      return '<div' + click + ' style="display:flex;align-items:center;justify-content:space-between;gap:10px;' +
-        (s.allowed ? 'cursor:pointer;opacity:1;' : 'cursor:not-allowed;opacity:0.45;') +
-        'padding:9px 12px;margin-bottom:6px;border-radius:9px;' +
-        'background:' + (sel ? 'rgba(124,58,237,0.22)' : 'rgba(255,255,255,0.04)') + ';' +
-        'border:1.5px solid ' + (sel ? '#7c3aed' : 'rgba(255,255,255,0.08)') + '">' +
-        '<div style="font-size:13px;font-weight:700;color:#fff;font-family:\'JetBrains Mono\',monospace">' +
-          prettyDate(s.dateStr) + '&nbsp;&nbsp;' + prettyHour(s.hour) +
-          (selectedAgent ? '' : '<span style="color:#7c3aed"> &middot; ' + s.agent + '</span>') +
-          (s.outsideWindow ? '<span style="color:#fca5a5;font-size:10px"> &middot; outside 5-7d</span>' : '') +
-        '</div>' +
-        '<div style="font-size:11px;font-weight:700;text-align:right">' + tag + '</div>' +
+        ? 'pickSlot(\'' + s.dateStr + '\',' + s.hour + ',\'' + s.agent + '\')'
+        : 'slotWhy(\'' + jsAttr(prettyDate(s.dateStr) + ' ' + prettyHour(s.hour) + ' is open, but: ' + s.reason) + '\')';
+      return '<span onclick="' + click + '" title="' + htmlAttr(s.allowed ? 'Book this slot' : s.reason) + '" ' +
+        'style="display:inline-block;cursor:pointer;font-family:\'JetBrains Mono\',monospace;' +
+        'font-size:12px;font-weight:700;padding:5px 9px;margin:0 5px 5px 0;border-radius:7px;' +
+        'color:' + (sel ? '#fff' : col) + ';' +
+        'background:' + (sel ? 'rgba(124,58,237,0.30)' : bg) + ';' +
+        'border:1.5px solid ' + (sel ? '#7c3aed' : bd) + ';' +
+        (s.allowed ? '' : 'text-decoration:line-through;') + '">' +
+        prettyHour(s.hour) + extra + '</span>';
+    }
+
+    function agentLine(rows, label) {
+      const ok   = rows.filter(r => r.allowed);
+      const grey = rows.filter(r => !r.allowed);   // planSlotDays already capped these
+      if (!ok.length && !grey.length) return '';
+      return '<div style="margin:0 0 2px 0">' +
+        (label ? '<span style="font-size:10px;font-weight:700;color:#7c3aed;margin-right:6px">' + label + '</span>' : '') +
+        ok.map(chip).join('') + grey.map(chip).join('') +
+        '</div>';
+    }
+
+    body.innerHTML = notes + days.map(d => {
+      let inner;
+      if (selectedAgent) {
+        inner = agentLine(d.rows, '');
+      } else {
+        inner = ['Jack', 'Dave'].map(a => agentLine(d.rows.filter(r => r.agent === a), a)).join('');
+      }
+      if (!inner) return '';
+      return '<div style="display:flex;align-items:flex-start;gap:10px;padding:7px 0;' +
+        'border-top:1px solid rgba(255,255,255,0.06)">' +
+        '<div style="flex:0 0 96px;font-size:12px;font-weight:800;color:#fff;' +
+        'font-family:\'JetBrains Mono\',monospace;padding-top:5px">' + prettyDate(d.dateStr) + '</div>' +
+        '<div style="flex:1 1 auto">' + inner + '</div>' +
         '</div>';
     }).join('') +
-    (slots.length > shown.length
-      ? '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">+ ' +
-        (slots.length - shown.length) + ' more further out - book manually if none of these work.</div>'
-      : '');
+    /* The old footer read "+ N more further out - book manually if none of these work",
+       which told the setter to abandon the tool at the exact moment good slots existed just
+       past the cut. Only say something when days were genuinely dropped, and do not imply
+       manual booking is the expected move. */
+    (plan.cut
+      ? '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px">' +
+        'Showing the first ' + SLOT_POLICY.maxDays + ' days with openings. More are free further out - type a date below.</div>'
+      : '') +
+    '<div style="font-size:10px;color:rgba(255,255,255,0.32);margin-top:6px">' +
+      'Struck-through times are free but not a fit for this score - tap one to see why.</div>';
   });
 }
 
