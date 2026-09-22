@@ -2314,14 +2314,22 @@ const SLOT_POLICY = {
        empty      - nobody in it
        pairWeak   - occupied by a sub-65 lead, go on top as the stronger one
        pairStrong - occupied by a 65+ lead, go on top as the BACKUP
-     Note the bottom band has no 'empty'. That is the rule that matters:
-     "the only place you put a lead basically under 65 points is with another
-     good lead as a backup." A weak lead is never offered a clean slot. */
+     22 Sep: the bottom band USED to have no 'empty' - "the only place you put a lead
+     basically under 65 points is with another good lead as a backup." Read as a
+     prohibition that produced a bad booking. Measured against the real calendar for a
+     60-score lead on Mon 28 / Tue 29: only 3 of 24 slots were bookable, and DAVE WAS FREE
+     IN ALL 12 OF HIS - every one refused, because every one was clean. So it funnelled
+     every weak lead onto Jack's already-busy pair slots while a whole empty calendar sat
+     next to it. Refusing never protected the slot either: a booked weak lead can still be
+     double-booked by a strong one afterwards. The rule is now a PREFERENCE - pairings are
+     listed first and coloured, clean slots are offered after as reserve. 'pairWeak' stays
+     refused for a weak lead, which the same data showed working correctly: two weak leads
+     in one pair wastes the slot. */
   bands: [
     { min: 90,   label: 'PRIME',  note: 'Clean slot only - never share this one.',            allow: ['empty'] },
     { min: 80,   label: 'STRONG', note: 'Clean slot, or on top of a weak lead.',              allow: ['empty', 'pairWeak'] },
     { min: 65,   label: 'MEDIUM', note: 'Clean slot, or paired as the backup on a good one.', allow: ['empty', 'pairStrong'] },
-    { min: -999, label: 'BACKUP', note: 'Backup only - must sit with a stronger lead.',       allow: ['pairStrong'] }
+    { min: -999, label: 'BACKUP', note: 'Prefer pairing with a stronger lead; clean slots are reserve.', allow: ['pairStrong', 'empty'] }
   ],
   /* "You never overbook confirmed and high quality scores, or confirmed
      middle-of-the-road medium priorities." Needs `cf` on each busy block, which
@@ -2627,6 +2635,9 @@ function renderSlots() {
   const isOneLeg = !!S.dmRisk;
   const noQuote  = (A.quotes === 'None');
   const agents   = selectedAgent ? [selectedAgent] : ['Jack', 'Dave'];
+  /* Sub-65: pairings are the preferred home for this lead, clean slots are the fallback.
+     Expressed by ordering and colour, never by refusing to book. */
+  const preferPairing = graded && !!band && band.label === 'BACKUP';
 
   head.innerHTML =
     '<span style="color:#7c3aed">' + (selectedAgent || 'Jack &amp; Dave') + '</span>' +
@@ -2675,6 +2686,14 @@ function renderSlots() {
     if (extended) notes +=
       '<div style="font-size:11px;font-weight:700;color:#fca5a5;margin-bottom:6px">' +
       'Nothing fits inside the 5-7 day window, so later dates are shown and marked.</div>';
+    if (preferPairing && slots.some(s => s.allowed && s.kind === 'pairStrong')) notes +=
+      '<div style="font-size:11px;font-weight:700;color:#c4b5fd;margin-bottom:6px">' +
+      'Purple slots already hold a stronger lead - book this one alongside as the backup. ' +
+      'Green are clean slots: fine to book, and still pairable later.</div>';
+    else if (preferPairing) notes +=
+      '<div style="font-size:11px;font-weight:700;color:#c4b5fd;margin-bottom:6px">' +
+      'No stronger lead to pair with in this window. These are clean slots - fine to book, ' +
+      'and it can still be double-booked later if a strong lead comes in.</div>';
     if (graded && !slots.some(s => s.allowed)) notes +=
       '<div style="font-size:11px;font-weight:700;color:#fca5a5;margin-bottom:6px">' +
       'Nothing here suits a ' + total + '. Everything is greyed with the reason - try the other agent, or book manually and say why in the notes.</div>';
@@ -2690,6 +2709,11 @@ function renderSlots() {
        widen-and-extend fallbacks reason over the unfiltered list. */
     const plan = planSlotDays(slots);
     const days = plan.days;
+
+    // Counted off what planSlotDays actually kept, not off the raw list, so the number
+    // matches what the setter can see on screen.
+    let shownOk = 0, shownGrey = 0;
+    days.forEach(d => d.rows.forEach(r => { if (r.allowed) shownOk++; else shownGrey++; }));
 
     const curD = document.getElementById('appointmentDate').value;
     const curT = document.getElementById('appointmentTime').value;
@@ -2714,7 +2738,12 @@ function renderSlots() {
       const click = s.allowed
         ? 'pickSlot(\'' + s.dateStr + '\',' + s.hour + ',\'' + s.agent + '\')'
         : 'slotWhy(\'' + jsAttr(prettyDate(s.dateStr) + ' ' + prettyHour(s.hour) + ' is open, but: ' + s.reason) + '\')';
-      return '<span onclick="' + click + '" title="' + htmlAttr(s.allowed ? 'Book this slot' : s.reason) + '" ' +
+      const tip = s.allowed
+        ? (preferPairing && s.kind === 'empty'
+            ? 'Reserve - no strong lead here yet. Fine to book; it can still be paired later.'
+            : (s.kind === 'pairStrong' ? 'Preferred - pairs this lead with the ' + s.withScore : 'Book this slot'))
+        : s.reason;
+      return '<span onclick="' + click + '" title="' + htmlAttr(tip) + '" ' +
         'style="display:inline-block;cursor:pointer;font-family:\'JetBrains Mono\',monospace;' +
         'font-size:12px;font-weight:700;padding:5px 9px;margin:0 5px 5px 0;border-radius:7px;' +
         'color:' + (sel ? '#fff' : col) + ';' +
@@ -2727,6 +2756,12 @@ function renderSlots() {
     function agentLine(rows, label) {
       const ok   = rows.filter(r => r.allowed);
       const grey = rows.filter(r => !r.allowed);   // planSlotDays already capped these
+      /* Pairings first for a weak lead - that is the whole of Jack's preference now that it
+         no longer blocks. Time order is kept WITHIN each group so a row still scans left to
+         right while the setter is on the phone. */
+      if (preferPairing) {
+        ok.sort((x, y) => ((x.kind === 'pairStrong' ? 0 : 1) - (y.kind === 'pairStrong' ? 0 : 1)) || (x.start - y.start));
+      }
       if (!ok.length && !grey.length) return '';
       return '<div style="margin:0 0 2px 0">' +
         (label ? '<span style="font-size:10px;font-weight:700;color:#7c3aed;margin-right:6px">' + label + '</span>' : '') +
@@ -2757,8 +2792,13 @@ function renderSlots() {
       ? '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px">' +
         'Showing the first ' + SLOT_POLICY.maxDays + ' days with openings. More are free further out - type a date below.</div>'
       : '') +
+    /* Arnold, 22 Sep: "most of these slots are not available - need fix". The panel was
+       headed AVAILABLE FOR THIS LEAD above mostly struck-through chips, which reads as
+       nonsense from the setter's seat. The count says it in one glance. */
     '<div style="font-size:10px;color:rgba(255,255,255,0.32);margin-top:6px">' +
-      'Struck-through times are free but not a fit for this score - tap one to see why.</div>';
+      '<strong style="color:#4ade80">' + shownOk + ' bookable</strong>' +
+      (shownGrey ? ' &middot; ' + shownGrey + ' not a fit for this score - tap one to see why' : '') +
+      '</div>';
   });
 }
 
