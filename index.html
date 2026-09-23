@@ -1289,13 +1289,17 @@ function applyQuotesScore() {
    supportive-but-absent partner is the easier rebook. */
 function dmScore() {
   if (A.dmWho === null) return null;
-  /* Marvin, 17 Sep: "'nobody else' option should be negative point, not
-     additional 15". It is the one answer we cannot verify and the claim
-     one-legs hide behind, so it now costs points instead of earning them:
-     a perfect lead (urgency 20 + quote in hand 40 + credit 20) claiming
-     sole decision maker lands on 65 - the double-book line - instead of
-     95. Still ranks above a CONFIRMED one-leg, which caps at 45. */
-  if (A.dmWho === 'Nobody Else') return -15;
+  /* ARNOLD + JACK, 23 Sep - this REVERSES Marvin's 17 Sep -15.
+     Arnold: "there should be no deduction nor additional points on this tile
+     as jack sold some jobs with single people. only put negative when they
+     confirmed they have someone but is a one legger."
+     Jack: "This is 100% correct. They should not get the -40 or 50 points."
+     A genuine sole decision maker who turns up is a perfectly good
+     appointment - Jack closes them. The thing worth penalising is a
+     CONFIRMED one-leg (someone else exists and is not attending), which is
+     handled by updateDmRisk()'s -40, not here. So this tile is now neutral:
+     no deduction, no bonus. A perfect lead claiming sole DM scores 80. */
+  if (A.dmWho === 'Nobody Else') return 0;
   if (A.dmAttend === null) return null;
   if (A.dmAttend === 'Not Sure') return 5;
   /* Buy-in deleted 17 Sep, so "coming" collapses to a single value. 20 is the
